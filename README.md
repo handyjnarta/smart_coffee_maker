@@ -1,6 +1,6 @@
 # smart_coffee_maker
 
 Library used : 
-#include <RBDdimmer.h> __
-#include "max6675.h" __
+#include <RBDdimmer.h> <br />
+#include "max6675.h" <br />
 #include <PID_v1.h> 
