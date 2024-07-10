@@ -32,20 +32,22 @@ HX711_ADC LoadCell(HX711_dout, HX711_sck);
 
 const int calVal_eepromAdress = 0;
 unsigned long t = 0;
+//PUMP
+int motorPin =14;// pin to connect to motor module
+int mSpeed = 150;// variable to hold speed value
+
 
 void setup() {
-  Serial.begin(57600); delay(10);
+  Serial.begin(9600);
+  
   Serial.println();
   Serial.println("Starting...");
 
   LoadCell.begin();
-  //LoadCell.setReverseOutput(); //uncomment to turn a negative output value to positive
+
   float calibrationValue; // calibration value (see example file "Calibration.ino")
   calibrationValue = 892.02; //848.91; // uncomment this if you want to set the calibration value in the sketch
-//#if defined(ESP8266)|| defined(ESP32)
-  //EEPROM.begin(512); // uncomment this if you use ESP8266/ESP32 and want to fetch the calibration value from eeprom
-//#endif
-  //EEPROM.get(calVal_eepromAdress, calibrationValue); // uncomment this if you want to fetch the calibration value from eeprom
+
 
   unsigned long stabilizingtime = 2000; // preciscion right after power-up can be improved by adding a few seconds of stabilizing time
   boolean _tare = true; //set this to false if you don't want tare to be performed in the next step
@@ -57,13 +59,17 @@ void setup() {
   else {
     LoadCell.setCalFactor(calibrationValue); // set calibration value (float)
     Serial.println("Startup is complete");
+    pinMode(motorPin,OUTPUT);
   }
+
+  //PUMP
 }
 
 void loop() {
   static boolean newDataReady = 0;
   const int serialPrintInterval = 500; //increase value to slow down serial print activity
-
+  analogWrite(motorPin, mSpeed);
+  delay(200);
   // check for new data/start next conversion:
   if (LoadCell.update()) newDataReady = true;
 
@@ -75,11 +81,17 @@ void loop() {
         sum += i;  // Menambahkan nilai i ke sum
     }
     float average = sum / 80;
+    if (average >= 200) {
+      mSpeed = 0; //turn off motor when load is too much
+    }
     Serial.print("Load_cell output val: ");
-        Serial.println(average);
-        newDataReady = 0;
-        t = millis(); //
-        sum = 0;
+    Serial.println(average);
+    Serial.println("\t");
+    Serial.print("motor speed : ");
+    Serial.println(mSpeed);
+    newDataReady = 0;
+    t = millis(); //
+    sum = 0;
     }
   }
 

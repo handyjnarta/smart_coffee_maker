@@ -3,8 +3,8 @@
 //#include "soc/rtc.h"
 
 // HX711 circuit wiring
-const int LOADCELL_DOUT_PIN = 19;
-const int LOADCELL_SCK_PIN = 18;
+const int LOADCELL_DOUT_PIN = 15;
+const int LOADCELL_SCK_PIN = 26;
 
 HX711 scale;
 
@@ -32,7 +32,7 @@ void setup() {
             // by the SCALE parameter (not set yet)
             
   //scale.set_scale(INSERT YOUR CALIBRATION FACTOR);
-  scale.set_scale(104.06);                    // this value is obtained by calibrating the scale with known weights; see the README for details
+  scale.set_scale(164.739);                    // this value is obtained by calibrating the scale with known weights; see the README for details
   scale.tare();               // reset the scale to 0
 
   Serial.println("After setting up the scale:");
