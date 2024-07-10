@@ -69,10 +69,12 @@ void loop() {
         float i = LoadCell.getData();
         sum += i;  // Menambahkan nilai i ke sum
     }
+      average = sum/10; 
       Serial.print("Load_cell output val: ");
-      Serial.println(sum);
+      Serial.println(average);
       newDataReady = 0;
       t = millis();
+      sum = 0;
     }
   }
 
