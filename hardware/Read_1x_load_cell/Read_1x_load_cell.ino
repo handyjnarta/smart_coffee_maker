@@ -24,8 +24,8 @@
 #endif
 
 //pins:
-const int HX711_dout = 4; //mcu > HX711 dout pin
-const int HX711_sck = 5; //mcu > HX711 sck pin
+const int HX711_dout = 19; //mcu > HX711 dout pin
+const int HX711_sck = 18; //mcu > HX711 sck pin
 float sum = 0;
 //HX711 constructor:
 HX711_ADC LoadCell(HX711_dout, HX711_sck);
@@ -73,12 +73,12 @@ void loop() {
       for (int k = 1; k <= 10; k++) {
         float i = LoadCell.getData();
         sum += i;  // Menambahkan nilai i ke sum
-        float average = sum / 10;
-        Serial.print("Load_cell output val: ");
-        Serial.println(i);
+    }
+    float average = sum / 10;
+    Serial.print("Load_cell output val: ");
+        Serial.println(average);
         newDataReady = 0;
         t = millis(); //
-    }
     }
   }
 
