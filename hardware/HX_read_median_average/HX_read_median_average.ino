@@ -9,8 +9,8 @@
 
 HX711 scale;
 
-uint8_t dataPin = 6;
-uint8_t clockPin = 7;
+uint8_t dataPin = 19;
+uint8_t clockPin = 18;
 
 uint32_t start, stop;
 volatile float f;
@@ -28,17 +28,18 @@ void setup()
 
   // TODO find a nice solution for this calibration..
   // load cell factor 20 KG
-  scale.set_scale(127.15);
+  //scale.set_scale(127.15);
 
   // load cell factor 5 KG
-  // scale.set_scale(420.0983);
+  scale.set_scale(-0.112956);
+
   // reset the scale to zero = 0
   scale.tare();
 
   Serial.println("\nPERFORMANCE");
   start = micros();
   f = 0;
-  for (int i = 0; i < 100; i++)
+  for (int i = 0; i < 10; i++)
   {
     f = scale.read_medavg(7);
   }
