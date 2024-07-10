@@ -24,8 +24,8 @@
 #endif
 
 //pins:
-const int HX711_dout = 19; //mcu > HX711 dout pin
-const int HX711_sck = 18; //mcu > HX711 sck pin
+const int HX711_dout = 15; //mcu > HX711 dout pin
+const int HX711_sck = 26; //mcu > HX711 sck pin
 float sum = 0;
 //HX711 constructor:
 HX711_ADC LoadCell(HX711_dout, HX711_sck);
@@ -41,7 +41,7 @@ void setup() {
   LoadCell.begin();
   //LoadCell.setReverseOutput(); //uncomment to turn a negative output value to positive
   float calibrationValue; // calibration value (see example file "Calibration.ino")
-  calibrationValue = 0.12; // uncomment this if you want to set the calibration value in the sketch
+  calibrationValue = 104.06; // uncomment this if you want to set the calibration value in the sketch
 //#if defined(ESP8266)|| defined(ESP32)
   //EEPROM.begin(512); // uncomment this if you use ESP8266/ESP32 and want to fetch the calibration value from eeprom
 //#endif
@@ -79,6 +79,7 @@ void loop() {
         Serial.println(average);
         newDataReady = 0;
         t = millis(); //
+        sum = 0;
     }
   }
 

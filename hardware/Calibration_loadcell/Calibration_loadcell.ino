@@ -24,8 +24,8 @@
 #endif
 
 //pins:
-const int HX711_dout = 19; //mcu > HX711 dout pin
-const int HX711_sck = 18; //mcu > HX711 sck pin
+const int HX711_dout = 15; //mcu > HX711 dout pin
+const int HX711_sck = 26; //mcu > HX711 sck pin
 float sum = 0;
 //HX711 constructor:
 HX711_ADC LoadCell(HX711_dout, HX711_sck);
@@ -57,7 +57,7 @@ void setup() {
 
 void loop() {
   static boolean newDataReady = 0;
-  const int serialPrintInterval = 0; //increase value to slow down serial print activity
+  const int serialPrintInterval = 1000; //increase value to slow down serial print activity
 
   // check for new data/start next conversion:
   if (LoadCell.update()) newDataReady = true;
@@ -65,11 +65,11 @@ void loop() {
   // get smoothed value from the dataset:
   if (newDataReady) {
     if (millis() > t + serialPrintInterval) {
-      for (int k = 1; k <= 10; k++) {
+      for (int k = 1; k <= 10000; k++) {
         float i = LoadCell.getData();
         sum += i;  // Menambahkan nilai i ke sum
     }
-      average = sum/10; 
+      float average = sum/10000; 
       Serial.print("Load_cell output val: ");
       Serial.println(average);
       newDataReady = 0;
