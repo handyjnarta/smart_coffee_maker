@@ -65,11 +65,11 @@ void loop() {
   // get smoothed value from the dataset:
   if (newDataReady) {
     if (millis() > t + serialPrintInterval) {
-      for (int k = 1; k <= 10000; k++) {
+      for (int k = 1; k <= 80; k++) {
         float i = LoadCell.getData();
         sum += i;  // Menambahkan nilai i ke sum
     }
-      float average = sum/10000; 
+      float average = sum/80; 
       Serial.print("Load_cell output val: ");
       Serial.println(average);
       newDataReady = 0;

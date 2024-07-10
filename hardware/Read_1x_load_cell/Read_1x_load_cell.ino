@@ -41,7 +41,7 @@ void setup() {
   LoadCell.begin();
   //LoadCell.setReverseOutput(); //uncomment to turn a negative output value to positive
   float calibrationValue; // calibration value (see example file "Calibration.ino")
-  calibrationValue = 104.06; // uncomment this if you want to set the calibration value in the sketch
+  calibrationValue = 848.91; // uncomment this if you want to set the calibration value in the sketch
 //#if defined(ESP8266)|| defined(ESP32)
   //EEPROM.begin(512); // uncomment this if you use ESP8266/ESP32 and want to fetch the calibration value from eeprom
 //#endif
@@ -70,11 +70,11 @@ void loop() {
   // get smoothed value from the dataset:
   if (newDataReady) {
     if (millis() > t + serialPrintInterval) { //waktu baru
-      for (int k = 1; k <= 10; k++) {
+      for (int k = 1; k <= 80; k++) {
         float i = LoadCell.getData();
         sum += i;  // Menambahkan nilai i ke sum
     }
-    float average = sum / 10;
+    float average = sum / 80;
     Serial.print("Load_cell output val: ");
         Serial.println(average);
         newDataReady = 0;
