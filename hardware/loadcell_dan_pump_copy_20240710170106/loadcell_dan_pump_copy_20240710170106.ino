@@ -20,7 +20,7 @@
 
 #include <HX711_ADC.h>
 #if defined(ESP8266)|| defined(ESP32) || defined(AVR)
-#include <EEPROM.h>
+//#include <EEPROM.h>
 #endif
 
 //pins:
@@ -47,8 +47,6 @@ void setup() {
 
   float calibrationValue; // calibration value (see example file "Calibration.ino")
   calibrationValue = 892.02; //848.91; // uncomment this if you want to set the calibration value in the sketch
-
-
   unsigned long stabilizingtime = 2000; // preciscion right after power-up can be improved by adding a few seconds of stabilizing time
   boolean _tare = true; //set this to false if you don't want tare to be performed in the next step
   LoadCell.start(stabilizingtime, _tare);

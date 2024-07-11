@@ -12,7 +12,7 @@ dimmerLamp dimmer(outputPin, zerocross); // Initialize port for dimmer for ESP82
 
 int thermoSO = 19;
 int thermoCS = 23;
-int thermoCLK = 15;
+int thermoCLK = 13;
 
 MAX6675 thermocouple(thermoCLK, thermoCS, thermoSO);
 
