@@ -75,7 +75,7 @@ void setup() {
   myPID.SetOutputLimits(0, 80); // Output limits for the dimmer (0-80%)
 
   LoadCell.begin();
-  float calibrationValue = 892.02; // calibration value
+  float calibrationValue = -802.12; // calibration value
   unsigned long stabilizingtime = 2000; // precision right after power-up can be improved by adding a few seconds of stabilizing time
   boolean _tare = true; // set this to false if you don't want tare to be performed in the next step
   LoadCell.start(stabilizingtime, _tare);
