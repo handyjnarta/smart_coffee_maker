@@ -1,3 +1,4 @@
+//Connection Halaman depan
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth/app/constant/constant.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
@@ -17,7 +18,7 @@ class ConnectionView extends StatelessWidget {
         Obx(() {
           return Visibility(
             visible: ctrl.isConnecting.value,
-            child: const LinearProgressIndicator(
+            child: const LinearProgressIndicator(//Bagian yang bakal berjalan pas lagi connecting
               backgroundColor: Colors.yellow,
               valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
             ),
@@ -61,13 +62,13 @@ class ConnectionView extends StatelessWidget {
 
                         ElevatedButton(
                           style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all(
+                            backgroundColor: WidgetStateProperty.all(
                                 (ctrl.selectedDevice.value != 'NONE' &&
                                     ctrl.selectedDevice.value != '' &&
                                     ctrl.isConnecting.isFalse &&
                                     ctrl.isBluetoothActive.isTrue)
-                                    ? AppColors.activeButton
-                                    : AppColors.inActiveButton
+                                    ? const Color.fromARGB(51, 114, 198, 246)
+                                    : const Color.fromARGB(255, 5, 60, 70)
                             ),
                           ),
                           onPressed: () {
@@ -86,13 +87,12 @@ class ConnectionView extends StatelessWidget {
                 }),
 
                 const Divider(thickness: 1.0,),
-                const SizedBox(height: 20,),
+                const SizedBox(height: 15,),
                 const Text(
-                  "PAIRED DEVICES",
-                  style: TextStyle(fontSize: 24, color: Colors.blue),
+                  "Paired Devices",
+                  style: TextStyle(fontSize: 18, color: Colors.blue),
                   textAlign: TextAlign.center,
                 ),
-
                 Obx((){
                   return
                     Column(
@@ -101,29 +101,31 @@ class ConnectionView extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
                             const Text(
-                              'Device:',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
+                            'Device:',
+                            style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            //fontSize: 12, // Ubah ukuran font di sini
+                                ),
                               ),
-                            ),
+
                             buildDeviceDropDown(),
 
                             refreshButton()
                           ],
                         ),
 
-                        const Divider(thickness: 1.0,),
-                        const SizedBox(height: 20,),
+                        const Divider(thickness: 0.5,),
+                        const SizedBox(height: 10,),
                         // auto reconnect switch
                         Row(
                           children: [
                             Switch(
                                 value: ctrl.isAutoReconnect.value,
                                 onChanged: (bool newVal) {
-                                  ctrl.isAutoReconnect.value = newVal;
+                                ctrl.isAutoReconnect.value = newVal;
                                 }
                             ),
-                            const SizedBox(width: 4,),
+                            const SizedBox(width: 2,),
                             const Text('Auto reconnect if connection lost',
                               style: TextStyle(
                                 color: Colors.black,
@@ -135,7 +137,6 @@ class ConnectionView extends StatelessWidget {
                       ],
                     );
                 }),
-
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(20),
@@ -174,7 +175,43 @@ class ConnectionView extends StatelessWidget {
       ],
     );
   }
+  refreshButton() {
+  return Padding(
+    padding: const EdgeInsets.only(left: 4.0), // Menggeser tombol ke kiri sejauh 4 pixel
+    child: ElevatedButton.icon(
+      icon: const Icon(
+        Icons.refresh,
+        color: Colors.white,
+      ),
+      label: const Text(
+        'Refresh',
+        style: TextStyle(
+          color: Colors.white,
+        ),
+      ),
+      style: ButtonStyle(
+        backgroundColor: WidgetStateProperty.all(
+          ctrl.isBluetoothActive.value ? Color.fromARGB(185, 148, 235, 78) : AppColors.inActiveButton,
+        ),
+        fixedSize: WidgetStateProperty.all(const Size(50, 50)),
+      ),
+      onPressed: () async {
+        // So, that when new devices are paired
+        // while the app is running, user can refresh
+        // the paired devices list.
+        if (ctrl.isBluetoothActive.value) {
+          await BluetoothData.instance.getPairedDevices().then((_) {
+            showGetxSnackbar('Devices refreshed', 'Device list refreshed');
+            ctrl.refreshDeviceList();
+            ctrl.refreshLogs(text:'Device list refreshed');
+          });
+        }
+      },
+    ),
+  );
+}
 
+/*YANG LAMA
   refreshButton() {
     return
       ElevatedButton.icon(
@@ -183,15 +220,17 @@ class ConnectionView extends StatelessWidget {
           color: Colors.white,
         ),
         label: const Text(
-          "Refresh",
+          'Refresh',
           style: TextStyle(
+            fontSize: 2,
             color: Colors.white,
           ),
         ),
         style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all(
-              ctrl.isBluetoothActive.value ? AppColors.activeButton : AppColors.inActiveButton
+          backgroundColor: WidgetStateProperty.all(
+              ctrl.isBluetoothActive.value ? const Color.fromARGB(185, 148, 235, 78) : AppColors.inActiveButton,
           ),
+          fixedSize: WidgetStateProperty.all(const Size(50, 50)),
         ),
         onPressed: () async {
           // So, that when new devices are paired
@@ -210,7 +249,7 @@ class ConnectionView extends StatelessWidget {
         },
       );
   }
-
+   */
   void onPressedConnectButton() {
     // if bluetooth not active or bluetooth active but still connecting, then
     // nothing to_do if user press the button
@@ -232,7 +271,7 @@ class ConnectionView extends StatelessWidget {
       }
     }
   }
-
+   //YANG LAMA
   buildDeviceDropDown() {
     var devList = ctrl.deviceItems.value.map<DropdownMenuItem<BluetoothDevice>>((dev) {
       return DropdownMenuItem(value: dev, child: Text(dev.name!));

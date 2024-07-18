@@ -37,11 +37,13 @@ showGetxSnackbar(String title, String description) {
     '',
     messageText: Text(description, style: const TextStyle(fontSize: 16),),
     backgroundColor: Colors.white.withOpacity(0.6),
-    duration: const Duration(seconds: 2)
+    duration: const Duration(seconds: 1)
   );
 }
 
 // Method to show a SnackBar, taking message as the text
+//Kode ini mendefinisikan sebuah fungsi asinkron bernama `showSnackBar` yang menampilkan sebuah SnackBar di aplikasi Flutter. 
+//Fungsi ini menunggu selama 100 milidetik, kemudian menyembunyikan SnackBar yang sedang ditampilkan (jika ada), dan menampilkan SnackBar baru dengan pesan yang diberikan dan durasi tertentu.
 Future showSnackBar(String message, {Duration duration = const Duration(seconds: 3),}) async {
   await Future.delayed(const Duration(milliseconds: 100));
 
@@ -51,7 +53,7 @@ Future showSnackBar(String message, {Duration duration = const Duration(seconds:
       behavior: SnackBarBehavior.floating,
       content: Text(
         message,
-        style: const TextStyle(fontSize: 16),
+        style: const TextStyle(fontSize: 12),
       ),
       duration: duration,
     ),

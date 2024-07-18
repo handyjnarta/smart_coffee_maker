@@ -6,7 +6,6 @@ import 'package:flutter_bluetooth/app/constant/constant.dart';
 import 'package:flutter_bluetooth/utils.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:get/get.dart';
-// import 'app/controllers/global_controller.dart';
 import 'main.dart';
 
 class BluetoothData {
@@ -22,8 +21,6 @@ class BluetoothData {
   // To track whether the device is still connected to Bluetooth
   bool? get isConnected => connection != null && connection!.isConnected;
 
-  // deviceState only used to change color, not too important
-  // int deviceState = 0;
   bool isDisconnecting = false;
   bool _isConnectionLost = false;
   int _reconnectCounter = 0;
@@ -38,6 +35,10 @@ class BluetoothData {
   List<BluetoothDevice> devicesList = [];
   BluetoothDevice? device;
 
+  // StreamController to send messages
+  final StreamController<String> _messageController = StreamController<String>.broadcast();
+  Stream<String> get messageStream => _messageController.stream;
+
   Future<void> initBluetooth() async {
     // Get current state
     debugPrint('[bluetooth_data] reading bluetooth state');
@@ -50,15 +51,8 @@ class BluetoothData {
       ctrl.refreshDeviceList();
     }
 
-    // deviceState = 0; // neutral
-
-    // If the bluetooth of the device is not enabled,
-    // then request permission to turn on bluetooth
-    // as the app starts up
     enableBluetooth();
 
-    // Listen for further state changes
-    // membaca status bluetooth ketika di aktifkan atau dimatikan
     FlutterBluetoothSerial.instance.onStateChanged().listen((BluetoothState state) async {
         bluetoothState = state;
         if (bluetoothState == BluetoothState.STATE_OFF) {
@@ -79,7 +73,6 @@ class BluetoothData {
     });
   }
 
-  // Avoid memory leak and disconnect
   void dispose() {
     if (isConnected!) {
       isDisconnecting = true;
@@ -88,9 +81,9 @@ class BluetoothData {
     }
 
     _timer?.cancel();
+    _messageController.close(); // Close the StreamController
   }
 
-  // Method to connect to bluetooth
   void connect() async {
     if (device == null) {
       debugPrint('No device selected');
@@ -102,7 +95,6 @@ class BluetoothData {
       if (!isConnected!) {
         await BluetoothConnection.toAddress(device?.address).then((conn) {
           debugPrint('Connected to the device');
-          // showSnackBar('Connected to the device')
           showGetxSnackbar('Connected', 'Connected to the device');
 
           connection = conn;
@@ -113,27 +105,14 @@ class BluetoothData {
           _isConnectionLost = false;
           ctrl.refreshLogs(text: 'Connected');
 
-          // balasan/feedback dari device client selalu dibaca
-          // karena subscription stream
           connection?.input?.listen((Uint8List data) {
             final dataString = ascii.decode(data, allowInvalid: true).trim();
             debugPrint('[bluetooth_data] Data incoming: $dataString');
 
             if (dataString.isNotEmpty) {
               ctrl.refreshLogs(sourceId: SourceId.clientId, text: dataString);
+              _messageController.add(dataString); // Send the message to the stream
             }
-
-            // Send data ke device client as feedback
-            // Uint8List dataForDevice = utf8.encode("ok " "\r\n") as Uint8List;
-            // connection?.output.add(dataForDevice);
-
-            // if (ascii.decode(data).contains('!')) {
-              // connection?.finish(); // Closing connection
-              // disconnect();
-              // debugPrint('[bluetooth_data] Disconnecting by local host');
-              // ctrl.refreshLogs(text: 'Disconnecting by local host');
-              // showGetxSnackbar('Disconnected', 'Disconnecting by local host');
-            // }
           }).onDone(() {
             debugPrint('[bluetooth_data] on done');
             String status = '';
@@ -156,7 +135,6 @@ class BluetoothData {
           });
         }).catchError((error) {
           debugPrint('[bluetooth_data] Cannot connect, exception occurred: $error');
-          // showSnackBar('Cannot connect, exception occurred');
           showGetxSnackbar('Failed to connect', 'Cannot connect, exception occurred');
           ctrl.refreshLogs(text:'Cannot connect');
           ctrl.isConnecting.value = false;
@@ -168,7 +146,7 @@ class BluetoothData {
   }
 
   void reConnect() {
-    Future.delayed(const Duration(seconds: 5)).then((value) {
+    Future.delayed(const Duration(seconds: 15)).then((value) {
       if (ctrl.isAutoReconnect.isTrue && bluetoothState == BluetoothState.STATE_ON
           && _isConnectionLost && _reconnectCounter < maxTryReconnect)
       {
@@ -181,46 +159,31 @@ class BluetoothData {
     });
   }
 
-  // Method to disconnect bluetooth
-  void disconnect() async {
-    // deviceState = 0;
-
+  Future<void> disconnect() async {
     await connection?.close();
-    // showSnackBar('Device disconnected');
     showGetxSnackbar('Disconnected', 'Device disconnected');
     ctrl.refreshLogs(text:'Device disconnected');
     debugPrint('Device disconnected');
-    // if (!connection!.isConnected) {
-    //   ctrl.isConnected.value = false;
-    // }
     ctrl.isConnected.value = false;
   }
 
-  // Request Bluetooth permission from the user
   Future<void> enableBluetooth() async {
-    // Retrieving the current Bluetooth state
     bluetoothState = await FlutterBluetoothSerial.instance.state;
 
-    // If the bluetooth is off, then turn it on first
-    // and then retrieve the devices that are paired.
     if (bluetoothState == BluetoothState.STATE_OFF) {
       await FlutterBluetoothSerial.instance.requestEnable();
     }
-    // await getPairedDevices();
   }
 
-  // For retrieving and storing the paired devices in a list.
   Future<void> getPairedDevices() async {
     List<BluetoothDevice> devices = [];
 
-    // To get the list of paired devices
     try {
       devices = await _bluetooth.getBondedDevices();
     } on PlatformException {
       debugPrint("Error");
     }
 
-    // Store the [devices] list in the [_devicesList]
     devicesList = devices;
   }
 
@@ -232,7 +195,6 @@ class BluetoothData {
     _timer = Timer.periodic(oneSec, (Timer timer) {
         debugPrint('[bluetooth_data] time out in: $start');
         if (start == 0) {
-          // if state is connecting and still not connected after >= max connection time out
           if (ctrl.isConnecting.isTrue) {
             debugPrint('[bluetooth_data] Connection timeout');
             showGetxSnackbar('Failed to connect', 'Connection time out');
@@ -250,10 +212,9 @@ class BluetoothData {
 
   Future<void> sendMessageToBluetooth(String message, bool asSwitch) async {
     if (ctrl.isConnected.isTrue) {
-      Uint8List data = utf8.encode("$message" "\r\n") as Uint8List;
+      Uint8List data = utf8.encode("$message" "\r\n");
       connection?.output.add(data);
       await connection?.output.allSent;
     }
   }
-
 }

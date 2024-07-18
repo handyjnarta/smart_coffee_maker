@@ -1,7 +1,8 @@
+//Tempat utk chatan
+
 // import 'dart:convert';
 // import 'dart:typed_data';
-// import 'dart:async';
-import 'dart:async';
+// import 'dart:async';  DISURUH SAMA QUICK SOLVE
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth/app/constant/constant.dart';
 import 'package:flutter_bluetooth/utils.dart';
@@ -182,7 +183,9 @@ class DataLogs extends StatelessWidget {
         ),
       );
   }
-
+  
+//Kode ini mendefinisikan sebuah fungsi `sendMessage` yang mengirim pesan melalui koneksi Bluetooth jika teks yang dimasukkan oleh pengguna tidak kosong. 
+//Fungsi ini membersihkan teks yang sudah diinput, mengirim pesan melalui Bluetooth, memperbarui log di aplikasi, menambahkan pesan ke dalam riwayat perintah, dan jika terjadi kesalahan, mencatat pesan kesalahan tersebut ke dalam log.
   void sendMessage() {
     String text = ctrl.logTextEditingController.text.trim();
     ctrl.logTextEditingController.clear();

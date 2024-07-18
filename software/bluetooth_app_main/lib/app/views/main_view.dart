@@ -18,12 +18,12 @@ class MainView extends StatelessWidget {
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
-        title: const Text("Flutter Bluetooth"),
-        backgroundColor: Colors.deepPurple,
+        title: const Text("Coffee Maker"),
+        backgroundColor: Color.fromARGB(199, 170, 84, 3),
         actions:
         [
           Padding(
-            padding: const EdgeInsets.only(right: 14.0, top: 10, bottom: 6),
+            padding: const EdgeInsets.only(right: 10.0, top: 10, bottom: 10), //padding: const EdgeInsets.only(right: 14.0, top: 10, bottom: 6),
               child: Obx(() {
                 return
                   Visibility(
@@ -132,8 +132,8 @@ class MainView extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: const [
                 Icon(Icons.bluetooth),
-                // SizedBox(width: 10,),
-                Text('Connection')
+                SizedBox(width: 2,),
+                Text('Link')
               ],)
             ),
 
@@ -141,8 +141,8 @@ class MainView extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: const [
                 Icon(Icons.terminal),
-                SizedBox(width: 10,),
-                Text('Data Logs')
+                SizedBox(width: 2,),
+                Text('Chat')
               ],)
             ),
 
@@ -150,8 +150,8 @@ class MainView extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: const [
                 Icon(Icons.list_alt_outlined),
-                SizedBox(width: 4,),
-                Text('Device List')
+                SizedBox(width: 2,),
+                Text('D_List')
               ],)
             ),
           ],

@@ -1,4 +1,3 @@
-// For performing some operations asynchronously
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth/utils.dart';
 import 'package:get/get.dart';
@@ -25,6 +24,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     debugPrint('[main] building UI');
     ctrl = Get.put(Controller());
+
+    // Listen to BluetoothData messages
+    BluetoothData.instance.messageStream.listen((message) {
+      debugPrint('Received message: $message');
+      // Add your code here to process the message
+    });
 
     return GetMaterialApp(
       title: 'Flutter Bluetooth App',
@@ -76,7 +81,6 @@ class BluetoothAppState extends State<BluetoothApp> with TickerProviderStateMixi
 
   Future init() async {
     prefs = await SharedPreferences.getInstance();
-    // load the saved device list
     DeviceController.loadDeviceListFromStorage();
     await BluetoothData.instance.initBluetooth();
   }
@@ -94,7 +98,6 @@ Future<bool> onWillPop() {
   DateTime now = DateTime.now();
   if (currentBackPressTime == null || now.difference(currentBackPressTime!) > const Duration(seconds: 2)) {
     currentBackPressTime = now;
-    // Fluttertoast.showToast(msg: "Press again to exit");
     showGetxSnackbar("Exit app", "Press again to exit");
     return Future.value(false);
   }

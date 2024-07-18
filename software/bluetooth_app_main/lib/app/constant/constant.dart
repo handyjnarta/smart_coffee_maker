@@ -18,5 +18,5 @@ const double maxLogContainerWidth = 300;
 const int maxCommandCount = 4;
 const int minCommandCount = 2;
 const int maxConnectionTimeOut = 15; // in second
-const int maxTryReconnect = 3;
+const int maxTryReconnect = 5;
 const int maxCommandHistoryCount = 10;

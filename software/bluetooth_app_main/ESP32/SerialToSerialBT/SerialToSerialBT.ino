@@ -22,7 +22,7 @@ String device_name = "ESP32-BT-Slave";
 BluetoothSerial SerialBT;
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(9600);
   SerialBT.begin(device_name); //Bluetooth device name
   Serial.printf("The device with name \"%s\" is started.\nNow you can pair it with Bluetooth!\n", device_name.c_str());
   //Serial.printf("The device with name \"%s\" and MAC address %s is started.\nNow you can pair it with Bluetooth!\n", device_name.c_str(), SerialBT.getMacString()); // Use this after the MAC method is implemented
@@ -30,14 +30,17 @@ void setup() {
     SerialBT.setPin(pin);
     Serial.println("Using PIN");
   #endif
+  
 }
 
 void loop() {
   if (Serial.available()) {
+    
     SerialBT.write(Serial.read());
   }
   if (SerialBT.available()) {
+    //Serial.print("Kirim bang");
     Serial.write(SerialBT.read());
   }
-  delay(2);
+  //delay(2000);
 }
