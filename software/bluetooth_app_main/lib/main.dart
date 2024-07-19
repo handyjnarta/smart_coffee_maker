@@ -8,6 +8,8 @@ import 'app/views/main_view.dart';
 import 'bluetooth_data.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import '../pages/login.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 DateTime? currentBackPressTime;
 late Controller ctrl;
@@ -19,6 +21,10 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // Force sign out the user on startup
+  await FirebaseAuth.instance.signOut();
+
   runApp(const MyApp());
 }
 
@@ -42,9 +48,27 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: WillPopScope(
-        child: const BluetoothApp(),
-        onWillPop: () => onWillPop(),
+      home: StreamBuilder<User?>(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          debugPrint('[StreamBuilder] Checking authentication state');
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            debugPrint('[StreamBuilder] Waiting for authentication state');
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            debugPrint(
+                '[StreamBuilder] Error in authentication state: ${snapshot.error}');
+            return const Center(
+                child: Text(
+                    'Error occurred while checking authentication status'));
+          } else if (snapshot.hasData) {
+            debugPrint('[StreamBuilder] User is authenticated');
+            return const BluetoothApp();
+          } else {
+            debugPrint('[StreamBuilder] User is not authenticated');
+            return Login();
+          }
+        },
       ),
     );
   }
@@ -62,7 +86,7 @@ class BluetoothAppState extends State<BluetoothApp>
   @override
   void initState() {
     super.initState();
-
+    debugPrint('[BluetoothApp] Initializing');
     ctrl.initTabController(this);
     init();
 
@@ -79,6 +103,7 @@ class BluetoothAppState extends State<BluetoothApp>
 
   @override
   void dispose() {
+    debugPrint('[BluetoothApp] Disposing');
     BluetoothData.instance.dispose();
     listScrollController.dispose();
     super.dispose();
