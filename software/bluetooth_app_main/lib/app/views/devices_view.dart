@@ -1,3 +1,4 @@
+//D_List
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth/app/controllers/device_controller.dart';
 import 'package:flutter_bluetooth/app/helper/popup_dialogs.dart';
@@ -220,20 +221,20 @@ class DevicesView extends StatelessWidget {
                         },
                         itemBuilder: (BuildContext context) {
                           return [
-                            PopupMenuItem<PopupItems>(
+                            const PopupMenuItem<PopupItems>(
                               value: PopupItems.edit,
                               child: Row(
-                                children: const [
+                                children: [
                                   Text('Edit'),
                                   Expanded(child: SizedBox(width: 10,)),
                                   Icon(Icons.edit, size: 20.0,)
                                 ],
                               ),
                             ),
-                            PopupMenuItem<PopupItems>(
+                            const PopupMenuItem<PopupItems>(
                               value: PopupItems.delete,
                               child: Row(
-                                children: const [
+                                children: [
                                   Text('Delete'),
                                   Expanded(child: SizedBox(width: 10,)),
                                   Icon(Icons.delete, size: 20.0,)

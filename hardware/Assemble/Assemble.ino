@@ -79,8 +79,8 @@ int readIntFromSerial() {
 
 void setup() {
   Serial.begin(9600);
-  ESP_BT.begin("ESP32_Coffee_Control");
-  ESP_BT.println("Bluetooth Device is Ready to Pair");
+  ESP_BT.begin("ESP32-BT-Slave-Qorex");// jangan dipake ESP32_Coffee_Control, 
+  Serial.println("Bluetooth Device is Ready to Pair");
   dimmer.begin(NORMAL_MODE, ON);
   Serial.println("Dimmer Program is starting...");
 
@@ -102,9 +102,10 @@ void setup() {
     pinMode(motorPin, OUTPUT);
   }
 
-  currentState = WAITING_FOR_INPUT;
+  //currentState = WAITING_FOR_INPUT;
   Serial.println("Mulai bang");
   ESP_BT.println("Mulai Bangk");
+  
 }
 
 void askForInputs() {
@@ -112,7 +113,7 @@ void askForInputs() {
   //ESP_BT.println("Enter desired temperature setpoint: ");
   if (ESP_BT.available()) {
     char incoming = ESP_BT.read();//char incoming = 's';
-    if (incoming == 's'){
+    if (incoming == 'a'){
       //delay(1000);
       //ESP_BT.println("Enter desired temperature setpoint: ");
       Setpoint = readDoubleFromSerial();
@@ -124,7 +125,7 @@ void askForInputs() {
       }
 
       ESP_BT.printf("Setpoint accepted: %.2f", Setpoint);
-      //ESP_BT.println('\n');
+      ESP_BT.println('\n');
       ESP_BT.println("Enter number of pouring steps: ");
       numSteps = readIntFromSerial();
       while (numSteps < 1) {
@@ -183,11 +184,20 @@ void controlMotor(int speed) {
 }
 
 void loop() {
+  //ESP.restart();
+  /*if (ESP_BT.available()) {
+    Serial.println('reset bang');
+    char reset = ESP_BT.read();//char incoming = 's';
+    if (reset == 'r'){
+      Serial.println('reset bang');
+      ESP.restart();
+    }
+}*/
   unsigned long currentMillis = millis();
   switch (currentState) {
-    case WAITING_FOR_INPUT:
-      askForInputs();
-      break;
+  case WAITING_FOR_INPUT:
+  askForInputs();
+  break;
 
     case POURING:
       if (currentMillis - previousMillis >= interval) {
@@ -256,15 +266,16 @@ void loop() {
         }
         unsigned long currentMillis_print = millis(); // Mendapatkan waktu saat ini
         // Memeriksa apakah interval waktu telah berlalu
-        unsigned long interval_print = 1000;
+        unsigned long interval_print = 2000;
         if (currentMillis_print - previousMillis_print >= interval_print) {
     // Simpan waktu saat ini sebagai waktu sebelumnya
         previousMillis_print = currentMillis_print;
-        ESP_BT.print("C = ");
-        ESP_BT.println(NilaiSuhu);
+        ESP_BT.printf("C = %.2f",NilaiSuhu );
+        //ESP_BT.println(NilaiSuhu);
         ESP_BT.println('\n');
-        ESP_BT.print("total water wight: ");
-        ESP_BT.println(volumeLoadCells);
+        delay(100);
+        ESP_BT.printf("total water weight: %.2f", volumeLoadCells);
+        //ESP_BT.println(volumeLoadCells);
         }
       }
       break;
@@ -273,4 +284,5 @@ void loop() {
       currentState = WAITING_FOR_INPUT;
       break;
   }
+  
 }

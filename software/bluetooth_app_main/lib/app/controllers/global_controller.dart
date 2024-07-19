@@ -79,7 +79,7 @@ class Controller extends GetxController {
   void refreshLogs({SourceId sourceId=SourceId.statusId, required String text}) {
     logs.value.add(Message(whom: sourceId, text: text, logTime: DateTime.tryParse(getCurrentDateTime())!));
     logs.refresh();
-    debugPrint('[global_controller] refresh logs called');
+    debugPrint('[global_controller] refresh logs called'); 
   }
 
   void initTabController(TickerProvider tickerProvider) {

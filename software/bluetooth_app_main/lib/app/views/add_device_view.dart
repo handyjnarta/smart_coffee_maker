@@ -126,9 +126,9 @@ class AddDeviceView extends StatelessWidget {
               }
             },
             style: buildButtonStyle(),
-            child: Row(
+            child: const Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
+              children: [
                 Icon(Icons.save),
                 SizedBox(width: 10,),
                 Text('Save Device', ),

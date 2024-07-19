@@ -3,18 +3,18 @@ import 'package:flutter/material.dart';
 ButtonStyle buildButtonStyle({Color borderColor=Colors.purple, bool isCircleButton=false, Color? splashColor, double? radiusSize, double? buttonWidth}) {
   return
     ButtonStyle(
-      // minimumSize: MaterialStateProperty.all(Size.fromWidth(buttonWidth ?? 40)),
-      minimumSize: MaterialStateProperty.all(Size(buttonWidth ?? 40, 40)),
-      shape: MaterialStateProperty.all(
+      // minimumSize: WidgetStateProperty.all(Size.fromWidth(buttonWidth ?? 40)),
+      minimumSize: WidgetStateProperty.all(Size(buttonWidth ?? 40, 40)),
+      shape: WidgetStateProperty.all(
           isCircleButton
               ? const CircleBorder()
               : RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(radiusSize ?? 30)))
       ),
-      padding: MaterialStateProperty.all(const EdgeInsets.all(8)),
-      // backgroundColor: MaterialStateProperty.all(Colors.blue), // <-- Button color
-      side: MaterialStateProperty.all(BorderSide(color: borderColor,)),
-      overlayColor: MaterialStateProperty.resolveWith<Color?>((states) {
-        if (states.contains(MaterialState.pressed)) {
+      padding: WidgetStateProperty.all(const EdgeInsets.all(8)),
+      // backgroundColor: WidgetStateProperty.all(Colors.blue), // <-- Button color
+      side: WidgetStateProperty.all(BorderSide(color: borderColor,)),
+      overlayColor: WidgetStateProperty.resolveWith<Color?>((states) {
+        if (states.contains(WidgetState.pressed)) {
           return splashColor ?? Colors.deepPurple; // <-- Splash color / if splashColor is null then return deepPurple
         }
         return null;

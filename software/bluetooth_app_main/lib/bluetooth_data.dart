@@ -90,6 +90,7 @@ class BluetoothData {
     } else {
       ctrl.refreshLogs(text: 'Connecting to ${ctrl.selectedDevice}');
       ctrl.isConnecting.value = true;
+      //send_Rst();
       startTimeoutConnectionTimer();
 
       if (!isConnected!) {
@@ -143,6 +144,7 @@ class BluetoothData {
         });
       }
     }
+    //send_Rst();
   }
 
   void reConnect() {
@@ -216,5 +218,35 @@ class BluetoothData {
       connection?.output.add(data);
       await connection?.output.allSent;
     }
+  }
+}
+
+void send_Rst() {
+  // Teks yang akan dikirimkan
+  String reset = 'r';
+  
+  try {
+    // Kirim pesan ke Bluetooth
+    BluetoothData.instance.sendMessageToBluetooth(reset, false);
+    
+    // Segarkan log untuk menunjukkan bahwa pesan telah dikirim
+    ctrl.refreshLogs(sourceId: SourceId.hostId, text: reset);
+    
+    // Tambahkan ke riwayat perintah baru (jika diperlukan)
+    //addNewCommandHistories(text);
+
+    // Jika Anda ingin menggulirkan ke bawah atau ke atas, hapus komentar pada bagian ini
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   if (listScrollController.hasClients) {
+    //     listScrollController.animateTo(
+    //         listScrollController.position.minScrollExtent,
+    //         duration: const Duration(milliseconds: 500), curve: Curves.easeInOut
+    //     );
+    //   }
+    // });
+  } catch (e) {
+    // Tangani error jika terjadi
+    debugPrint('[data_logs] send message error: $e');
+    ctrl.refreshLogs(sourceId: SourceId.hostId, text: 'send message error: $e');
   }
 }

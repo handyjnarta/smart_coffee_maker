@@ -104,17 +104,21 @@ class ConnectionView extends StatelessWidget {
                             'Device:',
                             style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            //fontSize: 12, // Ubah ukuran font di sini
+                            fontSize: 16, // Ubah ukuran font di sini
                                 ),
                               ),
 
                             buildDeviceDropDown(),
 
-                            refreshButton()
+                            //refreshButton()
                           ],
                         ),
 
-                        const Divider(thickness: 0.5,),
+                        const Divider(thickness: 1.0,),
+                        const SizedBox(height: 10,),
+                        //refresh button
+                        refreshButton(),
+                        const Divider(thickness: 1.0,),
                         const SizedBox(height: 10,),
                         // auto reconnect switch
                         Row(
@@ -175,9 +179,10 @@ class ConnectionView extends StatelessWidget {
       ],
     );
   }
+  /* PADDING -> GAGAL
   refreshButton() {
   return Padding(
-    padding: const EdgeInsets.only(left: 4.0), // Menggeser tombol ke kiri sejauh 4 pixel
+    padding: const EdgeInsets.only(left: 20.0), // Menggeser tombol ke kiri sejauh 4 pixel
     child: ElevatedButton.icon(
       icon: const Icon(
         Icons.refresh,
@@ -209,9 +214,51 @@ class ConnectionView extends StatelessWidget {
       },
     ),
   );
-}
+}*/
 
-/*YANG LAMA
+/* FLEXIBLE GAGAL
+refreshButton() {
+  return Flexible(
+    child: ElevatedButton.icon(
+      icon: const Icon(
+        Icons.refresh,
+        color: Colors.white,
+      ),
+      label: const Text(
+        'Refresh',
+        style: TextStyle(
+          fontSize: 14,  // Sesuaikan ukuran teks
+          color: Colors.white,
+        ),
+      ),
+      style: ButtonStyle(
+        backgroundColor: WidgetStateProperty.all(
+          ctrl.isBluetoothActive.value 
+            ? const Color.fromARGB(185, 148, 235, 78) 
+            : AppColors.inActiveButton,
+        ),
+      ),
+      onPressed: () async {
+        // So, that when new devices are paired
+        // while the app is running, user can refresh
+        // the paired devices list.
+        if (ctrl.isBluetoothActive.value) {
+          await BluetoothData.instance.getPairedDevices().then((_) {
+            // showSnackBar('Device list refreshed');
+            showGetxSnackbar('Devices refreshed', 'Device list refreshed');
+            ctrl.refreshDeviceList();
+            ctrl.refreshLogs(text: 'Device list refreshed');
+          });
+        } else {
+          null;
+        }
+      },
+    ),
+  );
+}
+*/
+
+//YANG LAMA
   refreshButton() {
     return
       ElevatedButton.icon(
@@ -222,7 +269,7 @@ class ConnectionView extends StatelessWidget {
         label: const Text(
           'Refresh',
           style: TextStyle(
-            fontSize: 2,
+            fontSize: 14,
             color: Colors.white,
           ),
         ),
@@ -230,7 +277,7 @@ class ConnectionView extends StatelessWidget {
           backgroundColor: WidgetStateProperty.all(
               ctrl.isBluetoothActive.value ? const Color.fromARGB(185, 148, 235, 78) : AppColors.inActiveButton,
           ),
-          fixedSize: WidgetStateProperty.all(const Size(50, 50)),
+          fixedSize: WidgetStateProperty.all(const Size(200, 50)),
         ),
         onPressed: () async {
           // So, that when new devices are paired
@@ -248,8 +295,8 @@ class ConnectionView extends StatelessWidget {
           }
         },
       );
-  }
-   */
+  } //*/
+   
   void onPressedConnectButton() {
     // if bluetooth not active or bluetooth active but still connecting, then
     // nothing to_do if user press the button
@@ -271,7 +318,8 @@ class ConnectionView extends StatelessWidget {
       }
     }
   }
-   //YANG LAMA
+  
+   // /*YANG LAMA
   buildDeviceDropDown() {
     var devList = ctrl.deviceItems.value.map<DropdownMenuItem<BluetoothDevice>>((dev) {
       return DropdownMenuItem(value: dev, child: Text(dev.name!));
@@ -300,5 +348,5 @@ class ConnectionView extends StatelessWidget {
           value: ctrl.deviceItems.value[ctrl.devIndex.value]
       );
   }
-
+   //*/
 }
