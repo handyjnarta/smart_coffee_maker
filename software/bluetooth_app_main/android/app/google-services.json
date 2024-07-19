@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "872590217146",
+    "project_id": "smart-coffee-maker-c9d5f",
+    "storage_bucket": "smart-coffee-maker-c9d5f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:872590217146:android:6c7eb8d3390cb138595783",
+        "android_client_info": {
+          "package_name": "com.example.flutter_bluetooth"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB2L1C_lK6kjS3N_A6qjUDYoqgdn8G_wsU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

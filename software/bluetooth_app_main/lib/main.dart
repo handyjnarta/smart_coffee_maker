@@ -6,14 +6,19 @@ import 'app/controllers/device_controller.dart';
 import 'app/controllers/global_controller.dart';
 import 'app/views/main_view.dart';
 import 'bluetooth_data.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 DateTime? currentBackPressTime;
 late Controller ctrl;
 late ScrollController listScrollController;
 late SharedPreferences prefs;
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 
@@ -39,7 +44,7 @@ class MyApp extends StatelessWidget {
       ),
       home: WillPopScope(
         child: const BluetoothApp(),
-        onWillPop: ()=> onWillPop(),
+        onWillPop: () => onWillPop(),
       ),
     );
   }
@@ -52,8 +57,8 @@ class BluetoothApp extends StatefulWidget {
   BluetoothAppState createState() => BluetoothAppState();
 }
 
-class BluetoothAppState extends State<BluetoothApp> with TickerProviderStateMixin {
-
+class BluetoothAppState extends State<BluetoothApp>
+    with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
@@ -63,11 +68,11 @@ class BluetoothAppState extends State<BluetoothApp> with TickerProviderStateMixi
 
     listScrollController = ScrollController(initialScrollOffset: 50.0);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if(listScrollController.hasClients){
+      if (listScrollController.hasClients) {
         listScrollController.animateTo(
             listScrollController.position.maxScrollExtent,
-            duration: const Duration(milliseconds: 500), curve: Curves.easeInOut
-        );
+            duration: const Duration(milliseconds: 500),
+            curve: Curves.easeInOut);
       }
     });
   }
@@ -88,15 +93,16 @@ class BluetoothAppState extends State<BluetoothApp> with TickerProviderStateMixi
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        onTap: () => FocusManager.instance.primaryFocus?.unfocus(), // to hide keyboard if the screen tapped outside of the keyboard
-        child: const MainView()
-    );
+        onTap: () => FocusManager.instance.primaryFocus
+            ?.unfocus(), // to hide keyboard if the screen tapped outside of the keyboard
+        child: const MainView());
   }
 }
 
 Future<bool> onWillPop() {
   DateTime now = DateTime.now();
-  if (currentBackPressTime == null || now.difference(currentBackPressTime!) > const Duration(seconds: 2)) {
+  if (currentBackPressTime == null ||
+      now.difference(currentBackPressTime!) > const Duration(seconds: 2)) {
     currentBackPressTime = now;
     showGetxSnackbar("Exit app", "Press again to exit");
     return Future.value(false);

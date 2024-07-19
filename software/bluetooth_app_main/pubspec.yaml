@@ -41,6 +41,7 @@ dependencies:
   get: ^4.6.5
   shared_preferences: ^2.0.17
   grouped_list: ^5.1.2
+  firebase_core: ^3.2.0
 
 dev_dependencies:
   flutter_test:
