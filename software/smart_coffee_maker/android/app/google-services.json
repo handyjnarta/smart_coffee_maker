@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "916428056991",
+    "project_id": "smart-coffee-maker-88bfb",
+    "storage_bucket": "smart-coffee-maker-88bfb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:916428056991:android:fdb132da0bde7a3fa335aa",
+        "android_client_info": {
+          "package_name": "com.example.smart_coffee_maker"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAdWTJRXkZdsNt7-m9TutBeIntWDCL2Nq0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
