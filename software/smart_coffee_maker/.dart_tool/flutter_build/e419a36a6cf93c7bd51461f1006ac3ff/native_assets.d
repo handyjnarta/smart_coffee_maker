@@ -1,0 +1,1 @@
+ /Users/handyjonarta/Documents/coding/smart_coffee_maker/.dart_tool/flutter_build/e419a36a6cf93c7bd51461f1006ac3ff/native_assets.yaml: 
