@@ -20,6 +20,7 @@ double Setpoint, NilaiSuhu, Output;
 double Kp = 1.0, Ki = 0.5, Kd = 0.1;
 PID myPID(&NilaiSuhu, &Output, &Setpoint, Kp, Ki, Kd, DIRECT);
 
+
 unsigned long previousMillis = 0;
 const long interval = 500;
 // unsigned long setpointReachedMillis = 0;
@@ -41,15 +42,12 @@ int numSteps = 0;
 int pouringVolumes[100];
 int pouringDurations[100];
 int pouringIntervals[100];
-
 enum ProgramState {
   WAITING_FOR_INPUT,
   POURING,
   COMPLETED
 };
-
 ProgramState currentState = WAITING_FOR_INPUT;
-
 double readDoubleFromSerial() {
   String input = "";
   while (true) {
@@ -63,7 +61,6 @@ double readDoubleFromSerial() {
     }
   }
 }
-
 int readIntFromSerial() {
   String input = "";
   while (true) {
@@ -84,10 +81,8 @@ void setup() {
   Serial.println("Bluetooth Device is Ready to Pair");
   dimmer.begin(NORMAL_MODE, ON);
   Serial.println("Dimmer Program is starting...");
-
   myPID.SetMode(AUTOMATIC);
   myPID.SetOutputLimits(0, 80);
-
   LoadCell.begin();
   float calibrationValue = -802.12;
   unsigned long stabilizingtime = 2000;
@@ -106,7 +101,7 @@ void setup() {
   //currentState = WAITING_FOR_INPUT;
   Serial.println("Mulai bang");
   //ESP_BT.println("Mulai Bangk");
-  
+
 }
 
 void askForInputs() {
@@ -124,7 +119,6 @@ void askForInputs() {
         Setpoint = readDoubleFromSerial();
         //delay(1000);
       }
-
       ESP_BT.printf("Setpoint accepted: %.2f", Setpoint);
       ESP_BT.println('\n');
       ESP_BT.println("Enter number of pouring steps: ");
@@ -134,7 +128,6 @@ void askForInputs() {
         ESP_BT.println("Enter again number of pouring steps: ");
         numSteps = readIntFromSerial();
       }
-
       for (int step = 1; step <= numSteps; ++step) {
         ESP_BT.print("Enter desired water volume for step ");
         ESP_BT.print(step);
@@ -142,12 +135,10 @@ void askForInputs() {
         int volwater = readIntFromSerial();
         pouringVolumes[step - 1] = volwater;
         totalVolume += volwater;
-
         ESP_BT.print("Enter duration (in seconds) for pouring step ");
         ESP_BT.print(step);
         ESP_BT.println(": ");
         pouringDurations[step - 1] = readIntFromSerial();
-
         ESP_BT.print("Enter interval time (in seconds) between pouring step ");
         ESP_BT.print(step);
         ESP_BT.println(": ");
@@ -195,7 +186,7 @@ void loop() {
     case POURING: {
       int newVal;
 
-      
+
       if (currentMillis - previousMillis >= interval) {
         previousMillis = currentMillis;
 
@@ -204,7 +195,7 @@ void loop() {
         myPID.Compute();
 
         int preVal = dimmer.getPower();
-        
+
 
         if (abs(NilaiSuhu - Setpoint) <= 1 || (NilaiSuhu > Setpoint) ) {
           newVal = 0;
@@ -250,14 +241,14 @@ void loop() {
                 if (step < numSteps - 1) {
                   delay(pourInterval * 1000);
                 }
-                
-                
+
+
               }
-              
+
             }
-            
+
           }
-          
+
           ESP_BT.println("All pouring steps completed.");
           newVal = 0;
           controlMotor(0);
@@ -276,14 +267,14 @@ void loop() {
           Serial.println("%");
         }*/
 
-        
+
       }
       break;
     }
 
     case COMPLETED: {
       ESP_BT.println("Pouring session completed. Enter new values to restart.");
-      
+
       currentState = WAITING_FOR_INPUT;
       break;
     }
