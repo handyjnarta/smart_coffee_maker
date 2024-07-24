@@ -20,9 +20,10 @@ double Setpoint, NilaiSuhu, Output;
 double Kp = 1.0, Ki = 0.5, Kd = 0.1;
 PID myPID(&NilaiSuhu, &Output, &Setpoint, Kp, Ki, Kd, DIRECT);
 
+
 unsigned long previousMillis = 0;
 const long interval = 500;
-unsigned long setpointReachedMillis = 0;
+// unsigned long setpointReachedMillis = 0;
 const long setpointDelay = 10000;
 unsigned long previousMillis_print = 0;
 
@@ -33,6 +34,7 @@ HX711_ADC LoadCell(HX711_dout, HX711_sck);
 
 unsigned long t = 0;
 int motorPin = 14;
+int motorSpeed = 0;  
 
 float average = 0.0;
 int totalVolume = 0;
@@ -40,15 +42,12 @@ int numSteps = 0;
 int pouringVolumes[100];
 int pouringDurations[100];
 int pouringIntervals[100];
-
 enum ProgramState {
   WAITING_FOR_INPUT,
   POURING,
   COMPLETED
 };
-
 ProgramState currentState = WAITING_FOR_INPUT;
-
 double readDoubleFromSerial() {
   String input = "";
   while (true) {
@@ -62,7 +61,6 @@ double readDoubleFromSerial() {
     }
   }
 }
-
 int readIntFromSerial() {
   String input = "";
   while (true) {
@@ -79,14 +77,12 @@ int readIntFromSerial() {
 
 void setup() {
   Serial.begin(9600);
-  ESP_BT.begin("coba");// jangan dipake ESP32_Coffee_Control, 
+  ESP_BT.begin("ESP32-BT-Slave-Qorexf");// jangan dipake ESP32_Coffee_Control, 
   Serial.println("Bluetooth Device is Ready to Pair");
   dimmer.begin(NORMAL_MODE, ON);
   Serial.println("Dimmer Program is starting...");
-
   myPID.SetMode(AUTOMATIC);
   myPID.SetOutputLimits(0, 80);
-
   LoadCell.begin();
   float calibrationValue = -802.12;
   unsigned long stabilizingtime = 2000;
@@ -104,8 +100,8 @@ void setup() {
 
   //currentState = WAITING_FOR_INPUT;
   Serial.println("Mulai bang");
-  ESP_BT.println("Mulai Bangk");
-  
+  //ESP_BT.println("Mulai Bangk");
+
 }
 
 void askForInputs() {
@@ -123,7 +119,6 @@ void askForInputs() {
         Setpoint = readDoubleFromSerial();
         //delay(1000);
       }
-
       ESP_BT.printf("Setpoint accepted: %.2f", Setpoint);
       ESP_BT.println('\n');
       ESP_BT.println("Enter number of pouring steps: ");
@@ -133,7 +128,6 @@ void askForInputs() {
         ESP_BT.println("Enter again number of pouring steps: ");
         numSteps = readIntFromSerial();
       }
-
       for (int step = 1; step <= numSteps; ++step) {
         ESP_BT.print("Enter desired water volume for step ");
         ESP_BT.print(step);
@@ -141,24 +135,23 @@ void askForInputs() {
         int volwater = readIntFromSerial();
         pouringVolumes[step - 1] = volwater;
         totalVolume += volwater;
-
         ESP_BT.print("Enter duration (in seconds) for pouring step ");
         ESP_BT.print(step);
         ESP_BT.println(": ");
         pouringDurations[step - 1] = readIntFromSerial();
-
         ESP_BT.print("Enter interval time (in seconds) between pouring step ");
         ESP_BT.print(step);
         ESP_BT.println(": ");
         pouringIntervals[step - 1] = readIntFromSerial();
       }
 
-      ESP_BT.print("Total water volume: ");
-      ESP_BT.println(totalVolume);
+      //ESP_BT.print("Total water volume: ");
+      //ESP_BT.println(totalVolume);
 
       currentState = POURING;
     }
   }
+  dimmer.setPower(0);
 }
 
 void updateLoadCell() {
@@ -177,112 +170,113 @@ void updateLoadCell() {
 }
 
 void controlMotor(int speed) {
-  analogWrite(0, speed);
-  delay(20);
-  Serial.print("Motor Speed: ");
-  Serial.println(speed);
+  motorSpeed = speed;            // Update global motor speed variable
+  analogWrite(motorPin, speed);  // Set motor speed
+  delay(20);                     // Short delay
 }
 
 void loop() {
-  //ESP.restart();
-  /*if (ESP_BT.available()) {
-    Serial.println('reset bang');
-    char reset = ESP_BT.read();//char incoming = 's';
-    if (reset == 'r'){
-      Serial.println('reset bang');
-      ESP.restart();
-    }
-}*/
   unsigned long currentMillis = millis();
   switch (currentState) {
-  case WAITING_FOR_INPUT:
-  askForInputs();
-  break;
+    case WAITING_FOR_INPUT: {
+      askForInputs();
+      break;
+    }
 
-    case POURING:
+    case POURING: {
+      int newVal;
+
+
       if (currentMillis - previousMillis >= interval) {
         previousMillis = currentMillis;
 
         NilaiSuhu = thermocouple.readCelsius();
+        ESP_BT.printf("C -OL = %.2f", NilaiSuhu);
         myPID.Compute();
 
         int preVal = dimmer.getPower();
-        int newVal;
-        updateLoadCell();
 
-        float volumeLoadCells = average;
 
-        if (abs(NilaiSuhu - Setpoint) <= 2) {
-          newVal = 10;
-          Output = 10;
+        if (abs(NilaiSuhu - Setpoint) <= 1 || (NilaiSuhu > Setpoint) ) {
+          newVal = 0;
+          Output = 0;
 
           static int step = 0;
           static unsigned long stepStartTime = 0;
           static bool pouring = false;
 
-          if (step < numSteps) {
+          for (step = 0; step < numSteps; step++) {
             int volwater = pouringVolumes[step];
             int pourDuration = pouringDurations[step];
             int pourInterval = pouringIntervals[step];
-
-            if (!pouring) {
-              ESP_BT.print("Starting Step ");
-              ESP_BT.println(step + 1);
-              controlMotor(255);
-              ESP_BT.println("Pouring water...");
+            updateLoadCell();
+              controlMotor(100);
+              ESP_BT.println("mengalir bang");
               stepStartTime = millis();
               pouring = true;
-            } else {
-              if (millis() - stepStartTime >= pourDuration * 1000 && volumeLoadCells >= volwater) {
+
+            while (pouring) {
+              dimmer.setPower(newVal);
+              float volumeLoadCells = average;
+              unsigned long currentMillis_print = millis(); // Get current time
+              unsigned long interval_print = 500; // Print interval
+              if (currentMillis_print - previousMillis_print >= interval_print) {
+                previousMillis_print = currentMillis_print;
+                ESP_BT.printf("C = %.2f", NilaiSuhu);
+                ESP_BT.println('\n');
+                //delay(100);
+                updateLoadCell();
+                ESP_BT.printf("total water weight: %.2f", volumeLoadCells);
+                //ESP_BT.println();
+              }
+              if (millis() - stepStartTime >= pourDuration * 1000 && (volumeLoadCells+20) >= volwater )  {
+                //ESP_BT.print("udah berhenti");
+                ESP_BT.println('\n');
+                ESP_BT.printf("total water weight: %.2f", (volumeLoadCells+10));
+                ESP_BT.printf("total water weight: %.2f", (volumeLoadCells+10));
+                //ESP_BT.printf("total water weight: %d", (volumeLoadCells+10));
                 controlMotor(0);
-                ESP_BT.println("Water poured.");
                 volumeLoadCells = 0;
-                step++;
                 pouring = false;
-                if (step < numSteps) {
-                  ESP_BT.print("Waiting for ");
-                  ESP_BT.print(pourInterval);
-                  ESP_BT.println("seconds before next step...");
+                if (step < numSteps - 1) {
                   delay(pourInterval * 1000);
                 }
+
+
               }
+
             }
-          } else {
-            ESP_BT.println("All pouring steps completed.");
-            step = 0;
-            newVal = 0;
-            controlMotor(0);
-            currentState = COMPLETED;
+
           }
+
+          ESP_BT.println("All pouring steps completed.");
+          newVal = 0;
+          controlMotor(0);
+          step = 0;
+          currentState = COMPLETED;
         } else {
-          setpointReachedMillis = 0;
+          // setpointReachedMillis = 0;
           newVal = (int)Output;
         }
+
         dimmer.setPower(newVal);
-        if (preVal != newVal) {
+
+        /*if (preVal != newVal) {
           Serial.print("TempValue -> ");
           Serial.print(newVal);
           Serial.println("%");
-        }
-        unsigned long currentMillis_print = millis(); // Mendapatkan waktu saat ini
-        // Memeriksa apakah interval waktu telah berlalu
-        unsigned long interval_print = 2000;
-        if (currentMillis_print - previousMillis_print >= interval_print) {
-    // Simpan waktu saat ini sebagai waktu sebelumnya
-        previousMillis_print = currentMillis_print;
-        ESP_BT.printf("C = %.2f",NilaiSuhu );
-        //ESP_BT.println(NilaiSuhu);
-        ESP_BT.println('\n');
-        delay(100);
-        ESP_BT.printf("total water weight: %.2f", volumeLoadCells);
-        //ESP_BT.println(volumeLoadCells);
-        }
+        }*/
+
+
       }
       break;
-    case COMPLETED:
+    }
+
+    case COMPLETED: {
       ESP_BT.println("Pouring session completed. Enter new values to restart.");
+
       currentState = WAITING_FOR_INPUT;
       break;
+    }
   }
-  
 }
