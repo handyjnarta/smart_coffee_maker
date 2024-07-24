@@ -1,5 +1,7 @@
-//Cari command new command dan ganti jadi new recipe, cari cara agar 
-
+//Cari command new command dan ganti jadi new recipe, 
+//cari cara agar command bisa jadi resep dengan for input yang benar 
+// dan cari cara agar resep bisa ditampilkan ke dalam tampilan chat  
+// kondisional utk meyajinkan user thdp resep yang ingin dijalankan
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth/app/constant/constant.dart';
 import 'package:get/get.dart';

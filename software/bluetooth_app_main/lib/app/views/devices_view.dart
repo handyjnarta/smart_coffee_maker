@@ -103,7 +103,7 @@ class DevicesView extends StatelessWidget {
         isScrollControlled: true,
         context: context,
         builder: (BuildContext context) {
-          return const AddDeviceView(title: 'Add new device');
+          return const AddDeviceView(title: 'Add new recipe');
         }
     ).whenComplete(() {
       debugPrint('[device_view] show modal bottom sheet closed (insert new device)');
@@ -172,7 +172,7 @@ class DevicesView extends StatelessWidget {
                           );
                         }
 
-                        if (ctrl.isConnected.isTrue) {
+                        if (ctrl.isConnected.isTrue) { //Kirim pesan ke bluetooth
                           BluetoothData.instance.sendMessageToBluetooth(commandToTurnOn, false);
                           DeviceController.deviceList[deviceIndex].status = true;
                           DeviceController.deviceList.refresh();
