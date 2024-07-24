@@ -34,7 +34,7 @@ const int calVal_eepromAdress = 0;
 unsigned long t = 0;
 //PUMP
 int motorPin =14;// pin to connect to motor module
-int mSpeed = 150;// variable to hold speed value
+int mSpeed = 100;// variable to hold speed value
 
 
 void setup() {
@@ -46,7 +46,7 @@ void setup() {
   LoadCell.begin();
 
   float calibrationValue; // calibration value (see example file "Calibration.ino")
-  calibrationValue = 892.02; //848.91; // uncomment this if you want to set the calibration value in the sketch
+  calibrationValue = -900.0; //848.91; // uncomment this if you want to set the calibration value in the sketch
   unsigned long stabilizingtime = 2000; // preciscion right after power-up can be improved by adding a few seconds of stabilizing time
   boolean _tare = true; //set this to false if you don't want tare to be performed in the next step
   LoadCell.start(stabilizingtime, _tare);
