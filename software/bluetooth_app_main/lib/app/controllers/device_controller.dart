@@ -40,11 +40,14 @@ class DeviceController extends GetxController {
       errorText.value = 'Device name minimal 3 character';
     } else {
       errorText.value = '';
-      int newDevIndex = deviceList.indexWhere((element) => element.deviceName == deviceNameController.text);
+      int newDevIndex = deviceList.indexWhere(
+          (element) => element.deviceName == deviceNameController.text);
 
-      if ((isInsertNewDevice && newDevIndex > -1)
-          || (isEditDevice && newDevIndex > -1 && deviceNameController.text != oldDeviceData['oldDevice']['deviceName'])
-      ) {
+      if ((isInsertNewDevice && newDevIndex > -1) ||
+          (isEditDevice &&
+              newDevIndex > -1 &&
+              deviceNameController.text !=
+                  oldDeviceData['oldDevice']['deviceName'])) {
         errorText.value = 'Device name already used';
       } else {
         if (currentDevice != null) {
@@ -58,11 +61,13 @@ class DeviceController extends GetxController {
     }
   }
 
-  static void loadDeviceListFromStorage({bool isLoadFromInitApp=true}) {
+  static void loadDeviceListFromStorage({bool isLoadFromInitApp = true}) {
     if (isLoadFromInitApp) {
       deviceList.clear();
       deviceList.addAll(DeviceManager.instance.loadDeviceListFromStorage());
-      ctrl.refreshLogs(text: 'Devices loaded from storage on app start', sourceId: SourceId.statusId);
+      ctrl.refreshLogs(
+          text: 'Devices loaded from storage on app start',
+          sourceId: SourceId.statusId);
     } else {
       showConfirmDialog(
           context: Get.context!,
@@ -72,11 +77,13 @@ class DeviceController extends GetxController {
           onOkPressed: () {
             Navigator.pop(Get.context!);
             deviceList.clear();
-            deviceList.addAll(DeviceManager.instance.loadDeviceListFromStorage());
-            ctrl.refreshLogs(text: 'Devices loaded from storage', sourceId: SourceId.statusId);
+            deviceList
+                .addAll(DeviceManager.instance.loadDeviceListFromStorage());
+            ctrl.refreshLogs(
+                text: 'Devices loaded from storage',
+                sourceId: SourceId.statusId);
             showGetxSnackbar('Device loaded', 'Device loaded from storage');
-          }
-      );
+          });
     }
     // deviceStateList.clear();
     // deviceStateList.addAll(DeviceManager.instance.getStatusDeviceList);
@@ -93,10 +100,10 @@ class DeviceController extends GetxController {
         onOkPressed: () {
           Navigator.pop(Get.context!);
           DeviceManager.instance.saveDeviceListIntoStorage(deviceList);
-          ctrl.refreshLogs(text: 'Devices saved into storage', sourceId: SourceId.statusId);
+          ctrl.refreshLogs(
+              text: 'Devices saved into storage', sourceId: SourceId.statusId);
           showGetxSnackbar('Device saved', 'Devices saved into storage OK');
-        }
-    );
+        });
   }
 
   static void createNewDevice() {
@@ -138,24 +145,23 @@ class DeviceController extends GetxController {
     int index = 0;
     for (final cmd in currentDevice!.commandList) {
       CommandController.commandTextEditCtrlList[index].text = cmd.command;
-      CommandController.commandMenuList.add(
-          CommandMenu(
-            // index: commandId,
-            titleText: cmd.title,
-            commandText: cmd.command,
-            readOnly: true,
-            commandController: CommandController.commandTextEditCtrlList[index],
-            onDeleteButtonPressed: DeviceController.deleteSelectedCommand,
-            onEditButtonPressed: DeviceController.editSelectedCommand,
-          )
-      );
+      CommandController.commandMenuList.add(CommandMenu(
+        // index: commandId,
+        titleText: cmd.title,
+        commandText: cmd.command,
+        readOnly: true,
+        commandController: CommandController.commandTextEditCtrlList[index],
+        onDeleteButtonPressed: DeviceController.deleteSelectedCommand,
+        onEditButtonPressed: DeviceController.editSelectedCommand,
+      ));
       index++;
     }
   }
 
   static void refreshSaveDeviceButtonState() {
     if (currentDevice != null) {
-      if (currentDevice!.commandList.length < minCommandCount || errorText.isNotEmpty) {
+      if (currentDevice!.commandList.length < minCommandCount ||
+          errorText.isNotEmpty) {
         enableSaveDeviceBtn.value = false;
 
         // jika enableSaveDeviceBtn = false dan errorText.isNotEmpty dan enableNewCommandBtn.isFalse
@@ -174,18 +180,23 @@ class DeviceController extends GetxController {
     isSaveDeviceBtnClicked = true;
 
     if (currentDevice?.deviceName != deviceNameController.text) {
-      ctrl.refreshLogs(text: 'Device "${currentDevice?.deviceName}" changed to "${deviceNameController.text}"');
+      ctrl.refreshLogs(
+          text:
+              'Device "${currentDevice?.deviceName}" changed to "${deviceNameController.text}"');
       currentDevice?.setNewDeviceName = deviceNameController.text;
     }
 
     if (isEditDevice) {
       deviceList[deviceIndex] = currentDevice!;
-      showGetxSnackbar('Edit success', 'Device "${currentDevice?.deviceName}" edited successfully');
-      ctrl.refreshLogs(text: 'Device "${currentDevice?.deviceName}" edited successfully');
+      showGetxSnackbar('Edit success',
+          'Device "${currentDevice?.deviceName}" edited successfully');
+      ctrl.refreshLogs(
+          text: 'Device "${currentDevice?.deviceName}" edited successfully');
     } else {
       deviceList.add(currentDevice!);
       // showSnackBar('Device: "${currentDevice?.deviceName}" saved')
-      showGetxSnackbar('Save device OK', 'Device: "${currentDevice?.deviceName}" saved');
+      showGetxSnackbar(
+          'Save device OK', 'Device: "${currentDevice?.deviceName}" saved');
       ctrl.refreshLogs(text: 'Device "${currentDevice?.deviceName}" saved');
     }
     for (final data in deviceList) {
@@ -194,27 +205,33 @@ class DeviceController extends GetxController {
   }
 
   static void onNewCommandButtonPressed() {
-      CommandController.commandCtrl.clear();
-      CommandController.commandTitleCtrl.clear();
-      CommandController.commandLogText.clear();
+    CommandController.commandCtrl.clear();
+    CommandController.commandTitleCtrl.clear();
+    CommandController.commandLogText.clear();
   }
 
   static VoidCallback? editSelectedCommand() {
     debugPrint('');
     debugPrint('[device_controller] selected title to edit: $selectedTitle');
-    CommandController.commandIndexToEdit = currentDevice!.commandList.indexWhere((element) => element.title == selectedTitle);
-    CommandController.oldCommand = currentDevice!.commandList[CommandController.commandIndexToEdit].command;
+    CommandController.commandIndexToEdit = currentDevice!.commandList
+        .indexWhere((element) => element.title == selectedTitle);
+    CommandController.oldCommand = currentDevice!
+        .commandList[CommandController.commandIndexToEdit].command;
     CommandController.isEditCommand.value = true;
-    CommandController.commandTitleCtrl.text = currentDevice!.commandList[CommandController.commandIndexToEdit].title;
-    CommandController.commandCtrl.text = currentDevice!.commandList[CommandController.commandIndexToEdit].command;
+    CommandController.commandTitleCtrl.text =
+        currentDevice!.commandList[CommandController.commandIndexToEdit].title;
+    CommandController.commandCtrl.text = currentDevice!
+        .commandList[CommandController.commandIndexToEdit].command;
     // deviceLogTextCtrl.text = currentDevice!.deviceLogText;
-    CommandController.commandLogText.text = currentDevice!.commandList[CommandController.commandIndexToEdit].logText;
+    CommandController.commandLogText.text = currentDevice!
+        .commandList[CommandController.commandIndexToEdit].logText;
     AddDeviceView.editCommand(Get.context!);
     return null;
   }
 
   static VoidCallback? deleteSelectedCommand() {
-    debugPrint('[device_controller] selected title to delete: $selectedTitle from device ${currentDevice!.deviceName}');
+    debugPrint(
+        '[device_controller] selected title to delete: $selectedTitle from device ${currentDevice!.deviceName}');
     int commandIndexToDelete = -1;
     // bool found = false;
     // int deviceIndex = -1;
@@ -241,16 +258,16 @@ class DeviceController extends GetxController {
     //   deviceList[deviceIndex].commandList.removeAt(commandIndexToDelete);
     //   CommandController.commandMenuList.removeAt(commandIndexToDelete);
     // }
-    commandIndexToDelete = currentDevice!.commandList.indexWhere((element) => element.title == selectedTitle);
+    commandIndexToDelete = currentDevice!.commandList
+        .indexWhere((element) => element.title == selectedTitle);
 
     if (currentDevice!.commandList.isNotEmpty) {
       currentDevice?.commandList.removeAt(commandIndexToDelete);
       CommandController.commandMenuList.removeAt(commandIndexToDelete);
     }
-    
+
     refreshNewCommandButtonState();
 
     return null;
   }
-
 }
