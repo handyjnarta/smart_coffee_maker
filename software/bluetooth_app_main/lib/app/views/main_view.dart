@@ -18,7 +18,7 @@ class MainView extends StatelessWidget {
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
-        title: const Text("Marcoff Chat"),
+        title: const Text("Marcoff Chatbbb"),
         backgroundColor: const Color.fromARGB(199, 170, 84, 3),
         actions:
         [
