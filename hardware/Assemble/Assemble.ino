@@ -79,7 +79,7 @@ int readIntFromSerial() {
 
 void setup() {
   Serial.begin(9600);
-  ESP_BT.begin("ESP32-BT-Slave-Qorex");// jangan dipake ESP32_Coffee_Control, 
+  ESP_BT.begin("coba");// jangan dipake ESP32_Coffee_Control, 
   Serial.println("Bluetooth Device is Ready to Pair");
   dimmer.begin(NORMAL_MODE, ON);
   Serial.println("Dimmer Program is starting...");

@@ -83,7 +83,7 @@ class MainView extends StatelessWidget {
                               value: DevicePopupMenuItem.newDevice,
                               child: Row(
                                 children: const [
-                                  Text('New Device'),
+                                  Text('New Recipe'),
                                   Expanded(child: SizedBox(width: 10,)),
                                   Icon(Icons.add_rounded, size: 20.0, color: Colors.black)
                                 ],
@@ -94,7 +94,7 @@ class MainView extends StatelessWidget {
                               child: Row(
                                 children: [
                                   Text(
-                                    'Save Device',
+                                    'Save to Cloud',
                                     style: TextStyle(color: DeviceController.deviceList.isNotEmpty ? Colors.black : Colors.grey),
                                   ),
                                   const Expanded(child: SizedBox(width: 10,)),
@@ -110,7 +110,7 @@ class MainView extends StatelessWidget {
                               value: DevicePopupMenuItem.loadDevice,
                               child: Row(
                                 children: const [
-                                  Text('Load Device'),
+                                  Text('Load Recipe'),
                                   Expanded(child: SizedBox(width: 10,)),
                                   Icon(Icons.upload_outlined, size: 20.0, color: Colors.black,)
                                 ],
@@ -151,7 +151,7 @@ class MainView extends StatelessWidget {
               children: const [
                 Icon(Icons.list_alt_outlined),
                 SizedBox(width: 2,),
-                Text('D_List')
+                Text('Resep')
               ],)
             ),
           ],
