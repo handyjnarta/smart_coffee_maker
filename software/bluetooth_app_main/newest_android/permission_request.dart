@@ -1,8 +1,7 @@
 import 'dart:developer';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:/permission_handler.dart';
 
 class PermissionRequest {
-
   static Future<bool> isPermissionAllowed() async {
     bool result = false;
 
@@ -16,18 +15,21 @@ class PermissionRequest {
     // print('status:');
     // print(statuses);
     final scanPermissionStatus = statuses[Permission.bluetoothScan]!;
-    final bluetoothConnectPermissionStatus = statuses[Permission.bluetoothConnect]!;
+    final bluetoothConnectPermissionStatus =
+        statuses[Permission.bluetoothConnect]!;
 
     log('[permission_request] scanPermissionStatus: $scanPermissionStatus');
     log('[permission_request] bluetoothConnectPermissionStatus: $bluetoothConnectPermissionStatus');
 
-    if (scanPermissionStatus.isGranted && bluetoothConnectPermissionStatus.isGranted) {
+    if (scanPermissionStatus.isGranted &&
+        bluetoothConnectPermissionStatus.isGranted) {
       result = true;
-    }
-    else if (scanPermissionStatus.isDenied || bluetoothConnectPermissionStatus.isDenied) {
+    } else if (scanPermissionStatus.isDenied ||
+        bluetoothConnectPermissionStatus.isDenied) {
       log('[permission_request] permission denied');
     }
-    if (scanPermissionStatus.isPermanentlyDenied && bluetoothConnectPermissionStatus.isPermanentlyDenied) {
+    if (scanPermissionStatus.isPermanentlyDenied &&
+        bluetoothConnectPermissionStatus.isPermanentlyDenied) {
       log('[permission_request] permission permanentlyDenied');
     }
 

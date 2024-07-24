@@ -1,14 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:bluetooth_dev_control/permission_request.dart';
-import 'package:bluetooth_dev_control/translator.dart';
+import 'permission_request.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
-import 'package:bluetooth_dev_control/app/constant/constant.dart';
-import 'package:bluetooth_dev_control/utils.dart';
+import 'package:flutter_bluetooth/app/constant/constant.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:get/get.dart';
-import 'main.dart';
+import 'package:flutter_bluetooth/main.dart';
+import 'package:flutter/material.dart';
 
 class BluetoothData {
   // Initializing the Bluetooth connection state to be unknown
@@ -47,10 +46,8 @@ class BluetoothData {
     if (bluetoothState == BluetoothState.STATE_ON) {
       ctrl.isBluetoothActive.value = true;
       debugPrint('[bluetooth_data] Bluetooth already active');
-      ctrl.refreshLogs(text: Translator.bluetoothAlreadyActive.trans);
       ctrl.refreshDeviceList();
-    }
-    else {
+    } else {
       enableBluetooth();
     }
 
@@ -62,25 +59,24 @@ class BluetoothData {
 
     // Listen for further state changes
     // membaca status bluetooth ketika di aktifkan atau dimatikan
-    FlutterBluetoothSerial.instance.onStateChanged().listen((BluetoothState state) async {
-        bluetoothState = state;
+    FlutterBluetoothSerial.instance
+        .onStateChanged()
+        .listen((BluetoothState state) async {
+      bluetoothState = state;
 
-        if (bluetoothState == BluetoothState.STATE_OFF) {
-          ctrl.isBluetoothActive.value = false;
-          ctrl.isConnected.value = false;
-          ctrl.isConnecting.value = false;
-          ctrl.refreshLogs(text: Translator.bluetoothTurnedOff.trans);
-          ctrl.selectedPairedDevice.value = -1;
-        }
-        else if (bluetoothState == BluetoothState.STATE_ON) {
-          ctrl.isBluetoothActive.value = true;
-          ctrl.refreshLogs(text: Translator.bluetoothTurnedOn.trans);
-        }
+      if (bluetoothState == BluetoothState.STATE_OFF) {
+        ctrl.isBluetoothActive.value = false;
+        ctrl.isConnected.value = false;
+        ctrl.isConnecting.value = false;
+      } else if (bluetoothState == BluetoothState.STATE_ON) {
+        ctrl.isBluetoothActive.value = true;
+      }
 
-        await getPairedDevices();
-        ctrl.devIndex.value = 0;
-        ctrl.refreshDeviceList();
-        debugPrint('[bluetooth_data] onStateChanged, bluetooth status: ${ctrl.isBluetoothActive.value}');
+      await getPairedDevices();
+      ctrl.devIndex.value = 0;
+      ctrl.refreshDeviceList();
+      debugPrint(
+          '[bluetooth_data] onStateChanged, bluetooth status: ${ctrl.isBluetoothActive.value}');
     });
   }
 
@@ -100,7 +96,6 @@ class BluetoothData {
     if (device == null) {
       debugPrint('No device selected');
     } else {
-      ctrl.refreshLogs(text: '${Translator.connectingTo.trans} ${ctrl.selectedDevice}');
       ctrl.isConnecting.value = true;
       startTimeoutConnectionTimer();
 
@@ -108,7 +103,6 @@ class BluetoothData {
         await BluetoothConnection.toAddress(device?.address).then((conn) {
           debugPrint('Connected to the device');
           // showSnackBar('Connected to the device')
-          showGetxSnackbar(Translator.connected.trans, Translator.connectedToTheDevice.trans);
 
           connection = conn;
           ctrl.isConnected.value = true;
@@ -116,7 +110,6 @@ class BluetoothData {
           _timer?.cancel();
           _reconnectCounter = 0;
           _isConnectionLost = false;
-          ctrl.refreshLogs(text: Translator.connected.trans);
           ctrl.deviceItems.refresh();
 
           // balasan/feedback dari device client selalu dibaca
@@ -125,20 +118,16 @@ class BluetoothData {
             final dataString = ascii.decode(data, allowInvalid: true).trim();
             debugPrint('[bluetooth_data] Data incoming: $dataString');
 
-            if (dataString.isNotEmpty) {
-              ctrl.refreshLogs(sourceId: SourceId.clientId, text: dataString);
-            }
-
             // Send data ke device client as feedback
             // Uint8List dataForDevice = utf8.encode("ok " "\r\n") as Uint8List;
             // connection?.output.add(dataForDevice);
 
             // if (ascii.decode(data).contains('!')) {
-              // connection?.finish(); // Closing connection
-              // disconnect();
-              // debugPrint('[bluetooth_data] Disconnecting by local host');
-              // ctrl.refreshLogs(text: 'Disconnecting by local host');
-              // showGetxSnackbar('Disconnected', 'Disconnecting by local host');
+            // connection?.finish(); // Closing connection
+            // disconnect();
+            // debugPrint('[bluetooth_data] Disconnecting by local host');
+            // ctrl.refreshLogs(text: 'Disconnecting by local host');
+            // showGetxSnackbar('Disconnected', 'Disconnecting by local host');
             // }
           }).onDone(() {
             debugPrint('[bluetooth_data] on done');
@@ -149,74 +138,25 @@ class BluetoothData {
               isDisconnecting = false;
               debugPrint(status);
             } else {
-              status = '[bluetooth_data]Disconnected remotely or connection lost!';
+              status =
+                  '[bluetooth_data]Disconnected remotely or connection lost!';
               debugPrint(status);
               _isConnectionLost = true;
             }
 
             status = status.replaceAll('[bluetooth_data]', '');
             ctrl.refreshLogs(text: status);
-            showGetxSnackbar(Translator.disconnected.trans, status);
             ctrl.isConnected.value = false;
-            reConnect();
           });
         }).catchError((error) {
-          debugPrint('[bluetooth_data] Cannot connect, exception occurred: $error');
+          debugPrint(
+              '[bluetooth_data] Cannot connect, exception occurred: $error');
           // showSnackBar('Cannot connect, exception occurred');
-          showGetxSnackbar(Translator.failedToConnect.trans, Translator.cannotConnectExceptionOccured.trans);
-          ctrl.refreshLogs(text: Translator.cannotConnect.trans);
           ctrl.isConnecting.value = false;
           _timer?.cancel();
-          reConnect();
         });
       }
     }
-  }
-
-  void reConnect() {
-    // info:
-    // selectedDelayTimeBeforeReconnectDropdownValue dikali 5 karena:
-    //    index dropdown ke 0 = "No delay"
-    //    index dropdown ke 1 = "5 seconds"
-    //    index dropdown ke 2 = "10 seconds"
-    //    index dropdown ke 3 = "15 seconds"
-    //    index dropdown ke 4 = "20 seconds"
-    //    index dropdown ke 5 = "25 seconds"
-    //    index dropdown ke 6 = "30 seconds"
-
-    // selectedMaxTryReconnectDropdownValue ditambah 2 karena:
-    // index dropdown ke 0 = "2 times" --> dari angka 2
-    // index dropdown terakhir = "10 times" --> sampai angka 10
-
-    if (settingsCtrl.isAutoReconnect.isTrue) {
-      Future.delayed(Duration(seconds: settingsCtrl.selectedDelayTimeBeforeReconnectDropdownValue.value * 5)).then((value) {
-        // if (ctrl.isAutoReconnect.isTrue && bluetoothState == BluetoothState.STATE_ON
-        if (bluetoothState == BluetoothState.STATE_ON && _isConnectionLost
-            && _reconnectCounter < settingsCtrl.selectedMaxTryReconnectDropdownValue.value + 2)
-        {
-          _reconnectCounter++;
-          debugPrint('[bluetooth_data] auto reconnect active, reconnecting #$_reconnectCounter/${settingsCtrl.selectedMaxTryReconnectDropdownValue.value + 2}');
-          ctrl.refreshLogs(text: '${Translator.autoReconnectActive.trans} $_reconnectCounter/${settingsCtrl.selectedMaxTryReconnectDropdownValue.value + 2}');
-          showGetxSnackbar(Translator.reconnectingTitle.trans, Translator.tryingToReconnect.trans);
-          BluetoothData.instance.connect();
-        }
-      });
-    }
-  }
-
-  // Method to disconnect bluetooth
-  void disconnect() async {
-    // deviceState = 0;
-
-    await connection?.close();
-    // showSnackBar('Device disconnected');
-    showGetxSnackbar(Translator.disconnected.trans, Translator.deviceDisconnected.trans);
-    ctrl.refreshLogs(text:Translator.deviceDisconnected.trans);
-    debugPrint('Device disconnected');
-    // if (!connection!.isConnected) {
-    //   ctrl.isConnected.value = false;
-    // }
-    ctrl.isConnected.value = false;
   }
 
   // Request Bluetooth permission from the user
@@ -258,14 +198,14 @@ class BluetoothData {
     int start = maxConnectionTimeOut;
 
     const oneSec = Duration(seconds: 1);
-    _timer = Timer.periodic(oneSec, (Timer timer) {
+    _timer = Timer.periodic(
+      oneSec,
+      (Timer timer) {
         debugPrint('[bluetooth_data] time out in: $start');
         if (start == 0) {
           // if state is connecting and still not connected after >= max connection time out
           if (ctrl.isConnecting.isTrue) {
             debugPrint('[bluetooth_data] Connection timeout');
-            showGetxSnackbar(Translator.failedToConnect.trans, Translator.connectionTimeOut.trans);
-            ctrl.refreshLogs(text: '${Translator.failedToConnect.trans} ${Translator.connectionTimeOut.trans}', sourceId: SourceId.statusId);
             ctrl.isConnecting.value = false;
           }
 
@@ -284,5 +224,4 @@ class BluetoothData {
       await connection?.output.allSent;
     }
   }
-
 }
