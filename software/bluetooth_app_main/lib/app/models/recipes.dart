@@ -60,7 +60,7 @@ class RecipesManager {
     final allRecipes = await _firestoreService.loadRecipesListFromFirestore();
     _statusList.clear();
     for (final recipe in allRecipes) {
-      _statusList.add(recipe.setpoint as bool);
+      _statusList.add(recipe.status);
     }
     return allRecipes;
   }

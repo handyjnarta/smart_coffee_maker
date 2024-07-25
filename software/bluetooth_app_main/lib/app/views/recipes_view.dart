@@ -1,60 +1,60 @@
 //D_List
 //DEVICE = RESEP :)
 import 'package:flutter/material.dart';
-import 'package:flutter_bluetooth/app/controllers/device_controller.dart';
+import 'package:flutter_bluetooth/app/controllers/recipe_controller.dart';
 import 'package:flutter_bluetooth/app/helper/popup_dialogs.dart';
 import 'package:get/get.dart';
 import '../../bluetooth_data.dart';
 import '../../main.dart';
 import '../../utils.dart';
 import '../constant/constant.dart';
-import 'add_device_view.dart';
+import 'add_recipe_view.dart';
 
 enum PopupItems { edit, delete }
 
-class DevicesView extends StatelessWidget {
-  const DevicesView({Key? key}) : super(key: key);
+class RecipesView extends StatelessWidget {
+  const RecipesView({Key? key}) : super(key: key);
 
-  void deleteDevice() {
+  void deleteRecipe() {
     // Get.back();
     Navigator.pop(Get.context!);
-    String deviceName =
-        DeviceController.deviceList[DeviceController.deviceIndex].deviceName;
-    DeviceController.deviceList.removeAt(DeviceController.deviceIndex);
-    ctrl.refreshLogs(text: 'Device "$deviceName" deleted');
-    // showSnackBar('Device deleted');
-    showGetxSnackbar('Device deleted', 'Device "$deviceName" deleted');
+    String recipeName =
+        RecipeController.recipeList[RecipeController.recipeIndex].recipeName;
+    RecipeController.recipeList.removeAt(RecipeController.recipeIndex);
+    ctrl.refreshLogs(text: 'Recipe "$recipeName" deleted');
+    // showSnackBar('Recipe deleted');
+    showGetxSnackbar('Recipe deleted', 'Recipe "$recipeName" deleted');
   }
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      return DeviceController.deviceList.isNotEmpty
+      return RecipeController.recipeList.isNotEmpty
           ? ListView.builder(
-              itemCount: DeviceController.deviceList.length,
+              itemCount: RecipeController.recipeList.length,
               itemBuilder: (BuildContext context, int index) {
-                debugPrint('[device_view] rebuilding listview');
+                debugPrint('[recipe_view] rebuilding listview');
 
-                return buildDeviceContainer(
+                return buildRecipeContainer(
                     context: context,
-                    deviceName: DeviceController.deviceList[index].deviceName,
-                    status: DeviceController.deviceList[index].status,
-                    commandToTurnOn: DeviceController
-                        .deviceList[index].commandList[0].command,
-                    commandToTurnOff: DeviceController
-                        .deviceList[index].commandList[1].command,
-                    deviceIndex: index);
+                    recipeName: RecipeController.recipeList[index].recipeName,
+                    status: RecipeController.recipeList[index].status,
+                    commandToTurnOn: RecipeController
+                        .recipeList[index].commandList[0].command,
+                    commandToTurnOff: RecipeController
+                        .recipeList[index].commandList[1].command, //matiin
+                    recipeIndex: index);
               })
           : const Center(
               child: Text(
-              'No device found',
+              'No recipe found',
               style: TextStyle(fontSize: 22),
             ));
     });
   }
 
-  void editSelectedDevice(BuildContext context) {
-    DeviceController.editDevice();
+  void editSelectedRecipe(BuildContext context) {
+    RecipeController.editRecipe();
 
     showModalBottomSheet(
         shape: RoundedRectangleBorder(
@@ -63,42 +63,42 @@ class DevicesView extends StatelessWidget {
         isScrollControlled: true,
         context: context,
         builder: (BuildContext context) {
-          return const AddDeviceView(title: 'Edit device');
+          return const AddRecipeView(title: 'Edit recipe');
         }).whenComplete(() {
       debugPrint('');
-      debugPrint('[device_view] show modal bottom sheet closed (edit device)');
+      debugPrint('[recipe_view] show modal bottom sheet closed (edit recipe)');
       debugPrint(
-          '[device_view] DeviceController.isSaveDeviceBtnClicked: ${DeviceController.isSaveDeviceBtnClicked}');
-      // jika show modal bottom sheet closed, cek apakah ditutup karena tombol save device di klik atau bukan
-      // jika bukan karena tombol save di klik, maka kembalikan data device yang lama karena device yang diedit tidak disimpan
-      // DeviceController.currentDevice = DeviceController.deviceList[DeviceController.deviceIndex];
-      // DeviceController.currentDevice = DeviceController.deviceList[0];
-      if (DeviceController.isSaveDeviceBtnClicked == false
+          '[recipe_view] RecipeController.isSaveRecipeBtnClicked: ${RecipeController.isSaveRecipeBtnClicked}');
+      // jika show modal bottom sheet closed, cek apakah ditutup karena tombol save recipe di klik atau bukan
+      // jika bukan karena tombol save di klik, maka kembalikan data recipe yang lama karena recipe yang diedit tidak disimpan
+      // RecipeController.currentRecipe = RecipeController.recipeList[RecipeController.recipeIndex];
+      // RecipeController.currentRecipe = RecipeController.recipeList[0];
+      if (RecipeController.isSaveRecipeBtnClicked == false
           // &&
           // (
-          //     DeviceController.currentDevice?.commandList.length != DeviceController.oldDeviceData['oldDevice']['command_list'].length
-          //     || DeviceController.deviceNameController.text != DeviceController.oldDeviceData['oldDevice']['device_name']
+          //     RecipeController.currentRecipe?.commandList.length != RecipeController.oldRecipeData['oldRecipe']['command_list'].length
+          //     || RecipeController.recipeNameController.text != RecipeController.oldRecipeData['oldRecipe']['recipe_name']
           // )
           ) {
-        debugPrint('[device_view] old device rolled back');
-        DeviceController.deviceList[DeviceController.deviceIndex].commandList =
-            DeviceController.oldDeviceData['oldDevice']['commandList'];
-        // DeviceController.deviceList[DeviceController.deviceIndex].commandMenuList!.clear();
-        // DeviceController.deviceList[DeviceController.deviceIndex].commandMenuList = DeviceController.oldDeviceData['oldDevice']['commandMenuList'];
+        debugPrint('[recipe_view] old recipe rolled back');
+        RecipeController.recipeList[RecipeController.recipeIndex].commandList =
+            RecipeController.oldRecipeData['oldRecipe']['commandList'];
+        // RecipeController.recipeList[RecipeController.recipeIndex].commandMenuList!.clear();
+        // RecipeController.recipeList[RecipeController.recipeIndex].commandMenuList = RecipeController.oldRecipeData['oldRecipe']['commandMenuList'];
         ctrl.refreshLogs(
             text:
-                'Device "${DeviceController.deviceList[DeviceController.deviceIndex].deviceName}" editing canceled');
-        // showSnackBar('Device "${DeviceController.deviceList[DeviceController.deviceIndex].deviceName}" editing canceled');
+                'Recipe "${RecipeController.recipeList[RecipeController.recipeIndex].recipeName}" editing canceled');
+        // showSnackBar('Recipe "${RecipeController.recipeList[RecipeController.recipeIndex].recipeName}" editing canceled');
         showGetxSnackbar('Cancel to edit',
-            'Device "${DeviceController.deviceList[DeviceController.deviceIndex].deviceName}" editing canceled');
+            'Recipe "${RecipeController.recipeList[RecipeController.recipeIndex].recipeName}" editing canceled');
       }
     });
   }
 
-  void createNewDevice(BuildContext context) {
-    DeviceController.createNewDevice();
+  void createNewRecipe(BuildContext context) {
+    RecipeController.createNewRecipe();
 
-    // add new device
+    // add new recipe
     showModalBottomSheet(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
@@ -111,30 +111,30 @@ class DevicesView extends StatelessWidget {
         isScrollControlled: true,
         context: context,
         builder: (BuildContext context) {
-          return const AddDeviceView(title: 'Add new device');
+          return const AddRecipeView(title: 'Add new recipe');
         }).whenComplete(() {
       debugPrint(
-          '[device_view] show modal bottom sheet closed (insert new device)');
-      // jika show modal bottom sheet closed, cek apakah ditutup karena tombol save device di klik atau bukan
-      // jika bukan karena tombol save di klik, maka hapus device yang baru dibuat (jika ada)
+          '[recipe_view] show modal bottom sheet closed (insert new recipe)');
+      // jika show modal bottom sheet closed, cek apakah ditutup karena tombol save recipe di klik atau bukan
+      // jika bukan karena tombol save di klik, maka hapus recipe yang baru dibuat (jika ada)
     });
   }
 
-  buildDeviceContainer(
-      {required String deviceName,
+  buildRecipeContainer(
+      {required String recipeName,
       required bool status,
       required String commandToTurnOn,
       required String commandToTurnOff,
-      required int deviceIndex,
+      required int recipeIndex,
       required BuildContext context}) {
     return Padding(
       padding: const EdgeInsets.all(6.0),
       child: Card(
         shape: RoundedRectangleBorder(
           side: BorderSide(
-            // color: BluetoothData.instance.deviceState == 0
+            // color: BluetoothData.instance.recipeState == 0
             //     ? colors['neutralBorderColor']!
-            //     : BluetoothData.instance.deviceState == 1
+            //     : BluetoothData.instance.recipeState == 1
             //     ? colors['onBorderColor']!
             //     : colors['offBorderColor']!,
             color: status
@@ -144,7 +144,7 @@ class DevicesView extends StatelessWidget {
           ),
           borderRadius: BorderRadius.circular(4.0),
         ),
-        // elevation: BluetoothData.instance.deviceState == 0 ? 4 : 0,
+        // elevation: BluetoothData.instance.recipeState == 0 ? 4 : 0,
         elevation: 4,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -154,12 +154,12 @@ class DevicesView extends StatelessWidget {
                 children: <Widget>[
                   Expanded(
                     child: Text(
-                      deviceName,
+                      recipeName,
                       style: TextStyle(
                           fontSize: 20,
-                          // color: BluetoothData.instance.deviceState == 0
+                          // color: BluetoothData.instance.recipeState == 0
                           //     ? colors['neutralTextColor']
-                          //     : BluetoothData.instance.deviceState == 1
+                          //     : BluetoothData.instance.recipeState == 1
                           //     ? colors['onTextColor']
                           //     : colors['offTextColor'],
                           color: colors['neutralTextColor']!),
@@ -170,22 +170,22 @@ class DevicesView extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () {
                       debugPrint(
-                          '[devices_view] To turn On Command: $commandToTurnOn');
+                          '[recipes_view] To turn On Command: $commandToTurnOn');
 
                       // jika log text tidak kosong, tampilkan log di data logs view
-                      if (DeviceController.deviceList[deviceIndex]
+                      if (RecipeController.recipeList[recipeIndex]
                           .commandList[0].logText.isNotEmpty) {
                         ctrl.refreshLogs(
-                            text: DeviceController
-                                .deviceList[deviceIndex].commandList[0].logText,
+                            text: RecipeController
+                                .recipeList[recipeIndex].commandList[0].logText,
                             sourceId: SourceId.hostId);
                       }
 
                       if (ctrl.isConnected.isTrue) {
                         BluetoothData.instance
                             .sendMessageToBluetooth(commandToTurnOn, false);
-                        DeviceController.deviceList[deviceIndex].status = true;
-                        DeviceController.deviceList.refresh();
+                        RecipeController.recipeList[recipeIndex].status = true;
+                        RecipeController.recipeList.refresh();
                       }
                     },
                     child: const Text("ON"),
@@ -199,21 +199,21 @@ class DevicesView extends StatelessWidget {
                     // onPressed: _connected
                     onPressed: () {
                       debugPrint(
-                          '[devices_view] To turn Off Command: $commandToTurnOff');
+                          '[recipes_view] To turn Off Command: $commandToTurnOff');
 
-                      if (DeviceController.deviceList[deviceIndex]
+                      if (RecipeController.recipeList[recipeIndex]
                           .commandList[1].logText.isNotEmpty) {
                         ctrl.refreshLogs(
-                            text: DeviceController
-                                .deviceList[deviceIndex].commandList[1].logText,
+                            text: RecipeController
+                                .recipeList[recipeIndex].commandList[1].logText,
                             sourceId: SourceId.hostId);
                       }
 
                       // if (ctrl.isConnected.isTrue) {
                       BluetoothData.instance
                           .sendMessageToBluetooth(commandToTurnOff, false);
-                      DeviceController.deviceList[deviceIndex].status = false;
-                      DeviceController.deviceList.refresh();
+                      RecipeController.recipeList[recipeIndex].status = false;
+                      RecipeController.recipeList.refresh();
                       // }
                     },
                     child: const Text("OFF"),
@@ -222,18 +222,18 @@ class DevicesView extends StatelessWidget {
                     width: 10,
                   ),
                   PopupMenuButton<PopupItems>(onSelected: (PopupItems item) {
-                    DeviceController.deviceIndex = DeviceController.deviceList
-                        .indexWhere((dev) => dev.deviceName == deviceName);
+                    RecipeController.recipeIndex = RecipeController.recipeList
+                        .indexWhere((dev) => dev.recipeName == recipeName);
 
                     if (item == PopupItems.edit) {
-                      editSelectedDevice(context);
+                      editSelectedRecipe(context);
                     } else {
-                      // delete the selected device
+                      // delete the selected recipe
                       showConfirmDialog(
                         context: context,
                         title: 'Delete confirm',
-                        text: 'Delete current device ($deviceName)?',
-                        onOkPressed: deleteDevice,
+                        text: 'Delete current recipe ($recipeName)?',
+                        onOkPressed: deleteRecipe,
                       );
                     }
                   }, itemBuilder: (BuildContext context) {
