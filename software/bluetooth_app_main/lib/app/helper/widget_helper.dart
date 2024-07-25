@@ -22,49 +22,49 @@ ButtonStyle buildButtonStyle({Color borderColor=Colors.purple, bool isCircleButt
     );
 }
 
-Widget buildTextField({required String title,
+Widget buildTextField({
+  required String numStep,
+  required String volume,
+  required String timePouring,
+  required String timeInterval,
   String? errorText,
-  required String commandText,
   required TextEditingController commandTextController,
-  bool isReadOnly=false,
-  VoidCallback? onChanged
+  bool isReadOnly = false,
+  VoidCallback? onChanged,
 }) {
-  return
-    TextField(
-      onChanged: (value) {
-        onChanged?.call();
-      },
-
-      readOnly: isReadOnly,
-      autofocus: false,
-      controller: commandTextController,
-      decoration: InputDecoration(
-          errorText: errorText,
-          errorBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: errorText == null || errorText.length < 3 ? Colors.grey : Colors.red, width: 1.0),
-          ),
-
-          focusedErrorBorder: OutlineInputBorder(
-              borderRadius: const BorderRadius.all(Radius.circular(4)),
-              // borderSide: BorderSide(width: 1,color: DeviceController.errorText.value.length < 3 ? Colors.black : Colors.red)
-              borderSide: BorderSide(width: 1,
-                  color: errorText == null || errorText.length < 3
-                  ? Colors.grey
-                  : Colors.red
-              )
-          ),
-
-          // hintText: commandTextController.text,
-          hintText: commandText,
-          floatingLabelBehavior: isReadOnly ? FloatingLabelBehavior.always : FloatingLabelBehavior.auto,
-          labelText: title,
-          labelStyle: const TextStyle(
-            color: Colors.black
-          ),
-          isDense: true,
-          contentPadding: const EdgeInsets.all(12),
-          // contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-          border: const OutlineInputBorder()
+  return TextField(
+    onChanged: (value) {
+      onChanged?.call();
+    },
+    readOnly: isReadOnly,
+    autofocus: false,
+    controller: commandTextController,
+    decoration: InputDecoration(
+      errorText: errorText,
+      errorBorder: OutlineInputBorder(
+        borderSide: BorderSide(
+          color: errorText == null || errorText.length < 3 ? Colors.grey : Colors.red,
+          width: 1.0,
+        ),
       ),
-    );
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: const BorderRadius.all(Radius.circular(4)),
+        borderSide: BorderSide(
+          width: 1,
+          color: errorText == null || errorText.length < 3 ? Colors.grey : Colors.red,
+        ),
+      ),
+      hintText: "Num Step: $numStep\nVolume: $volume\nTime Pouring: $timePouring\nTime Interval: $timeInterval",
+      floatingLabelBehavior: isReadOnly ? FloatingLabelBehavior.always : FloatingLabelBehavior.auto,
+      labelText: "Command Details",
+      labelStyle: const TextStyle(
+        color: Colors.black,
+      ),
+      isDense: true,
+      contentPadding: const EdgeInsets.all(12),
+      border: const OutlineInputBorder(),
+    ),
+  );
 }
+
+
