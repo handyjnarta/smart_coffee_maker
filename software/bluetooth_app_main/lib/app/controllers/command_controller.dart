@@ -66,7 +66,7 @@ class CommandController extends GetxController {
         recipeName: RecipeController.recipeNameController.text,
         status: false,
         commandList: [newCommand],
-      );
+      ) as Rxn<Recipes>;
     } else {
       if (isEditCommand.isTrue) {
         RecipeController.currentRecipe?.commandList[commandIndexToEdit] =
