@@ -17,8 +17,8 @@ class CommandController extends GetxController {
 
   static TextEditingController commandnumStepCtrl = TextEditingController();
   static TextEditingController commandvolumeCtrl = TextEditingController();
-  static TextEditingController commandTimePouring= TextEditingController();
-  static TextEditingController commandTimeInterval= TextEditingController();
+  static TextEditingController commandTimePouring = TextEditingController();
+  static TextEditingController commandTimeInterval = TextEditingController();
 
   static List<TextEditingController> commandTextEditCtrlList =
       List<TextEditingController>.generate(
@@ -47,7 +47,8 @@ class CommandController extends GetxController {
     //validateCommandInput();
     if (!isInputCommandValid.value) return;
 
-    int commandId = isEditCommand.isTrue ? commandIndexToEdit : commandMenuList.length;
+    int commandId =
+        isEditCommand.isTrue ? commandIndexToEdit : commandMenuList.length;
 
     //commandTextEditCtrlList[commandId].text = commandCtrl.text;
 
@@ -68,7 +69,8 @@ class CommandController extends GetxController {
       );
     } else {
       if (isEditCommand.isTrue) {
-        RecipeController.currentRecipe?.commandList[commandIndexToEdit] = newCommand;
+        RecipeController.currentRecipe?.commandList[commandIndexToEdit] =
+            newCommand;
       } else {
         RecipeController.currentRecipe?.commandList.add(newCommand);
       }
@@ -101,4 +103,3 @@ class CommandController extends GetxController {
     RecipeController.refreshSaveRecipeButtonState();
   }
 }
-

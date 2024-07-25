@@ -1,5 +1,3 @@
-//D_List
-//DEVICE = RESEP :)
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth/app/controllers/recipe_controller.dart';
 import 'package:flutter_bluetooth/app/helper/popup_dialogs.dart';
@@ -39,10 +37,6 @@ class RecipesView extends StatelessWidget {
                     context: context,
                     recipeName: RecipeController.recipeList[index].recipeName,
                     status: RecipeController.recipeList[index].status,
-                    commandToTurnOn: RecipeController
-                        .recipeList[index].commandList[0].command,
-                    commandToTurnOff: RecipeController
-                        .recipeList[index].commandList[1].command,
                     recipeIndex: index);
               })
           : const Center(
@@ -113,8 +107,6 @@ class RecipesView extends StatelessWidget {
   buildRecipeContainer(
       {required String recipeName,
       required bool status,
-      required String commandToTurnOn,
-      required String commandToTurnOff,
       required int recipeIndex,
       required BuildContext context}) {
     return Padding(
@@ -122,11 +114,6 @@ class RecipesView extends StatelessWidget {
       child: Card(
         shape: RoundedRectangleBorder(
           side: BorderSide(
-            // color: BluetoothData.instance.recipeState == 0
-            //     ? colors['neutralBorderColor']!
-            //     : BluetoothData.instance.recipeState == 1
-            //     ? colors['onBorderColor']!
-            //     : colors['offBorderColor']!,
             color: status
                 ? colors['onBorderColor']!
                 : colors['neutralBorderColor']!,
@@ -134,7 +121,6 @@ class RecipesView extends StatelessWidget {
           ),
           borderRadius: BorderRadius.circular(4.0),
         ),
-        // elevation: BluetoothData.instance.recipeState == 0 ? 4 : 0,
         elevation: 4,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -146,34 +132,18 @@ class RecipesView extends StatelessWidget {
                     child: Text(
                       recipeName,
                       style: TextStyle(
-                          fontSize: 20,
-                          // color: BluetoothData.instance.recipeState == 0
-                          //     ? colors['neutralTextColor']
-                          //     : BluetoothData.instance.recipeState == 1
-                          //     ? colors['onTextColor']
-                          //     : colors['offTextColor'],
-                          color: colors['neutralTextColor']!),
+                          fontSize: 20, color: colors['neutralTextColor']!),
                     ),
                   ),
 
                   // to turned on button
                   ElevatedButton(
                     onPressed: () {
-                      debugPrint(
-                          '[recipes_view] To turn On Command: $commandToTurnOn');
-
-                      // jika log text tidak kosong, tampilkan log di data logs view
-                      if (RecipeController.recipeList[recipeIndex]
-                          .commandList[0].logText.isNotEmpty) {
-                        ctrl.refreshLogs(
-                            text: RecipeController
-                                .recipeList[recipeIndex].commandList[0].logText,
-                            sourceId: SourceId.hostId);
-                      }
+                      debugPrint('[recipes_view] To turn On Command: r');
 
                       if (ctrl.isConnected.isTrue) {
                         BluetoothData.instance
-                            .sendMessageToBluetooth(commandToTurnOn, false);
+                            .sendMessageToBluetooth('r', false);
                         RecipeController.recipeList[recipeIndex].status = true;
                         RecipeController.recipeList.refresh();
                       }
@@ -184,30 +154,6 @@ class RecipesView extends StatelessWidget {
                     width: 10,
                   ),
 
-                  // to turned off button
-                  ElevatedButton(
-                    // onPressed: _connected
-                    onPressed: () {
-                      debugPrint(
-                          '[recipes_view] To turn Off Command: $commandToTurnOff');
-
-                      if (RecipeController.recipeList[recipeIndex]
-                          .commandList[1].logText.isNotEmpty) {
-                        ctrl.refreshLogs(
-                            text: RecipeController
-                                .recipeList[recipeIndex].commandList[1].logText,
-                            sourceId: SourceId.hostId);
-                      }
-
-                      // if (ctrl.isConnected.isTrue) {
-                      BluetoothData.instance
-                          .sendMessageToBluetooth(commandToTurnOff, false);
-                      RecipeController.recipeList[recipeIndex].status = false;
-                      RecipeController.recipeList.refresh();
-                      // }
-                    },
-                    child: const Text("OFF"),
-                  ),
                   const SizedBox(
                     width: 10,
                   ),
