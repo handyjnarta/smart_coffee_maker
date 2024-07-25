@@ -13,6 +13,8 @@ class Commands {
     required this.timeInterval,
   });
 
+  //String get command => null;
+
   // Convert a Commands object to a JSON map
   Map<String, dynamic> toJson() => {
         "numStep": numStep,
