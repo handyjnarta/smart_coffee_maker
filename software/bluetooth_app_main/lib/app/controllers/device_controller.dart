@@ -4,7 +4,7 @@ import 'package:flutter_bluetooth/app/constant/constant.dart';
 import 'package:flutter_bluetooth/app/controllers/command_controller.dart';
 import 'package:flutter_bluetooth/app/helper/command_menu.dart';
 import 'package:flutter_bluetooth/app/helper/popup_dialogs.dart';
-import 'package:flutter_bluetooth/app/models/devices.dart';
+import 'package:flutter_bluetooth/app/models/recipes.dart';
 import 'package:flutter_bluetooth/app/views/add_device_view.dart';
 import 'package:flutter_bluetooth/main.dart';
 import 'package:get/get.dart';
