@@ -3,7 +3,7 @@
 // cari cara agar command bisa jadi resep dengan for input yang benar (udah)
 // dan cari cara agar resep bisa ditampilkan ke dalam tampilan chat  (udah)
 // kondisional utk meyakinkan user thdp resep yang ingin dijalankan (udah)
-// app akan kirim perintah 'r' secaara otomatis ke esp tiap kali resep mau dijalankan, jika user kirim perintah 'y'(liat dari send bluetooth message) maka akan dijalankan resepnya
+// app akan kirim perintah 'r' secaara otomatis ke esp tiap kali resep mau dijalankan, jika user kirim perintah 'y'(liat dari send bluetooth message) maka akan dijalankan resepnya (udah)
 // commandToTurnOff dan commandToTurnOn itu di rombak total
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth/app/constant/constant.dart';
