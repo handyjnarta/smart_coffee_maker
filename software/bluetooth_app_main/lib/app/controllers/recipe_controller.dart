@@ -26,6 +26,8 @@ class RecipeController extends GetxController {
   static TextEditingController recipeNameController = TextEditingController();
   static TextEditingController turnOnTextController = TextEditingController();
   static TextEditingController turnOffTextController = TextEditingController();
+  static TextEditingController recipeSetpointController =
+      TextEditingController();
 
   static String selectedTitle = '';
   static RxString errorText = ''.obs;
@@ -113,6 +115,7 @@ class RecipeController extends GetxController {
     isSaveRecipeBtnClicked = false;
     recipeCount = recipeList.length;
     recipeNameController.clear();
+    recipeSetpointController.clear();
     CommandController.commandMenuList.clear();
   }
 

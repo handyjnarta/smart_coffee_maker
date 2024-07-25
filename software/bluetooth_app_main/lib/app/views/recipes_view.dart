@@ -42,7 +42,7 @@ class RecipesView extends StatelessWidget {
                     commandToTurnOn: RecipeController
                         .recipeList[index].commandList[0].command,
                     commandToTurnOff: RecipeController
-                        .recipeList[index].commandList[1].command, //matiin
+                        .recipeList[index].commandList[1].command,
                     recipeIndex: index);
               })
           : const Center(
@@ -71,24 +71,14 @@ class RecipesView extends StatelessWidget {
           '[recipe_view] RecipeController.isSaveRecipeBtnClicked: ${RecipeController.isSaveRecipeBtnClicked}');
       // jika show modal bottom sheet closed, cek apakah ditutup karena tombol save recipe di klik atau bukan
       // jika bukan karena tombol save di klik, maka kembalikan data recipe yang lama karena recipe yang diedit tidak disimpan
-      // RecipeController.currentRecipe = RecipeController.recipeList[RecipeController.recipeIndex];
-      // RecipeController.currentRecipe = RecipeController.recipeList[0];
-      if (RecipeController.isSaveRecipeBtnClicked == false
-          // &&
-          // (
-          //     RecipeController.currentRecipe?.commandList.length != RecipeController.oldRecipeData['oldRecipe']['command_list'].length
-          //     || RecipeController.recipeNameController.text != RecipeController.oldRecipeData['oldRecipe']['recipe_name']
-          // )
-          ) {
+
+      if (RecipeController.isSaveRecipeBtnClicked == false) {
         debugPrint('[recipe_view] old recipe rolled back');
         RecipeController.recipeList[RecipeController.recipeIndex].commandList =
             RecipeController.oldRecipeData['oldRecipe']['commandList'];
-        // RecipeController.recipeList[RecipeController.recipeIndex].commandMenuList!.clear();
-        // RecipeController.recipeList[RecipeController.recipeIndex].commandMenuList = RecipeController.oldRecipeData['oldRecipe']['commandMenuList'];
         ctrl.refreshLogs(
             text:
                 'Recipe "${RecipeController.recipeList[RecipeController.recipeIndex].recipeName}" editing canceled');
-        // showSnackBar('Recipe "${RecipeController.recipeList[RecipeController.recipeIndex].recipeName}" editing canceled');
         showGetxSnackbar('Cancel to edit',
             'Recipe "${RecipeController.recipeList[RecipeController.recipeIndex].recipeName}" editing canceled');
       }
