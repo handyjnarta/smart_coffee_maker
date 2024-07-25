@@ -39,6 +39,9 @@ class RecipeController extends GetxController {
 
     if (recipeNameController.text.length < 3) {
       errorText.value = 'Recipe name minimal 3 characters';
+    } else if (recipeSetpointController.text.isEmpty ||
+        int.tryParse(recipeSetpointController.text) == null) {
+      errorText.value = 'Invalid setpoint';
     } else {
       errorText.value = '';
       int newDevIndex = recipeList.indexWhere(
@@ -111,7 +114,13 @@ class RecipeController extends GetxController {
     isEditRecipe = false;
     enableSaveRecipeBtn.value = false;
     enableNewCommandBtn.value = false;
-    currentRecipe = null;
+    currentRecipe = Recipes(
+      recipeName: '',
+      id: '',
+      status: false,
+      setpoint: 0,
+      commandList: [],
+    );
     isSaveRecipeBtnClicked = false;
     recipeCount = recipeList.length;
     recipeNameController.clear();
@@ -128,10 +137,12 @@ class RecipeController extends GetxController {
     currentRecipe = recipeList[recipeIndex];
     oldRecipeData['oldRecipe'] = {
       'recipeName': currentRecipe!.recipeName,
+      'recipeSetpoint': currentRecipe!.setpoint,
       'commandList': [...currentRecipe!.commandList],
     };
 
     recipeNameController.text = currentRecipe!.recipeName;
+    recipeSetpointController.text = currentRecipe!.setpoint.toString();
 
     if (currentRecipe!.commandList.length < maxCommandCount) {
       enableNewCommandBtn.value = true;
@@ -179,6 +190,13 @@ class RecipeController extends GetxController {
           text:
               'Recipe "${currentRecipe?.recipeName}" changed to "${recipeNameController.text}"');
       currentRecipe?.setNewRecipe = recipeNameController.text;
+    }
+
+    if (currentRecipe?.setpoint != int.parse(recipeSetpointController.text)) {
+      ctrl.refreshLogs(
+          text:
+              'Setpoint "${currentRecipe?.setpoint}" changed to "${recipeSetpointController.text}"');
+      currentRecipe?.setpoint = int.parse(recipeSetpointController.text);
     }
 
     if (isEditRecipe) {
@@ -235,6 +253,7 @@ class RecipeController extends GetxController {
     }
 
     refreshNewCommandButtonState();
+    refreshSaveRecipeButtonState();
 
     return null;
   }
