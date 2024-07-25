@@ -65,20 +65,24 @@ class RecipeController extends GetxController {
     }
   }
 
-  Future<void> loadRecipeListFromStorage({bool isLoadFromInitApp = true}) async {
+  Future<void> loadRecipeListFromStorage(
+      {bool isLoadFromInitApp = true}) async {
     if (isLoadFromInitApp) {
       recipeList.clear();
-      recipeList.addAll(await RecipesManager.instance.loadRecipesListFromFirestore());
+      recipeList
+          .addAll(await RecipesManager.instance.loadRecipesListFromFirestore());
       refreshLogs('Recipes loaded from Firestore on app start');
     } else {
       showConfirmDialog(
         context: Get.context!,
         title: 'Reload recipes confirm',
-        text: 'Reload all recipes from Firestore?\nRecipe count in Firestore: ${RecipesManager.instance.getRecipesCount}',
+        text:
+            'Reload all recipes from Firestore?\nRecipe count in Firestore: ${RecipesManager.instance.getRecipesCount}',
         onOkPressed: () async {
           Navigator.pop(Get.context!);
           recipeList.clear();
-          recipeList.addAll(await RecipesManager.instance.loadRecipesListFromFirestore());
+          recipeList.addAll(
+              await RecipesManager.instance.loadRecipesListFromFirestore());
           refreshLogs('Recipes loaded from Firestore');
           showGetxSnackbar('Recipe loaded', 'Recipe loaded from Firestore');
         },
@@ -151,8 +155,8 @@ class RecipeController extends GetxController {
         timeInterval: CommandController.commandTimeInterval.text,
         timePouring: CommandController.commandTimePouring.text,
         readOnly: true,
-        onDeleteButtonPressed: deleteSelectedCommand,
-        onEditButtonPressed: editSelectedCommand,
+        onDeleteButtonPressed: () => deleteSelectedCommand(),
+        onEditButtonPressed: () => editSelectedCommand(),
       ));
     }
   }
@@ -176,22 +180,28 @@ class RecipeController extends GetxController {
     isSaveRecipeBtnClicked.value = true;
 
     if (currentRecipe.value?.recipeName != recipeNameController.text) {
-      refreshLogs('Recipe "${currentRecipe.value?.recipeName}" changed to "${recipeNameController.text}"');
+      refreshLogs(
+          'Recipe "${currentRecipe.value?.recipeName}" changed to "${recipeNameController.text}"');
       currentRecipe.value?.setNewRecipe = recipeNameController.text;
     }
 
-    if (currentRecipe.value?.setpoint != int.parse(recipeSetpointController.text)) {
-      refreshLogs('Setpoint "${currentRecipe.value?.setpoint}" changed to "${recipeSetpointController.text}"');
+    if (currentRecipe.value?.setpoint !=
+        int.parse(recipeSetpointController.text)) {
+      refreshLogs(
+          'Setpoint "${currentRecipe.value?.setpoint}" changed to "${recipeSetpointController.text}"');
       currentRecipe.value?.setpoint = recipeSetpointController.text;
     }
 
     if (isEditRecipe.value) {
       recipeList[recipeIndex.value] = currentRecipe.value!;
-      showGetxSnackbar('Edit success', 'Recipe "${currentRecipe.value?.recipeName}" edited successfully');
-      refreshLogs('Recipe "${currentRecipe.value?.recipeName}" edited successfully');
+      showGetxSnackbar('Edit success',
+          'Recipe "${currentRecipe.value?.recipeName}" edited successfully');
+      refreshLogs(
+          'Recipe "${currentRecipe.value?.recipeName}" edited successfully');
     } else {
       recipeList.add(currentRecipe.value!);
-      showGetxSnackbar('Save recipe OK', 'Recipe: "${currentRecipe.value?.recipeName}" saved');
+      showGetxSnackbar('Save recipe OK',
+          'Recipe: "${currentRecipe.value?.recipeName}" saved');
       refreshLogs('Recipe "${currentRecipe.value?.recipeName}" saved');
     }
     for (final data in recipeList) {
@@ -208,27 +218,23 @@ class RecipeController extends GetxController {
 
   VoidCallback? editSelectedCommand() {
     debugPrint('[recipe_controller] selected title to edit: $selectedTitle');
-    // CommandController.commandIndexToEdit = currentRecipe.value!.commandList
-    //     .indexWhere((element) => element.title == selectedTitle.value);
-    // CommandController.oldCommand = currentRecipe.value!
-    //     .commandList[CommandController.commandIndexToEdit].command;
     CommandController.isEditCommand.value = true;
-    CommandController.commandnumStepCtrl.text =
-        currentRecipe.value!.commandList[CommandController.commandIndexToEdit].numStep;
-    CommandController.commandvolumeCtrl.text = currentRecipe.value!
-        .commandList[CommandController.commandIndexToEdit].volume;
-    CommandController.commandTimePouring.text = currentRecipe.value!
-        .commandList[CommandController.commandIndexToEdit].timePouring;
-    CommandController.commandTimeInterval.text = currentRecipe.value!
-        .commandList[CommandController.commandIndexToEdit].timeInterval;
+    CommandController.commandnumStepCtrl.text = currentRecipe
+        .value!.commandList[CommandController.commandIndexToEdit].numStep;
+    CommandController.commandvolumeCtrl.text = currentRecipe
+        .value!.commandList[CommandController.commandIndexToEdit].volume;
+    CommandController.commandTimePouring.text = currentRecipe
+        .value!.commandList[CommandController.commandIndexToEdit].timePouring;
+    CommandController.commandTimeInterval.text = currentRecipe
+        .value!.commandList[CommandController.commandIndexToEdit].timeInterval;
     AddRecipeView.editCommand(Get.context!);
     return null;
   }
 
   VoidCallback? deleteSelectedCommand() {
-    debugPrint('[recipe_controller] selected title to delete: $selectedTitle from recipe ${currentRecipe.value!.recipeName}');
-     int commandIndexToDelete = currentRecipe.value!.id as int;
-
+    debugPrint(
+        '[recipe_controller] selected title to delete: $selectedTitle from recipe ${currentRecipe.value!.recipeName}');
+    int commandIndexToDelete = currentRecipe.value!.id as int;
 
     if (currentRecipe.value!.commandList.isNotEmpty) {
       currentRecipe.value?.commandList.removeAt(commandIndexToDelete);

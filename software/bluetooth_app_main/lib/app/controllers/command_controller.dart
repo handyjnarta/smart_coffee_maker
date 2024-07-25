@@ -7,6 +7,7 @@ import '../models/recipes.dart';
 import 'recipe_controller.dart';
 
 class CommandController extends GetxController {
+  final RecipeController recipeController = Get.find<RecipeController>();
   static List<CommandMenu> commandMenuList = <CommandMenu>[].obs;
   static var isEditCommand = false.obs;
   static var isInputCommandValid = false.obs;
@@ -25,30 +26,38 @@ class CommandController extends GetxController {
           maxCommandCount, (index) => TextEditingController(),
           growable: false);
 
-  /*static void validateCommandInput() {
+  static void validateCommandInput() {
     isInputCommandValid.value = false;
     commandTitleErrorText.value = '';
     commandErrorText.value = '';
 
-    if (commandnumStepCtrl.text.numericOnly() = false) { 
+    if (int.parse(commandnumStepCtrl.text) < 0) {
       debugPrint('[command_controller] input title command not valid');
-      commandTitleErrorText.value = 'Title length min 3 characters';
+      commandTitleErrorText.value = 'Numstep minimal 1 kak';
       return;
-    } else if (commandCtrl.text.isEmpty) {
+    }
+    if (int.parse(commandvolumeCtrl.text) < 0) {
       debugPrint('[command_controller] input command not valid');
-      commandErrorText.value = 'Please input command';
+      commandErrorText.value = 'Please input the right volume';
+      return;
+    }
+    if (int.parse(commandTimeInterval.text) < 0) {
+      debugPrint('[command_controller] input command not valid');
+      commandErrorText.value = 'Please input the right Time Interval';
+      return;
+    }
+    if (int.parse(commandTimePouring.text) < 0) {
+      debugPrint('[command_controller] input command not valid');
+      commandErrorText.value = 'Please input the right Time Pouring';
       return;
     }
 
     isInputCommandValid.value = true;
-  } */
+  }
 
   static void saveNewCommand() {
     //validateCommandInput();
     if (!isInputCommandValid.value) return;
-
-    int commandId =
-        isEditCommand.isTrue ? commandIndexToEdit : commandMenuList.length;
 
     //commandTextEditCtrlList[commandId].text = commandCtrl.text;
 
@@ -59,20 +68,22 @@ class CommandController extends GetxController {
       timeInterval: commandTimeInterval.text,
     );
 
-    if (RecipeController.currentRecipe == null) {
-      RecipeController.currentRecipe = Recipes(
-        id: RecipeController.selectedTitle,
-        setpoint: RecipeController.recipeSetpointController.text,
-        recipeName: RecipeController.recipeNameController.text,
+    if (RecipeController().currentRecipe.value == null) {
+      RecipeController().currentRecipe = Recipes(
+        id: RecipeController().selectedTitle.value,
+        setpoint: RecipeController().recipeSetpointController.text,
+        recipeName: RecipeController().recipeNameController.text,
         status: false,
         commandList: [newCommand],
       ) as Rxn<Recipes>;
     } else {
       if (isEditCommand.isTrue) {
-        RecipeController.currentRecipe?.commandList[commandIndexToEdit] =
-            newCommand;
+        RecipeController()
+            .currentRecipe
+            .value!
+            .commandList[commandIndexToEdit] = newCommand;
       } else {
-        RecipeController.currentRecipe?.commandList.add(newCommand);
+        RecipeController().currentRecipe.value!.commandList.add(newCommand);
       }
     }
 
@@ -83,8 +94,8 @@ class CommandController extends GetxController {
         timeInterval: commandTimeInterval.text,
         timePouring: commandTimePouring.text,
         readOnly: true,
-        onDeleteButtonPressed: RecipeController.deleteSelectedCommand,
-        onEditButtonPressed: RecipeController.editSelectedCommand,
+        onDeleteButtonPressed: RecipeController().deleteSelectedCommand,
+        onEditButtonPressed: RecipeController().editSelectedCommand,
       ));
     } else {
       commandMenuList[commandIndexToEdit] = CommandMenu(
@@ -93,12 +104,11 @@ class CommandController extends GetxController {
         timeInterval: commandTimeInterval.text,
         timePouring: commandTimePouring.text,
         readOnly: true,
-        commandController: commandTextEditCtrlList[commandId],
-        onDeleteButtonPressed: RecipeController.deleteSelectedCommand,
-        onEditButtonPressed: RecipeController.editSelectedCommand,
+        onDeleteButtonPressed: RecipeController().deleteSelectedCommand,
+        onEditButtonPressed: RecipeController().editSelectedCommand,
       );
     }
 
-    RecipeController.refreshSaveRecipeButtonState();
+    RecipeController().refreshSaveRecipeButtonState();
   }
 }

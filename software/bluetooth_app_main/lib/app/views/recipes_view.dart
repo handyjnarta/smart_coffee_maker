@@ -14,29 +14,30 @@ class RecipesView extends StatelessWidget {
   const RecipesView({Key? key}) : super(key: key);
 
   void deleteRecipe() {
-    // Get.back();
     Navigator.pop(Get.context!);
-    String recipeName =
-        RecipeController.recipeList[RecipeController.recipeIndex].recipeName;
-    RecipeController.recipeList.removeAt(RecipeController.recipeIndex);
+    String recipeName = RecipeController()
+        .recipeList[RecipeController().recipeIndex.value]
+        .recipeName;
+    RecipeController()
+        .recipeList
+        .removeAt(RecipeController().recipeIndex.value);
     ctrl.refreshLogs(text: 'Recipe "$recipeName" deleted');
-    // showSnackBar('Recipe deleted');
     showGetxSnackbar('Recipe deleted', 'Recipe "$recipeName" deleted');
   }
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      return RecipeController.recipeList.isNotEmpty
+      return RecipeController().recipeList.isNotEmpty
           ? ListView.builder(
-              itemCount: RecipeController.recipeList.length,
+              itemCount: RecipeController().recipeList.length,
               itemBuilder: (BuildContext context, int index) {
                 debugPrint('[recipe_view] rebuilding listview');
 
                 return buildRecipeContainer(
                     context: context,
-                    recipeName: RecipeController.recipeList[index].recipeName,
-                    status: RecipeController.recipeList[index].status,
+                    recipeName: RecipeController().recipeList[index].recipeName,
+                    status: RecipeController().recipeList[index].status,
                     recipeIndex: index);
               })
           : const Center(
@@ -48,7 +49,7 @@ class RecipesView extends StatelessWidget {
   }
 
   void editSelectedRecipe(BuildContext context) {
-    RecipeController.editRecipe();
+    RecipeController().editRecipe();
 
     showModalBottomSheet(
         shape: RoundedRectangleBorder(
@@ -62,36 +63,30 @@ class RecipesView extends StatelessWidget {
       debugPrint('');
       debugPrint('[recipe_view] show modal bottom sheet closed (edit recipe)');
       debugPrint(
-          '[recipe_view] RecipeController.isSaveRecipeBtnClicked: ${RecipeController.isSaveRecipeBtnClicked}');
-      // jika show modal bottom sheet closed, cek apakah ditutup karena tombol save recipe di klik atau bukan
-      // jika bukan karena tombol save di klik, maka kembalikan data recipe yang lama karena recipe yang diedit tidak disimpan
+          '[recipe_view] RecipeController.isSaveRecipeBtnClicked: ${RecipeController().isSaveRecipeBtnClicked}');
 
-      if (RecipeController.isSaveRecipeBtnClicked == false) {
+      if (RecipeController().isSaveRecipeBtnClicked == false) {
         debugPrint('[recipe_view] old recipe rolled back');
-        RecipeController.recipeList[RecipeController.recipeIndex].commandList =
-            RecipeController.oldRecipeData['oldRecipe']['commandList'];
+        RecipeController()
+                .recipeList[RecipeController().recipeIndex.value]
+                .commandList =
+            RecipeController().oldRecipeData['oldRecipe']['commandList'];
         ctrl.refreshLogs(
             text:
-                'Recipe "${RecipeController.recipeList[RecipeController.recipeIndex].recipeName}" editing canceled');
+                'Recipe "${RecipeController().recipeList[RecipeController().recipeIndex.value].recipeName}" editing canceled');
         showGetxSnackbar('Cancel to edit',
-            'Recipe "${RecipeController.recipeList[RecipeController.recipeIndex].recipeName}" editing canceled');
+            'Recipe "${RecipeController().recipeList[RecipeController().recipeIndex.value].recipeName}" editing canceled');
       }
     });
   }
 
   void createNewRecipe(BuildContext context) {
-    RecipeController.createNewRecipe();
+    RecipeController().createNewRecipe();
 
-    // add new recipe
     showModalBottomSheet(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
         ),
-
-        // to make bottom sheet move up when keyboard active if the keyboard hover of textfield
-        // reference: https://stackoverflow.com/a/59005853
-        // - wrap column with SingleChildScrollView
-        // - wrap SingleChildScrollView with Padding --> padding: MediaQuery.of(context).viewInsets,
         isScrollControlled: true,
         context: context,
         builder: (BuildContext context) {
@@ -99,16 +94,15 @@ class RecipesView extends StatelessWidget {
         }).whenComplete(() {
       debugPrint(
           '[recipe_view] show modal bottom sheet closed (insert new recipe)');
-      // jika show modal bottom sheet closed, cek apakah ditutup karena tombol save recipe di klik atau bukan
-      // jika bukan karena tombol save di klik, maka hapus recipe yang baru dibuat (jika ada)
     });
   }
 
-  buildRecipeContainer(
-      {required String recipeName,
-      required bool status,
-      required int recipeIndex,
-      required BuildContext context}) {
+  Widget buildRecipeContainer({
+    required String recipeName,
+    required bool status,
+    required int recipeIndex,
+    required BuildContext context,
+  }) {
     return Padding(
       padding: const EdgeInsets.all(6.0),
       child: Card(
@@ -135,8 +129,6 @@ class RecipesView extends StatelessWidget {
                           fontSize: 20, color: colors['neutralTextColor']!),
                     ),
                   ),
-
-                  // to turned on button
                   ElevatedButton(
                     onPressed: () {
                       debugPrint('[recipes_view] To turn On Command: r');
@@ -144,73 +136,64 @@ class RecipesView extends StatelessWidget {
                       if (ctrl.isConnected.isTrue) {
                         BluetoothData.instance
                             .sendMessageToBluetooth('r', false);
-                        RecipeController.recipeList[recipeIndex].status = true;
-                        RecipeController.recipeList.refresh();
+                        RecipeController().recipeList[recipeIndex].status =
+                            true;
+                        RecipeController().recipeList.refresh();
                       }
                     },
                     child: const Text("ON"),
                   ),
-                  const SizedBox(
-                    width: 10,
-                  ),
+                  const SizedBox(width: 10),
+                  PopupMenuButton<PopupItems>(
+                    onSelected: (PopupItems item) {
+                      RecipeController().recipeIndex.value = RecipeController()
+                          .recipeList
+                          .indexWhere((dev) => dev.recipeName == recipeName);
 
-                  const SizedBox(
-                    width: 10,
+                      if (item == PopupItems.edit) {
+                        editSelectedRecipe(context);
+                      } else {
+                        showConfirmDialog(
+                          context: context,
+                          title: 'Delete confirm',
+                          text: 'Delete current recipe ($recipeName)?',
+                          onOkPressed: deleteRecipe,
+                        );
+                      }
+                    },
+                    itemBuilder: (BuildContext context) {
+                      return [
+                        const PopupMenuItem<PopupItems>(
+                          value: PopupItems.edit,
+                          child: Row(
+                            children: [
+                              Text('Edit'),
+                              Expanded(child: SizedBox(width: 10)),
+                              Icon(
+                                Icons.edit,
+                                size: 20.0,
+                              )
+                            ],
+                          ),
+                        ),
+                        const PopupMenuItem<PopupItems>(
+                          value: PopupItems.delete,
+                          child: Row(
+                            children: [
+                              Text('Delete'),
+                              Expanded(child: SizedBox(width: 10)),
+                              Icon(
+                                Icons.delete,
+                                size: 20.0,
+                              )
+                            ],
+                          ),
+                        ),
+                      ];
+                    },
                   ),
-                  PopupMenuButton<PopupItems>(onSelected: (PopupItems item) {
-                    RecipeController.recipeIndex = RecipeController.recipeList
-                        .indexWhere((dev) => dev.recipeName == recipeName);
-
-                    if (item == PopupItems.edit) {
-                      editSelectedRecipe(context);
-                    } else {
-                      // delete the selected recipe
-                      showConfirmDialog(
-                        context: context,
-                        title: 'Delete confirm',
-                        text: 'Delete current recipe ($recipeName)?',
-                        onOkPressed: deleteRecipe,
-                      );
-                    }
-                  }, itemBuilder: (BuildContext context) {
-                    return [
-                      const PopupMenuItem<PopupItems>(
-                        value: PopupItems.edit,
-                        child: Row(
-                          children: [
-                            Text('Edit'),
-                            Expanded(
-                                child: SizedBox(
-                              width: 10,
-                            )),
-                            Icon(
-                              Icons.edit,
-                              size: 20.0,
-                            )
-                          ],
-                        ),
-                      ),
-                      const PopupMenuItem<PopupItems>(
-                        value: PopupItems.delete,
-                        child: Row(
-                          children: [
-                            Text('Delete'),
-                            Expanded(
-                                child: SizedBox(
-                              width: 10,
-                            )),
-                            Icon(
-                              Icons.delete,
-                              size: 20.0,
-                            )
-                          ],
-                        ),
-                      ),
-                    ];
-                  })
                 ],
               ),
-              // Text(description)
             ],
           ),
         ),

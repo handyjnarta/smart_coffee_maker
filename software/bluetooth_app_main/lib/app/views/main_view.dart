@@ -75,13 +75,13 @@ class MainView extends StatelessWidget {
                           if (item == RecipePopupMenuItem.newRecipe) {
                             const RecipesView().createNewRecipe(context);
                           } else if (item == RecipePopupMenuItem.saveRecipe) {
-                            if (RecipeController.recipeList.isNotEmpty) {
-                              RecipeController.saveRecipeListIntoStorage();
+                            if (RecipeController().recipeList.isNotEmpty) {
+                              RecipeController().saveRecipeListIntoStorage();
                             } else {
                               null;
                             }
                           } else {
-                            RecipeController.loadRecipeListFromStorage(
+                            RecipeController().loadRecipeListFromStorage(
                                 isLoadFromInitApp: false);
                           }
                         }, itemBuilder: (BuildContext context) {
@@ -107,8 +107,9 @@ class MainView extends StatelessWidget {
                                   Text(
                                     'Save to Cloud',
                                     style: TextStyle(
-                                        color: RecipeController
-                                                .recipeList.isNotEmpty
+                                        color: RecipeController()
+                                                .recipeList
+                                                .isNotEmpty
                                             ? Colors.black
                                             : Colors.grey),
                                   ),
@@ -118,10 +119,11 @@ class MainView extends StatelessWidget {
                                   )),
                                   Icon(Icons.save_alt_outlined,
                                       size: 20.0,
-                                      color:
-                                          RecipeController.recipeList.isNotEmpty
-                                              ? Colors.black
-                                              : Colors.grey)
+                                      color: RecipeController()
+                                              .recipeList
+                                              .isNotEmpty
+                                          ? Colors.black
+                                          : Colors.grey)
                                 ],
                               ),
                             ),

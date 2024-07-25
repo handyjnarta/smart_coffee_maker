@@ -111,7 +111,7 @@ class BluetoothAppState extends State<BluetoothApp>
 
   Future init() async {
     prefs = await SharedPreferences.getInstance();
-    RecipeController.loadRecipeListFromStorage();
+    RecipeController().loadRecipeListFromStorage();
     await BluetoothData.instance.initBluetooth();
   }
 

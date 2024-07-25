@@ -3,7 +3,6 @@ import 'package:flutter_bluetooth/app/constant/constant.dart';
 import 'package:flutter_bluetooth/app/controllers/recipe_controller.dart';
 import 'package:flutter_bluetooth/app/views/add_command_view.dart';
 import 'package:get/get.dart';
-import '../controllers/command_controller.dart';
 import '../helper/widget_helper.dart';
 import '../helper/popup_dialogs.dart';
 
@@ -46,12 +45,13 @@ class AddRecipeView extends StatelessWidget {
                     children: [
                       buildTextField(
                         title: 'Recipe Name',
-                        commandText: RecipeController.recipeNameController.text,
-                        errorText: RecipeController.errorText.value,
+                        commandText:
+                            RecipeController().recipeNameController.text,
+                        errorText: RecipeController().errorText.value,
                         commandTextController:
-                            RecipeController.recipeNameController,
+                            RecipeController().recipeNameController,
                         onChanged: (value) {
-                          RecipeController.refreshNewCommandButtonState();
+                          RecipeController().refreshNewCommandButtonState();
                         },
                       ),
                       Row(
@@ -67,18 +67,22 @@ class AddRecipeView extends StatelessWidget {
                           const Expanded(child: SizedBox(width: 20)),
                           OutlinedButton(
                             onPressed: () {
-                              if (RecipeController.enableNewCommandBtn.isTrue) {
+                              if (RecipeController()
+                                  .enableNewCommandBtn
+                                  .isTrue) {
                                 createNewCommand(context);
                               } else {
                                 final recipeName = int.tryParse(
-                                    RecipeController.recipeNameController.text);
+                                    RecipeController()
+                                        .recipeNameController
+                                        .text);
                                 if (recipeName == null ||
                                     recipeName < 30 ||
                                     recipeName > 95) {
-                                  RecipeController.errorText.value =
+                                  RecipeController().errorText.value =
                                       'Suhu harus diantara 30 dan 95';
                                 } else {
-                                  RecipeController.errorText.value =
+                                  RecipeController().errorText.value =
                                       'Max command is $maxCommandCount';
                                 }
                               }
@@ -132,8 +136,8 @@ class AddRecipeView extends StatelessWidget {
       height: 50,
       child: OutlinedButton(
         onPressed: () {
-          if (RecipeController.currentRecipe == null ||
-              RecipeController.currentRecipe!.commandList.length <
+          if (RecipeController().currentRecipe.value == null ||
+              RecipeController().currentRecipe.value!.commandList.length <
                   minCommandCount) {
             showCustomDialog(
               context: context,
@@ -143,9 +147,9 @@ class AddRecipeView extends StatelessWidget {
               title: 'Command < $minCommandCount',
             );
           } else {
-            RecipeController.refreshSaveRecipeButtonState();
-            if (RecipeController.enableSaveRecipeBtn.isTrue) {
-              RecipeController.saveRecipeData();
+            RecipeController().refreshSaveRecipeButtonState();
+            if (RecipeController().enableSaveRecipeBtn.isTrue) {
+              RecipeController().saveRecipeData();
               Navigator.of(context).pop();
             }
           }
@@ -164,7 +168,7 @@ class AddRecipeView extends StatelessWidget {
   }
 
   void createNewCommand(BuildContext context) {
-    RecipeController.onNewCommandButtonPressed();
+    RecipeController().onNewCommandButtonPressed();
     showCustomDialog(
       context: context,
       actionList: [const CommandView()],
