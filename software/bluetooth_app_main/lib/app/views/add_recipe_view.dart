@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth/app/constant/constant.dart';
-import 'package:flutter_bluetooth/app/controllers/device_controller.dart';
+import 'package:flutter_bluetooth/app/controllers/recipe_controller.dart';
 import 'package:flutter_bluetooth/app/views/add_command_view.dart';
 import 'package:get/get.dart';
 import '../controllers/command_controller.dart';
 import '../helper/widget_helper.dart';
 import '../helper/popup_dialogs.dart';
 
-class AddDeviceView extends StatelessWidget {
+class AddRecipeView extends StatelessWidget {
   final String title;
 
-  const AddDeviceView({Key? key, required this.title}) : super(key: key);
+  const AddRecipeView({Key? key, required this.title}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -46,11 +46,12 @@ class AddDeviceView extends StatelessWidget {
                     children: [
                       buildTextField(
                         title: 'Recipe Name',
-                        commandText: DeviceController.deviceNameController.text,
-                        errorText: DeviceController.errorText.value,
-                        commandTextController: DeviceController.deviceNameController,
+                        commandText: RecipeController.recipeNameController.text,
+                        errorText: RecipeController.errorText.value,
+                        commandTextController:
+                            RecipeController.recipeNameController,
                         onChanged: (value) {
-                          DeviceController.refreshNewCommandButtonState();
+                          RecipeController.refreshNewCommandButtonState();
                         },
                       ),
                       Row(
@@ -59,24 +60,31 @@ class AddDeviceView extends StatelessWidget {
                             padding: EdgeInsets.only(top: 14.0),
                             child: Text(
                               'Commands:',
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 16),
                             ),
                           ),
                           const Expanded(child: SizedBox(width: 20)),
                           OutlinedButton(
                             onPressed: () {
-                              if (DeviceController.enableNewCommandBtn.isTrue) {
+                              if (RecipeController.enableNewCommandBtn.isTrue) {
                                 createNewCommand(context);
                               } else {
-                                final deviceName = int.tryParse(DeviceController.deviceNameController.text);
-                                if (deviceName == null || deviceName < 30 || deviceName > 95) {
-                                  DeviceController.errorText.value = 'Suhu harus diantara 30 dan 95';
+                                final recipeName = int.tryParse(
+                                    RecipeController.recipeNameController.text);
+                                if (recipeName == null ||
+                                    recipeName < 30 ||
+                                    recipeName > 95) {
+                                  RecipeController.errorText.value =
+                                      'Suhu harus diantara 30 dan 95';
                                 } else {
-                                  DeviceController.errorText.value = 'Max command is $maxCommandCount';
+                                  RecipeController.errorText.value =
+                                      'Max command is $maxCommandCount';
                                 }
                               }
                             },
-                            style: buildButtonStyle(borderColor: Colors.grey, buttonWidth: 80),
+                            style: buildButtonStyle(
+                                borderColor: Colors.grey, buttonWidth: 80),
                             child: const Text('New Command'),
                           ),
                         ],
@@ -124,16 +132,20 @@ class AddDeviceView extends StatelessWidget {
       height: 50,
       child: OutlinedButton(
         onPressed: () {
-          if (DeviceController.currentDevice == null || DeviceController.currentDevice!.commandList.length < minCommandCount) {
+          if (RecipeController.currentRecipe == null ||
+              RecipeController.currentRecipe!.commandList.length <
+                  minCommandCount) {
             showCustomDialog(
               context: context,
-              actionList: standardPopupItems(contentText: 'Please add at least $minCommandCount command(s)'),
+              actionList: standardPopupItems(
+                  contentText:
+                      'Please add at least $minCommandCount command(s)'),
               title: 'Command < $minCommandCount',
             );
           } else {
-            DeviceController.refreshSaveDeviceButtonState();
-            if (DeviceController.enableSaveDeviceBtn.isTrue) {
-              DeviceController.saveDeviceData();
+            RecipeController.refreshSaveRecipeButtonState();
+            if (RecipeController.enableSaveRecipeBtn.isTrue) {
+              RecipeController.saveRecipeData();
               Navigator.of(context).pop();
             }
           }
@@ -152,7 +164,7 @@ class AddDeviceView extends StatelessWidget {
   }
 
   void createNewCommand(BuildContext context) {
-    DeviceController.onNewCommandButtonPressed();
+    RecipeController.onNewCommandButtonPressed();
     showCustomDialog(
       context: context,
       actionList: [const CommandView()],

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth/utils.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'app/controllers/device_controller.dart';
+import 'app/controllers/recipe_controller.dart';
 import 'app/controllers/global_controller.dart';
 import 'app/views/main_view.dart';
 import 'bluetooth_data.dart';
@@ -18,9 +18,9 @@ late SharedPreferences prefs;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-   await Firebase.initializeApp(
-     options: DefaultFirebaseOptions.currentPlatform,
-   );
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   // Force sign out the user on startup
   //await FirebaseAuth.instance.signOut();
@@ -111,7 +111,7 @@ class BluetoothAppState extends State<BluetoothApp>
 
   Future init() async {
     prefs = await SharedPreferences.getInstance();
-    DeviceController.loadDeviceListFromStorage();
+    RecipeController.loadRecipeListFromStorage();
     await BluetoothData.instance.initBluetooth();
   }
 
