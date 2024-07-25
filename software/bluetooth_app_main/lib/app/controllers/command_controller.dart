@@ -1,7 +1,10 @@
-//Cari command new command dan ganti jadi new recipe, 
-//cari cara agar command bisa jadi resep dengan for input yang benar 
-// dan cari cara agar resep bisa ditampilkan ke dalam tampilan chat  
-// kondisional utk meyajinkan user thdp resep yang ingin dijalankan
+// Cari command new command dan ganti jadi new recipe, (udah)
+// Ganti semua tampilan jadi resep (udah)
+// cari cara agar command bisa jadi resep dengan for input yang benar (udah)
+// dan cari cara agar resep bisa ditampilkan ke dalam tampilan chat  (udah)
+// kondisional utk meyakinkan user thdp resep yang ingin dijalankan (udah)
+// app akan kirim perintah 'r' secaara otomatis ke esp tiap kali resep mau dijalankan, jika user kirim perintah 'y'(liat dari send bluetooth message) maka akan dijalankan resepnya
+// commandToTurnOff dan commandToTurnOn itu di rombak total
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth/app/constant/constant.dart';
 import 'package:get/get.dart';
@@ -25,7 +28,7 @@ class CommandController extends GetxController {
 
   static List<TextEditingController> commandTextEditCtrlList = List<TextEditingController>.generate(maxCommandCount, (index) => TextEditingController(), growable: false);
 
-  static void validateCommmandInput() {
+  static void validateCommmandInput() { // input resep
     isInputCommandValid.value = false;
     commandTitleErrorText.value = '';
     commandErrorText.value = '';
@@ -42,38 +45,38 @@ class CommandController extends GetxController {
       return;
     }
 
-    if (DeviceController.currentDevice != null) {
-      bool isTitleExists = DeviceController.currentDevice!.commandList.indexWhere((cmd) => cmd.title == commandTitleCtrl.text) > - 1;
-      bool isCommandExists = DeviceController.currentDevice!.commandList.indexWhere((cmd) => cmd.command == commandCtrl.text) > - 1;
+    // if (DeviceController.currentDevice != null) {
+    //   bool isTitleExists = DeviceController.currentDevice!.commandList.indexWhere((cmd) => cmd.title == commandTitleCtrl.text) > - 1;
+    //   bool isCommandExists = DeviceController.currentDevice!.commandList.indexWhere((cmd) => cmd.command == commandCtrl.text) > - 1;
 
-      // jika sedang menginput command baru, cek apakah title & command yang diinput, apakah sudah ada di device yang sekarang
-      // jika sedang mengedit command, cek apakah title yang baru berbeda dengan title sebelumnya, jika berbeda
-      // cek apakah title dan command baru tersebut sudah ada digunakan di device sekarang
+    //   // jika sedang menginput command baru, cek apakah title & command yang diinput, apakah sudah ada di device yang sekarang
+    //   // jika sedang mengedit command, cek apakah title yang baru berbeda dengan title sebelumnya, jika berbeda
+    //   // cek apakah title dan command baru tersebut sudah ada digunakan di device sekarang
 
-      if (isEditCommand.isFalse) { // input new command
-        if (isTitleExists) {
-          commandTitleErrorText.value = 'Title already exists';
-          // isInputCommandValid.value = false;
-        } else if (isCommandExists) {
-          commandErrorText.value = 'Command already used';
-          // isInputCommandValid.value = false;
-        } else {
-          isInputCommandValid.value = true;
-        }
-      } else {
-        if (DeviceController.selectedTitle != commandTitleCtrl.text && isTitleExists) {
-          commandTitleErrorText.value = 'Title already exists';
-        }
-        // if old command != new command and new command already used
-        else if (oldCommand != commandCtrl.text && isCommandExists) {
-          commandErrorText.value = 'Command already used';
-        } else {
-          isInputCommandValid.value = true;
-        }
-      }
-    } else {
-      isInputCommandValid.value = true;
-    }
+    //   // if (isEditCommand.isFalse) { // input new command
+    //   //   if (isTitleExists) {
+    //   //     commandTitleErrorText.value = 'Title already exists';
+    //   //     // isInputCommandValid.value = false;
+    //   //   } else if (isCommandExists) {
+    //   //     commandErrorText.value = 'Command already used';
+    //   //     // isInputCommandValid.value = false;
+    //   //   } else {
+    //   //     isInputCommandValid.value = true;
+    //   //   }
+    //   // } else {
+    //   //   if (DeviceController.selectedTitle != commandTitleCtrl.text && isTitleExists) {
+    //   //     commandTitleErrorText.value = 'Title already exists';
+    //   //   }
+    //   //   // if old command != new command and new command already used
+    //   //   else if (oldCommand != commandCtrl.text && isCommandExists) {
+    //   //     commandErrorText.value = 'Command already used';
+    //   //   } else {
+    //   //     isInputCommandValid.value = true;
+    //   //   }
+    //   // }
+    // } else {
+    //   isInputCommandValid.value = true;
+    // }
   }
 
   static void saveNewCommand() {

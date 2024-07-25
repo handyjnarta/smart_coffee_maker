@@ -18,12 +18,12 @@ late SharedPreferences prefs;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+   await Firebase.initializeApp(
+     options: DefaultFirebaseOptions.currentPlatform,
+   );
 
   // Force sign out the user on startup
-  await FirebaseAuth.instance.signOut();
+  //await FirebaseAuth.instance.signOut();
 
   runApp(const MyApp());
 }

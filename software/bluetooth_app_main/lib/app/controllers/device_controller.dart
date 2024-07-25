@@ -216,31 +216,31 @@ class DeviceController extends GetxController {
   static VoidCallback? deleteSelectedCommand() {
     debugPrint('[device_controller] selected title to delete: $selectedTitle from device ${currentDevice!.deviceName}');
     int commandIndexToDelete = -1;
-    // bool found = false;
-    // int deviceIndex = -1;
-    // for (final devName in deviceList) {
-    //   if (devName.deviceName == deviceNameController.text) {
-    //     print('${devName.deviceName} is exists');
-    //     deviceIndex = deviceList.indexOf(devName);
-    //     print('device index $deviceIndex');
-    //
-    //     for (final cmd in devName.commandList) {
-    //       if (cmd.title == selectedTitle) {
-    //         print('$selectedTitle found');
-    //         commandIndexToDelete = devName.commandList.indexWhere((element) => element.title == selectedTitle);
-    //         print('index command: $commandIndexToDelete');
-    //         found = true;
-    //         break;
-    //       }
-    //     }
-    //   }
-    //   if (found) {break;}
-    // }
-    //
-    // if (commandIndexToDelete > -1) {
-    //   deviceList[deviceIndex].commandList.removeAt(commandIndexToDelete);
-    //   CommandController.commandMenuList.removeAt(commandIndexToDelete);
-    // }
+    bool found = false;
+    int deviceIndex = -1;
+    for (final devName in deviceList) {
+      if (devName.deviceName == deviceNameController.text) {
+        debugPrint('${devName.deviceName} is exists');
+        deviceIndex = deviceList.indexOf(devName);
+        debugPrint('device index $deviceIndex');
+    
+        for (final cmd in devName.commandList) {
+          if (cmd.title == selectedTitle) {
+            debugPrint('$selectedTitle found');
+            commandIndexToDelete = devName.commandList.indexWhere((element) => element.title == selectedTitle);
+            debugPrint('index command: $commandIndexToDelete');
+            found = true;
+            break;
+          }
+        }
+      }
+      if (found) {break;}
+    }
+    
+    if (commandIndexToDelete > -1) {
+      deviceList[deviceIndex].commandList.removeAt(commandIndexToDelete);
+      CommandController.commandMenuList.removeAt(commandIndexToDelete);
+    }
     commandIndexToDelete = currentDevice!.commandList.indexWhere((element) => element.title == selectedTitle);
 
     if (currentDevice!.commandList.isNotEmpty) {
