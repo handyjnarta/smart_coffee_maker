@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bluetooth/app/controllers/device_controller.dart';
+import 'package:flutter_bluetooth/app/controllers/recipe_controller.dart';
 import 'package:flutter_bluetooth/app/helper/popup_dialogs.dart';
 import 'package:flutter_bluetooth/app/views/add_pouring_view.dart';
 import 'package:get/get.dart';
@@ -33,7 +33,6 @@ class CommandController extends GetxController {
   }
 }
 
-
 class CommandView extends StatelessWidget {
   const CommandView({Key? key}) : super(key: key);
 
@@ -48,11 +47,12 @@ class CommandView extends StatelessWidget {
     List<Widget> actionList = [
       const SizedBox(height: 10),
       Obx(() {
+        //setpoint
         return buildTextField(
-          title: 'Setpoint',
-          commandText: CommandController.commandTitleCtrl.text,
-          errorText: CommandController.commandTitleErrorText.value,
-          commandTextController: CommandController.commandTitleCtrl,
+          numStep: 'numstep',
+          volume: 'vol',
+          timeInterval: 'timei',
+          timePouring: 'timep',
           //onChanged: CommandController.validateCommandInput,
         );
       }),
@@ -64,10 +64,11 @@ class CommandView extends StatelessWidget {
         return Column(
           children: [
             buildTextField(
-              title: 'Pouring Steps',
-              commandText: CommandController.commandCtrl.text,
-              errorText: CommandController.commandErrorText.value,
-              commandTextController: CommandController.commandCtrl,
+              //pouring step
+              numStep: 'numstep',
+              volume: 'vol',
+              timeInterval: 'timei',
+              timePouring: 'timep',
               //onChanged: CommandController.validateCommandInput,
             ),
             const SizedBox(height: 10),
@@ -109,11 +110,12 @@ class CommandView extends StatelessWidget {
               isCircleButton: false,
               buttonWidth: 100,
               onPressedAction: () {
-                CommandController.validateCommandInput(CommandController.commandCtrl.text);
+                CommandController.validateCommandInput(
+                    CommandController.commandCtrl.text);
 
                 if (CommandController.isInputCommandValid.isTrue) {
                   CommandController.saveNewCommand();
-                  DeviceController.refreshNewCommandButtonState();
+                  RecipeController().refreshNewCommandButtonState();
 
                   if (CommandController.isEditCommand.isTrue) {
                     CommandController.isEditCommand.value = false;
@@ -144,25 +146,25 @@ void showPouringDialog(BuildContext context) {
           mainAxisSize: MainAxisSize.min,
           children: [
             buildTextField(
-              title: 'Total Water',
-              commandText: '', // Inisialisasi dengan nilai kosong atau yang ada
-              errorText: '', // Tangani error jika ada
-              commandTextController: TextEditingController(),
-              //onChanged: (value) {},
+              //total water
+              numStep: 'numstep',
+              volume: 'vol',
+              timeInterval: 'timei',
+              timePouring: 'timep',
             ),
             buildTextField(
-              title: 'Pouring Time',
-              commandText: '', // Inisialisasi dengan nilai kosong atau yang ada
-              errorText: '', // Tangani error jika ada
-              commandTextController: TextEditingController(),
-              //onChanged: (value) {},
+              //pouring time
+              numStep: 'numstep',
+              volume: 'vol',
+              timeInterval: 'timei',
+              timePouring: 'timep',
             ),
             buildTextField(
-              title: 'Delay Time',
-              commandText: '', // Inisialisasi dengan nilai kosong atau yang ada
-              errorText: '', // Tangani error jika ada
-              commandTextController: TextEditingController(),
-              //onChanged: (value) {},
+              //interval time
+              numStep: 'numstep',
+              volume: 'vol',
+              timeInterval: 'timei',
+              timePouring: 'timep',
             ),
           ],
         ),
@@ -176,10 +178,12 @@ void showPouringDialog(BuildContext context) {
           ),
           TextButton(
             onPressed: () {
-              if (CommandController.currentStep.value < CommandController.stepsCount.value) {
+              if (CommandController.currentStep.value <
+                  CommandController.stepsCount.value) {
                 CommandController.currentStep.value++;
                 Navigator.pop(context);
-                showPouringDialog(context); // Menampilkan dialog untuk langkah berikutnya
+                showPouringDialog(
+                    context); // Menampilkan dialog untuk langkah berikutnya
               } else {
                 Navigator.pop(context);
                 CommandController.resetSteps();
@@ -243,7 +247,7 @@ class CommandView extends StatelessWidget {
       Obx(() {
         return SizedBox(height: CommandController.commandTitleErrorText.isEmpty ? 0 : 20);
       }),
-      // buildTextField(labelText: 'Command Description', textController: Controller.newDeviceCont),
+      // buildTextField(labelText: 'Command Description', textController: Controller.newRecipeCont),
       // const SizedBox(height: 20),
       Obx(() {
         return Column(
@@ -295,7 +299,7 @@ class CommandView extends StatelessWidget {
 
                   if (CommandController.isInputCommandValid.isTrue) {
                     CommandController.saveNewCommand();
-                    DeviceController.refreshNewCommandButtonState();
+                    RecipeController.refreshNewCommandButtonState();
 
                     if (CommandController.isEditCommand.isTrue) {
                       CommandController.isEditCommand.value = false;

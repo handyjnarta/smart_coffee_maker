@@ -29,14 +29,14 @@ class MyCustomButton extends StatelessWidget {
           if (commandTitle != null) {
             debugPrint('');
             debugPrint('[widget_helper]commandTitle: $commandTitle');
-            RecipeController.selectedTitle = commandTitle!;
+            RecipeController().selectedTitle.value = commandTitle!;
           }
 
           onPressedAction?.call();
 
-          if (RecipeController.isEditRecipe ||
-              RecipeController.isInsertNewRecipe) {
-            RecipeController.refreshSaveRecipeButtonState();
+          if (RecipeController().isEditRecipe.value ||
+              RecipeController().isInsertNewRecipe.value) {
+            RecipeController().refreshSaveRecipeButtonState();
           }
           // onPressedAction;
         },
