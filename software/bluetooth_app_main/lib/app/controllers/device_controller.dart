@@ -9,6 +9,7 @@ import 'package:flutter_bluetooth/app/views/add_device_view.dart';
 import 'package:flutter_bluetooth/main.dart';
 import 'package:get/get.dart';
 import '../../utils.dart';
+import '/services/firestore_service.dart';
 
 class DeviceController extends GetxController {
   static var isInsertNewDevice = false;
@@ -28,16 +29,14 @@ class DeviceController extends GetxController {
 
   static String selectedTitle = '';
   static RxString errorText = ''.obs;
-  // static List<CommandMenu> cmdMenuList = <CommandMenu>[].obs;
-  // static List<TextEditingController> commandMenuTextCtrlList = List<TextEditingController>.empty(growable: true).obs;
 
-  // this method called when editing the device name textfield
-  // method ini dipanggil ketika mengedit nama device
+  static FirestoreService firestoreService = FirestoreService();
+
   static void refreshNewCommandButtonState() {
     enableNewCommandBtn.value = false;
 
     if (deviceNameController.text.length < 3) {
-      errorText.value = 'Device name minimal 3 character';
+      errorText.value = 'Device name minimal 3 characters';
     } else {
       errorText.value = '';
       int newDevIndex = deviceList.indexWhere(
@@ -61,48 +60,46 @@ class DeviceController extends GetxController {
     }
   }
 
-  static void loadDeviceListFromStorage({bool isLoadFromInitApp = true}) {
+  static void loadDeviceListFromStorage({bool isLoadFromInitApp = true}) async {
     if (isLoadFromInitApp) {
       deviceList.clear();
-      deviceList.addAll(DeviceManager.instance.loadDeviceListFromStorage());
+      deviceList
+          .addAll(await DeviceManager.instance.loadDeviceListFromFirestore());
       ctrl.refreshLogs(
-          text: 'Devices loaded from storage on app start',
+          text: 'Devices loaded from Firestore on app start',
           sourceId: SourceId.statusId);
     } else {
       showConfirmDialog(
           context: Get.context!,
           title: 'Reload devices confirm',
-          text: 'Reload all device from storage?'
-              '\nDevice count in storage: ${DeviceManager.instance.getDeviceCount}',
-          onOkPressed: () {
+          text: 'Reload all devices from Firestore?'
+              '\nDevice count in Firestore: ${DeviceManager.instance.getDeviceCount}',
+          onOkPressed: () async {
             Navigator.pop(Get.context!);
             deviceList.clear();
-            deviceList
-                .addAll(DeviceManager.instance.loadDeviceListFromStorage());
+            deviceList.addAll(
+                await DeviceManager.instance.loadDeviceListFromFirestore());
             ctrl.refreshLogs(
-                text: 'Devices loaded from storage',
+                text: 'Devices loaded from Firestore',
                 sourceId: SourceId.statusId);
-            showGetxSnackbar('Device loaded', 'Device loaded from storage');
+            showGetxSnackbar('Device loaded', 'Device loaded from Firestore');
           });
     }
-    // deviceStateList.clear();
-    // deviceStateList.addAll(DeviceManager.instance.getStatusDeviceList);
-
-    // print('[device_controller] device state list');
-    // print(deviceStateList.toString());
   }
 
   static void saveDeviceListIntoStorage() {
     showConfirmDialog(
         context: Get.context!,
         title: 'Save devices confirm',
-        text: 'Save all device into storage?',
-        onOkPressed: () {
+        text: 'Save all devices into Firestore?',
+        onOkPressed: () async {
           Navigator.pop(Get.context!);
-          DeviceManager.instance.saveDeviceListIntoStorage(deviceList);
+          await DeviceManager.instance.saveDeviceListIntoFirestore(deviceList);
           ctrl.refreshLogs(
-              text: 'Devices saved into storage', sourceId: SourceId.statusId);
-          showGetxSnackbar('Device saved', 'Devices saved into storage OK');
+              text: 'Devices saved into Firestore',
+              sourceId: SourceId.statusId);
+          showGetxSnackbar('Device saved', 'Devices saved into Firestore OK');
+          debugPrint('Device list has been successfully stored into Firebase.');
         });
   }
 
@@ -139,14 +136,11 @@ class DeviceController extends GetxController {
     }
 
     CommandController.commandMenuList.clear();
-    // CommandController.commandMenuList.addAll(oldDeviceData['oldDevice']['commandMenuList']);
 
-    // memvisualisasikan model command
     int index = 0;
     for (final cmd in currentDevice!.commandList) {
       CommandController.commandTextEditCtrlList[index].text = cmd.command;
       CommandController.commandMenuList.add(CommandMenu(
-        // index: commandId,
         titleText: cmd.title,
         commandText: cmd.command,
         readOnly: true,
@@ -164,9 +158,6 @@ class DeviceController extends GetxController {
           errorText.isNotEmpty) {
         enableSaveDeviceBtn.value = false;
 
-        // jika enableSaveDeviceBtn = false dan errorText.isNotEmpty dan enableNewCommandBtn.isFalse
-        // berarti errorText nya muncul karena user ingin menambah command baru tetapi command yang ada
-        // jumlahnya sudah = maxCommandCount, maka diizinkan untuk save device
         if (errorText.isNotEmpty && enableNewCommandBtn.isFalse) {
           enableSaveDeviceBtn.value = true;
         }
@@ -194,7 +185,6 @@ class DeviceController extends GetxController {
           text: 'Device "${currentDevice?.deviceName}" edited successfully');
     } else {
       deviceList.add(currentDevice!);
-      // showSnackBar('Device: "${currentDevice?.deviceName}" saved')
       showGetxSnackbar(
           'Save device OK', 'Device: "${currentDevice?.deviceName}" saved');
       ctrl.refreshLogs(text: 'Device "${currentDevice?.deviceName}" saved');
@@ -222,7 +212,6 @@ class DeviceController extends GetxController {
         currentDevice!.commandList[CommandController.commandIndexToEdit].title;
     CommandController.commandCtrl.text = currentDevice!
         .commandList[CommandController.commandIndexToEdit].command;
-    // deviceLogTextCtrl.text = currentDevice!.deviceLogText;
     CommandController.commandLogText.text = currentDevice!
         .commandList[CommandController.commandIndexToEdit].logText;
     AddDeviceView.editCommand(Get.context!);
