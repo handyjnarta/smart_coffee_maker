@@ -83,7 +83,6 @@ class CommandController extends GetxController {
         timeInterval: commandTimeInterval.text,
         timePouring: commandTimePouring.text,
         readOnly: true,
-        commandController: commandTextEditCtrlList[commandId],
         onDeleteButtonPressed: RecipeController.deleteSelectedCommand,
         onEditButtonPressed: RecipeController.editSelectedCommand,
       ));

@@ -12,50 +12,47 @@ import '../../utils.dart';
 import '/services/firestore_service.dart';
 
 class RecipeController extends GetxController {
-  // Observable variables
-  var isInsertNewRecipe = false.obs;
-  var isEditRecipe = false.obs;
-  var isSaveRecipeBtnClicked = false.obs;
-  var enableNewCommandBtn = false.obs;
-  var enableSaveRecipeBtn = false.obs;
-  var recipeList = <Recipes>[].obs;
-  var currentRecipe = Rxn<Recipes>();
-  var recipeIndex = 0.obs;
-  var recipeCount = 0.obs;
-  var oldRecipeData = {}.obs;
+  static var isInsertNewRecipe = false;
+  static var isEditRecipe = false;
+  static bool isSaveRecipeBtnClicked = false;
+  static var enableNewCommandBtn = false.obs;
+  static var enableSaveRecipeBtn = false.obs;
+  static RxList<Recipes> recipeList = <Recipes>[].obs;
+  static Recipes? currentRecipe;
+  static int recipeIndex = -1;
+  static int recipeCount = 0;
+  static Map<String, dynamic> oldRecipeData = {};
 
-  final recipeNameController = TextEditingController();
-  final turnOnTextController = TextEditingController();
-  final turnOffTextController = TextEditingController();
-  final recipeSetpointController = TextEditingController();
+  static TextEditingController recipeNameController = TextEditingController();
+  static TextEditingController turnOnTextController = TextEditingController();
+  static TextEditingController turnOffTextController = TextEditingController();
+  static TextEditingController recipeSetpointController =
+      TextEditingController();
 
-  var selectedTitle = ''.obs;
-  var errorText = ''.obs;
+  static String selectedTitle = '';
+  static RxString errorText = ''.obs;
 
-  final FirestoreService firestoreService = FirestoreService();
+  static FirestoreService firestoreService = FirestoreService();
 
-  void refreshNewCommandButtonState() {
+  static void refreshNewCommandButtonState() {
     enableNewCommandBtn.value = false;
 
     if (recipeNameController.text.length < 3) {
       errorText.value = 'Recipe name minimal 3 characters';
-    } else if (recipeSetpointController.text.isEmpty ||
-        int.tryParse(recipeSetpointController.text) == null) {
-      errorText.value = 'Invalid setpoint';
     } else {
       errorText.value = '';
       int newDevIndex = recipeList.indexWhere(
           (element) => element.recipeName == recipeNameController.text);
 
-      if ((isInsertNewRecipe.value && newDevIndex > -1) ||
-          (isEditRecipe.value &&
+      if ((isInsertNewRecipe && newDevIndex > -1) ||
+          (isEditRecipe &&
               newDevIndex > -1 &&
               recipeNameController.text !=
                   oldRecipeData['oldRecipe']['recipeName'])) {
         errorText.value = 'Recipe name already used';
       } else {
-        if (currentRecipe.value != null) {
-          if (currentRecipe.value!.commandList.length < maxCommandCount) {
+        if (currentRecipe != null) {
+          if (currentRecipe!.commandList.length < maxCommandCount) {
             enableNewCommandBtn.value = true;
           }
         } else {
@@ -65,77 +62,79 @@ class RecipeController extends GetxController {
     }
   }
 
-  Future<void> loadRecipeListFromStorage({bool isLoadFromInitApp = true}) async {
+  static void loadRecipeListFromStorage({bool isLoadFromInitApp = true}) async {
     if (isLoadFromInitApp) {
       recipeList.clear();
-      recipeList.addAll(await RecipesManager.instance.loadRecipesListFromFirestore());
-      refreshLogs('Recipes loaded from Firestore on app start');
+      recipeList
+          .addAll(await RecipesManager.instance.loadRecipesListFromFirestore());
+      ctrl.refreshLogs(
+          text: 'Recipes loaded from Firestore on app start',
+          sourceId: SourceId.statusId);
     } else {
       showConfirmDialog(
-        context: Get.context!,
-        title: 'Reload recipes confirm',
-        text: 'Reload all recipes from Firestore?\nRecipe count in Firestore: ${RecipesManager.instance.getRecipesCount}',
-        onOkPressed: () async {
-          Navigator.pop(Get.context!);
-          recipeList.clear();
-          recipeList.addAll(await RecipesManager.instance.loadRecipesListFromFirestore());
-          refreshLogs('Recipes loaded from Firestore');
-          showGetxSnackbar('Recipe loaded', 'Recipe loaded from Firestore');
-        },
-      );
+          context: Get.context!,
+          title: 'Reload recipes confirm',
+          text: 'Reload all recipes from Firestore?'
+              '\nRecipe count in Firestore: ${RecipesManager.instance.getRecipesCount}',
+          onOkPressed: () async {
+            Navigator.pop(Get.context!);
+            recipeList.clear();
+            recipeList.addAll(
+                await RecipesManager.instance.loadRecipesListFromFirestore());
+            ctrl.refreshLogs(
+                text: 'Recipes loaded from Firestore',
+                sourceId: SourceId.statusId);
+            showGetxSnackbar('Recipe loaded', 'Recipe loaded from Firestore');
+          });
     }
   }
 
-  Future<void> saveRecipeListIntoStorage() async {
+  static void saveRecipeListIntoStorage() {
     showConfirmDialog(
-      context: Get.context!,
-      title: 'Save recipes confirm',
-      text: 'Save all recipes into Firestore?',
-      onOkPressed: () async {
-        Navigator.pop(Get.context!);
-        await RecipesManager.instance.saveRecipesListIntoFirestore(recipeList);
-        refreshLogs('Recipes saved into Firestore');
-        showGetxSnackbar('Recipe saved', 'Recipes saved into Firestore OK');
-      },
-    );
+        context: Get.context!,
+        title: 'Save recipes confirm',
+        text: 'Save all recipes into Firestore?',
+        onOkPressed: () async {
+          Navigator.pop(Get.context!);
+          await RecipesManager.instance
+              .saveRecipesListIntoFirestore(recipeList);
+          ctrl.refreshLogs(
+              text: 'Recipes saved into Firestore',
+              sourceId: SourceId.statusId);
+          showGetxSnackbar('Recipe saved', 'Recipes saved into Firestore OK');
+          debugPrint('Recipe list has been successfully stored into Firebase.');
+        });
   }
 
-  void createNewRecipe() {
-    isInsertNewRecipe.value = true;
-    isEditRecipe.value = false;
+  static void createNewRecipe() {
+    isInsertNewRecipe = true;
+    isEditRecipe = false;
     enableSaveRecipeBtn.value = false;
     enableNewCommandBtn.value = false;
-    currentRecipe.value = Recipes(
-      recipeName: '',
-      id: '',
-      status: false,
-      setpoint: '',
-      commandList: [],
-    );
-    isSaveRecipeBtnClicked.value = false;
-    recipeCount.value = recipeList.length;
+    currentRecipe = null;
+    isSaveRecipeBtnClicked = false;
+    recipeCount = recipeList.length;
     recipeNameController.clear();
     recipeSetpointController.clear();
     CommandController.commandMenuList.clear();
   }
 
-  void editRecipe() {
-    isSaveRecipeBtnClicked.value = false;
-    isInsertNewRecipe.value = false;
-    isEditRecipe.value = true;
+  static void editRecipe() {
+    isSaveRecipeBtnClicked = false;
+    isInsertNewRecipe = false;
+    isEditRecipe = true;
     errorText.value = '';
 
-    currentRecipe.value = recipeList[recipeIndex.value];
+    currentRecipe = recipeList[recipeIndex];
     oldRecipeData['oldRecipe'] = {
-      'recipeName': currentRecipe.value!.recipeName,
-      'recipeSetpoint': currentRecipe.value!.setpoint,
-      'commandList': [...currentRecipe.value!.commandList],
+      'recipeName': currentRecipe!.recipeName,
+      'recipeSetpoint': currentRecipe!.recipeSetpoint,
+      'commandList': [...currentRecipe!.commandList],
     };
 
-    recipeNameController.text = currentRecipe.value!.recipeName;
-    recipeSetpointController.text = currentRecipe.value!.setpoint.toString();
+    recipeNameController.text = currentRecipe!.recipeName;
 
-    if (currentRecipe.value!.commandList.length < maxCommandCount) {
+    if (currentRecipe!.commandList.length < maxCommandCount) {
       enableNewCommandBtn.value = true;
     } else {
       enableNewCommandBtn.value = false;
@@ -144,24 +143,22 @@ class RecipeController extends GetxController {
     CommandController.commandMenuList.clear();
 
     int index = 0;
-    for (final cmd in currentRecipe.value!.commandList) {
-      CommandController.commandTextEditCtrlList[index].text = cmd.command;
+    for (final cmd in currentRecipe!.commandList) {
       CommandController.commandMenuList.add(CommandMenu(
-        numStep: commandnumStepCtrl.text,
-        volume: commandvolumeCtrl.text,
-        timeInterval: commandTimeInterval.text,
-        timePouring: commandTimePouring.text,
+        titleText: cmd.title,
+        commandText: cmd.command,
         readOnly: true,
-        onDeleteButtonPressed: deleteSelectedCommand,
-        onEditButtonPressed: editSelectedCommand,
+        commandController: CommandController.commandTextEditCtrlList[index],
+        onDeleteButtonPressed: RecipeController.deleteSelectedCommand,
+        onEditButtonPressed: RecipeController.editSelectedCommand,
       ));
       index++;
     }
   }
 
-  void refreshSaveRecipeButtonState() {
-    if (currentRecipe.value != null) {
-      if (currentRecipe.value!.commandList.length < minCommandCount ||
+  static void refreshSaveRecipeButtonState() {
+    if (currentRecipe != null) {
+      if (currentRecipe!.commandList.length < minCommandCount ||
           errorText.isNotEmpty) {
         enableSaveRecipeBtn.value = false;
 
@@ -174,73 +171,73 @@ class RecipeController extends GetxController {
     }
   }
 
-  void saveRecipeData() {
-    isSaveRecipeBtnClicked.value = true;
+  static void saveRecipeData() {
+    isSaveRecipeBtnClicked = true;
 
-    if (currentRecipe.value?.recipeName != recipeNameController.text) {
-      refreshLogs('Recipe "${currentRecipe.value?.recipeName}" changed to "${recipeNameController.text}"');
-      currentRecipe.value?.setNewRecipe = recipeNameController.text;
+    if (currentRecipe?.recipeName != recipeNameController.text) {
+      ctrl.refreshLogs(
+          text:
+              'Recipe "${currentRecipe?.recipeName}" changed to "${recipeNameController.text}"');
+      currentRecipe?.setNewRecipe = recipeNameController.text;
     }
 
-    if (currentRecipe.value?.setpoint != int.parse(recipeSetpointController.text)) {
-      refreshLogs('Setpoint "${currentRecipe.value?.setpoint}" changed to "${recipeSetpointController.text}"');
-      currentRecipe.value?.setpoint = int.parse(recipeSetpointController.text);
-    }
-
-    if (isEditRecipe.value) {
-      recipeList[recipeIndex.value] = currentRecipe.value!;
-      showGetxSnackbar('Edit success', 'Recipe "${currentRecipe.value?.recipeName}" edited successfully');
-      refreshLogs('Recipe "${currentRecipe.value?.recipeName}" edited successfully');
+    if (isEditRecipe) {
+      recipeList[recipeIndex] = currentRecipe!;
+      showGetxSnackbar('Edit success',
+          'Recipe "${currentRecipe?.recipeName}" edited successfully');
+      ctrl.refreshLogs(
+          text: 'Recipe "${currentRecipe?.recipeName}" edited successfully');
     } else {
-      recipeList.add(currentRecipe.value!);
-      showGetxSnackbar('Save recipe OK', 'Recipe: "${currentRecipe.value?.recipeName}" saved');
-      refreshLogs('Recipe "${currentRecipe.value?.recipeName}" saved');
+      recipeList.add(currentRecipe!);
+      showGetxSnackbar(
+          'Save recipe OK', 'Recipe: "${currentRecipe?.recipeName}" saved');
+      ctrl.refreshLogs(text: 'Recipe "${currentRecipe?.recipeName}" saved');
     }
     for (final data in recipeList) {
       debugPrint('[recipe_controller] recipe name: ${data.recipeName}');
     }
   }
 
-  void onNewCommandButtonPressed() {
+  static void onNewCommandButtonPressed() {
     CommandController.commandCtrl.clear();
     CommandController.commandTitleCtrl.clear();
     CommandController.commandLogText.clear();
   }
 
-  VoidCallback? editSelectedCommand() {
+  static VoidCallback? editSelectedCommand() {
+    debugPrint('');
     debugPrint('[recipe_controller] selected title to edit: $selectedTitle');
-    CommandController.commandIndexToEdit = currentRecipe.value!.commandList
-        .indexWhere((element) => element.title == selectedTitle.value);
-    CommandController.oldCommand = currentRecipe.value!
+    CommandController.commandIndexToEdit = currentRecipe!.commandList
+        .indexWhere((element) => element.title == selectedTitle);
+    CommandController.oldCommand = currentRecipe!
         .commandList[CommandController.commandIndexToEdit].command;
     CommandController.isEditCommand.value = true;
     CommandController.commandTitleCtrl.text =
-        currentRecipe.value!.commandList[CommandController.commandIndexToEdit].title;
-    CommandController.commandCtrl.text = currentRecipe.value!
+        currentRecipe!.commandList[CommandController.commandIndexToEdit].title;
+    CommandController.commandCtrl.text = currentRecipe!
         .commandList[CommandController.commandIndexToEdit].command;
-    CommandController.commandLogText.text = currentRecipe.value!
+    CommandController.commandLogText.text = currentRecipe!
         .commandList[CommandController.commandIndexToEdit].logText;
     AddRecipeView.editCommand(Get.context!);
     return null;
   }
 
-  VoidCallback? deleteSelectedCommand() {
-    debugPrint('[recipe_controller] selected title to delete: $selectedTitle from recipe ${currentRecipe.value!.recipeName}');
-    int commandIndexToDelete = currentRecipe.value!.commandList
-        .indexWhere((element) => element.title == selectedTitle.value);
+  static VoidCallback? deleteSelectedCommand() {
+    debugPrint(
+        '[recipe_controller] selected title to delete: $selectedTitle from recipe ${currentRecipe!.recipeName}');
+    int commandIndexToDelete = -1;
+    commandIndexToDelete = currentRecipe!.commandList
+        .indexWhere((element) => element.title == selectedTitle);
 
-    if (currentRecipe.value!.commandList.isNotEmpty) {
-      currentRecipe.value?.commandList.removeAt(commandIndexToDelete);
+    if (currentRecipe!.commandList.isNotEmpty) {
+      currentRecipe?.commandList.removeAt(commandIndexToDelete);
       CommandController.commandMenuList.removeAt(commandIndexToDelete);
     }
 
     refreshNewCommandButtonState();
-    refreshSaveRecipeButtonState();
 
     return null;
   }
-
-  void refreshLogs(String text) {
-    ctrl.refreshLogs(text: text, sourceId: SourceId.statusId);
-  }
 }
+
+from this code, i want to implement create, load, edit, and delete setpoint of recipe the same as name of the recipe

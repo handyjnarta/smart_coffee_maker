@@ -1,25 +1,32 @@
 import 'package:flutter/material.dart';
 
-ButtonStyle buildButtonStyle({Color borderColor=Colors.purple, bool isCircleButton=false, Color? splashColor, double? radiusSize, double? buttonWidth}) {
-  return
-    ButtonStyle(
-      // minimumSize: WidgetStateProperty.all(Size.fromWidth(buttonWidth ?? 40)),
-      minimumSize: WidgetStateProperty.all(Size(buttonWidth ?? 40, 40)),
-      shape: WidgetStateProperty.all(
-          isCircleButton
-              ? const CircleBorder()
-              : RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(radiusSize ?? 30)))
-      ),
-      padding: WidgetStateProperty.all(const EdgeInsets.all(8)),
-      // backgroundColor: WidgetStateProperty.all(Colors.blue), // <-- Button color
-      side: WidgetStateProperty.all(BorderSide(color: borderColor,)),
-      overlayColor: WidgetStateProperty.resolveWith<Color?>((states) {
-        if (states.contains(WidgetState.pressed)) {
-          return splashColor ?? Colors.deepPurple; // <-- Splash color / if splashColor is null then return deepPurple
-        }
-        return null;
-      }),
-    );
+ButtonStyle buildButtonStyle(
+    {Color borderColor = Colors.purple,
+    bool isCircleButton = false,
+    Color? splashColor,
+    double? radiusSize,
+    double? buttonWidth}) {
+  return ButtonStyle(
+    // minimumSize: WidgetStateProperty.all(Size.fromWidth(buttonWidth ?? 40)),
+    minimumSize: WidgetStateProperty.all(Size(buttonWidth ?? 40, 40)),
+    shape: WidgetStateProperty.all(isCircleButton
+        ? const CircleBorder()
+        : RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(radiusSize ?? 30)))),
+    padding: WidgetStateProperty.all(const EdgeInsets.all(8)),
+    // backgroundColor: WidgetStateProperty.all(Colors.blue), // <-- Button color
+    side: WidgetStateProperty.all(BorderSide(
+      color: borderColor,
+    )),
+    overlayColor: WidgetStateProperty.resolveWith<Color?>((states) {
+      if (states.contains(WidgetState.pressed)) {
+        return splashColor ??
+            Colors
+                .deepPurple; // <-- Splash color / if splashColor is null then return deepPurple
+      }
+      return null;
+    }),
+  );
 }
 
 Widget buildTextField({
@@ -28,7 +35,6 @@ Widget buildTextField({
   required String timePouring,
   required String timeInterval,
   String? errorText,
-  required TextEditingController commandTextController,
   bool isReadOnly = false,
   VoidCallback? onChanged,
 }) {
@@ -38,12 +44,13 @@ Widget buildTextField({
     },
     readOnly: isReadOnly,
     autofocus: false,
-    controller: commandTextController,
     decoration: InputDecoration(
       errorText: errorText,
       errorBorder: OutlineInputBorder(
         borderSide: BorderSide(
-          color: errorText == null || errorText.length < 3 ? Colors.grey : Colors.red,
+          color: errorText == null || errorText.length < 3
+              ? Colors.grey
+              : Colors.red,
           width: 1.0,
         ),
       ),
@@ -51,11 +58,16 @@ Widget buildTextField({
         borderRadius: const BorderRadius.all(Radius.circular(4)),
         borderSide: BorderSide(
           width: 1,
-          color: errorText == null || errorText.length < 3 ? Colors.grey : Colors.red,
+          color: errorText == null || errorText.length < 3
+              ? Colors.grey
+              : Colors.red,
         ),
       ),
-      hintText: "Num Step: $numStep\nVolume: $volume\nTime Pouring: $timePouring\nTime Interval: $timeInterval",
-      floatingLabelBehavior: isReadOnly ? FloatingLabelBehavior.always : FloatingLabelBehavior.auto,
+      hintText:
+          "Num Step: $numStep\nVolume: $volume\nTime Pouring: $timePouring\nTime Interval: $timeInterval",
+      floatingLabelBehavior: isReadOnly
+          ? FloatingLabelBehavior.always
+          : FloatingLabelBehavior.auto,
       labelText: "Command Details",
       labelStyle: const TextStyle(
         color: Colors.black,
@@ -66,5 +78,3 @@ Widget buildTextField({
     ),
   );
 }
-
-
