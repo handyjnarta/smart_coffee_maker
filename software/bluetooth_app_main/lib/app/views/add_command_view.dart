@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+//import 'package:flutter_bluetooth/app/controllers/device_controller.dart';
 import 'package:flutter_bluetooth/app/controllers/recipe_controller.dart';
 import 'package:flutter_bluetooth/app/helper/popup_dialogs.dart';
 //import 'package:flutter_bluetooth/app/views/add_pouring_view.dart';
@@ -6,32 +7,6 @@ import 'package:get/get.dart';
 import 'package:flutter_bluetooth/app/controllers/command_controller.dart';
 import '../custom_widget/custom_button.dart';
 import '../helper/widget_helper.dart';
-
-class CommandController extends GetxController {
-  static var commandTitleCtrl = TextEditingController();
-  static var commandTitleErrorText = ''.obs;
-  static var commandCtrl = TextEditingController();
-  static var commandErrorText = ''.obs;
-  static var isEditCommand = false.obs;
-  static var isInputCommandValid = false.obs;
-
-  static var stepsCount = 0.obs; // Jumlah langkah pouring
-  static var currentStep = 0.obs; // Langkah pouring saat ini
-
-  static void validateCommandInput(String value) {
-    // Logika validasi
-    isInputCommandValid.value = true; // Sederhana: asumsikan input valid
-  }
-
-  static void saveNewCommand() {
-    // Logika untuk menyimpan perintah baru
-  }
-
-  static void resetSteps() {
-    stepsCount.value = 0;
-    currentStep.value = 0;
-  }
-}
 
 class CommandView extends StatelessWidget {
   const CommandView({Key? key}) : super(key: key);
@@ -47,12 +22,11 @@ class CommandView extends StatelessWidget {
     List<Widget> actionList = [
       const SizedBox(height: 10),
       Obx(() {
-        //setpoint
         return buildTextField(
-          numStep: 'numstep',
-          volume: 'vol',
-          timeInterval: 'timei',
-          timePouring: 'timep',
+          title: 'Setpoint',
+          commandText: CommandController.commandTitleCtrl.text,
+          errorText: CommandController.commandTitleErrorText.value,
+          commandTextController: CommandController.commandTitleCtrl,
           //onChanged: CommandController.validateCommandInput,
         );
       }),
@@ -64,11 +38,10 @@ class CommandView extends StatelessWidget {
         return Column(
           children: [
             buildTextField(
-              //pouring step
-              numStep: 'numstep',
-              volume: 'vol',
-              timeInterval: 'timei',
-              timePouring: 'timep',
+              title: 'Pouring Steps',
+              commandText: CommandController.commandCtrl.text,
+              errorText: CommandController.commandErrorText.value,
+              commandTextController: CommandController.commandCtrl,
               //onChanged: CommandController.validateCommandInput,
             ),
             const SizedBox(height: 10),
@@ -105,7 +78,8 @@ class CommandView extends StatelessWidget {
                     CommandController.commandCtrl.text);
 
                 if (CommandController.isInputCommandValid.isTrue) {
-                  CommandController.saveNewCommand();
+                  CommandController.saveNewCommand(
+                      CommandController.commandCtrl.text);
                   RecipeController().refreshNewCommandButtonState();
 
                   if (CommandController.isEditCommand.isTrue) {
@@ -157,25 +131,25 @@ void showPouringDialog(BuildContext context) {
           mainAxisSize: MainAxisSize.min,
           children: [
             buildTextField(
-              //total water
-              numStep: 'numstep',
-              volume: 'vol',
-              timeInterval: 'timei',
-              timePouring: 'timep',
+              title: 'Total Water',
+              commandText: '', // Inisialisasi dengan nilai kosong atau yang ada
+              errorText: '', // Tangani error jika ada
+              commandTextController: TextEditingController(),
+              //onChanged: (value) {},
             ),
             buildTextField(
-              //pouring time
-              numStep: 'numstep',
-              volume: 'vol',
-              timeInterval: 'timei',
-              timePouring: 'timep',
+              title: 'Pouring Time',
+              commandText: '', // Inisialisasi dengan nilai kosong atau yang ada
+              errorText: '', // Tangani error jika ada
+              commandTextController: TextEditingController(),
+              //onChanged: (value) {},
             ),
             buildTextField(
-              //interval time
-              numStep: 'numstep',
-              volume: 'vol',
-              timeInterval: 'timei',
-              timePouring: 'timep',
+              title: 'Delay Time',
+              commandText: '', // Inisialisasi dengan nilai kosong atau yang ada
+              errorText: '', // Tangani error jika ada
+              commandTextController: TextEditingController(),
+              //onChanged: (value) {},
             ),
           ],
         ),
@@ -260,7 +234,7 @@ class CommandView extends StatelessWidget {
       Obx(() {
         return SizedBox(height: CommandController.commandTitleErrorText.isEmpty ? 0 : 20);
       }),
-      // buildTextField(labelText: 'Command Description', textController: Controller.newRecipeCont),
+      // buildTextField(labelText: 'Command Description', textController: Controller.newDeviceCont),
       // const SizedBox(height: 20),
       Obx(() {
         return Column(
@@ -312,7 +286,7 @@ class CommandView extends StatelessWidget {
 
                   if (CommandController.isInputCommandValid.isTrue) {
                     CommandController.saveNewCommand();
-                    RecipeController.refreshNewCommandButtonState();
+                    DeviceController.refreshNewCommandButtonState();
 
                     if (CommandController.isEditCommand.isTrue) {
                       CommandController.isEditCommand.value = false;
