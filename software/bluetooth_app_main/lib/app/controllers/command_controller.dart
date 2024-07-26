@@ -22,13 +22,7 @@ class CommandController extends GetxController {
   static var stepsCount = 0.obs; // Number of pouring steps
   static var currentStep = 0.obs; // Current pouring step
   static var commandTitleCtrl = TextEditingController();
-  //static var commandTitleErrorText = ''.obs;
   static var commandCtrl = TextEditingController();
-  //static var commandErrorText = ''.obs;
-  //static var isEditCommand = false.obs;
-  //static var isInputCommandValid = false.obs;
-
-  //static TextEditingController commandCtrl = TextEditingController();
   static TextEditingController commandnumStepCtrl = TextEditingController();
   static TextEditingController commandvolumeCtrl = TextEditingController();
   static TextEditingController commandTimePouring = TextEditingController();
@@ -58,6 +52,8 @@ class CommandController extends GetxController {
       timeInterval: commandTimeInterval.text,
     );
 
+    debugPrint('New Command: $newCommand');
+
     if (RecipeController().currentRecipe.value == null) {
       RecipeController().currentRecipe = Rxn<Recipes>(
         Recipes(
@@ -78,6 +74,10 @@ class CommandController extends GetxController {
         RecipeController().currentRecipe.value!.commandList.add(newCommand);
       }
     }
+
+    // Print the updated command list
+    debugPrint(
+        'Updated Command List: ${RecipeController().currentRecipe.value!.commandList.map((command) => command.toString()).toList()}');
 
     if (isEditCommand.isFalse) {
       commandMenuList.add(CommandMenu(
@@ -101,8 +101,10 @@ class CommandController extends GetxController {
       );
     }
 
+    // Print the command menu list to verify it is updated
+    debugPrint('Command Menu List: $commandMenuList');
+
     RecipeController().refreshSaveRecipeButtonState();
-    debugPrint('New Command: $newCommand');
   }
 
   static void validateCommandInput() {
