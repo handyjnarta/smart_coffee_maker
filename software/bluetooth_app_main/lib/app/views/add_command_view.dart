@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 //import 'package:flutter_bluetooth/app/controllers/device_controller.dart';
 import 'package:flutter_bluetooth/app/controllers/recipe_controller.dart';
-import 'package:flutter_bluetooth/app/helper/popup_dialogs.dart';
+//import 'package:flutter_bluetooth/app/helper/popup_dialogs.dart';
+import 'package:flutter_bluetooth/utils.dart';
 //import 'package:flutter_bluetooth/app/views/add_pouring_view.dart';
 import 'package:get/get.dart';
 import 'package:flutter_bluetooth/app/controllers/command_controller.dart';
 import '../custom_widget/custom_button.dart';
 import '../helper/widget_helper.dart';
+//import 'dart:js_util';
 
 class CommandView extends StatelessWidget {
   const CommandView({Key? key}) : super(key: key);
@@ -41,7 +43,7 @@ class CommandView extends StatelessWidget {
               title: 'Pouring Steps',
               commandText: 'Add Pouring Step',
               errorText: CommandController.commandErrorText.value,
-              commandTextController: CommandController.stepsCount,
+              commandTextController: CommandController.commandnumStepCtrl,
               //onChanged: CommandController.validateCommandInput,
             ),
             const SizedBox(height: 10),
@@ -74,8 +76,7 @@ class CommandView extends StatelessWidget {
               isCircleButton: false,
               buttonWidth: 60,
               onPressedAction: () {
-                CommandController.validateCommandInput(
-                    CommandController.commandCtrl.text);
+                CommandController.validateCommandInput();
 
                 if (CommandController.isInputCommandValid.isTrue) {
                   CommandController.saveNewCommand(
@@ -97,9 +98,9 @@ class CommandView extends StatelessWidget {
               isCircleButton: false,
               buttonWidth: 60,
               onPressedAction: () {
+                
                 showPouringDialog(context);
-                CommandController.validateCommandInput(
-                    CommandController.commandCtrl.text);
+                CommandController.validateCommandInput();
 
                 if (CommandController.isInputCommandValid.isTrue) {
                   
@@ -133,16 +134,16 @@ void showPouringDialog(BuildContext context) {
           children: [
             buildTextField(
               title: 'Total Water',
-              commandText: 'Input total water', // Inisialisasi dengan nilai kosong atau yang ada
+              commandText: '', // Inisialisasi dengan nilai kosong atau yang ada
               errorText: '', // Tangani error jika ada
               commandTextController: TextEditingController(),
               //onChanged: (value) {},
             ),
             buildTextField(
               title: 'Pouring Time',
-              commandText: 'Input Pouring Time', // Inisialisasi dengan nilai kosong atau yang ada
+              commandText: '', // Inisialisasi dengan nilai kosong atau yang ada
               errorText: '', // Tangani error jika ada
-              commandTextController: TextEditingController(),
+              commandTextController: CommandController.commandTimePouring,
               //onChanged: (value) {},
             ),
             buildTextField(
@@ -166,19 +167,23 @@ void showPouringDialog(BuildContext context) {
           ),
           TextButton(
             onPressed: () {
-              debugPrint('step: ${CommandController.currentStep.value}');
+              //debugPrint('step: ${CommandController.currentStep.value}');
+              showGetxSnackbar('step: ${CommandController.stepsCount.value}', 'current step: ${CommandController.currentStep.value}');
               if (CommandController.currentStep.value <
                   CommandController.stepsCount.value - 1) {
                 CommandController.currentStep.value++;
-                debugPrint('step: ${CommandController.currentStep.value}');
+                //showGetxSnackbar('step: ${CommandController.currentStep.value}', 'Device list refreshed');
+                //debugPrint('step: ${CommandController.currentStep.value}');
                 Navigator.pop(context);
-                showPouringDialog(); // Menampilkan dialog untuk langkah berikutnya
+                CommandController.saveNewCommand;
+                CommandController.commandCtrl.text;
+                showPouringDialog(context); // Menampilkan dialog untuk langkah berikutnya
               } else if (CommandController.currentStep.value ==
                   CommandController.stepsCount.value - 1) {
                 CommandController.currentStep.value++;
                 CommandController.saveNewCommand(
                     CommandController.commandCtrl.text);
-                debugPrint('step: ${CommandController.currentStep.value}');
+                //debugPrint('step: ${CommandController.currentStep.value}');
                 Navigator.pop(context);
               } else {
                 Navigator.pop(context);

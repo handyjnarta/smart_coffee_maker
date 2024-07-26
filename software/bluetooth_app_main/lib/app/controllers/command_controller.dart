@@ -98,7 +98,7 @@ class CommandController extends GetxController {
     RecipeController().refreshSaveRecipeButtonState();
   }
 
-  static void validateCommandInput(String text) {
+  static void validateCommandInput() {
     isInputCommandValid.value = false;
     commandTitleErrorText.value = '';
     commandErrorText.value = '';
