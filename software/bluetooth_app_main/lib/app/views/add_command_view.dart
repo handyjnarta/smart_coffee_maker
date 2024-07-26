@@ -41,7 +41,7 @@ class CommandView extends StatelessWidget {
               title: 'Pouring Steps',
               commandText: 'Add Pouring Step',
               errorText: CommandController.commandErrorText.value,
-              commandTextController: CommandController.commandCtrl,
+              commandTextController: CommandController.stepsCount,
               //onChanged: CommandController.validateCommandInput,
             ),
             const SizedBox(height: 10),
@@ -134,21 +134,21 @@ void showPouringDialog(BuildContext context) {
             buildTextField(
               title: 'Total Water',
               commandText: 'Input total water', // Inisialisasi dengan nilai kosong atau yang ada
-              errorText: 'Input invalid', // Tangani error jika ada
+              errorText: '', // Tangani error jika ada
               commandTextController: TextEditingController(),
               //onChanged: (value) {},
             ),
             buildTextField(
               title: 'Pouring Time',
               commandText: 'Input Pouring Time', // Inisialisasi dengan nilai kosong atau yang ada
-              errorText: 'Input Invalid', // Tangani error jika ada
+              errorText: '', // Tangani error jika ada
               commandTextController: TextEditingController(),
               //onChanged: (value) {},
             ),
             buildTextField(
               title: 'Delay Time',
               commandText: 'Input Delay Time', // Inisialisasi dengan nilai kosong atau yang ada
-              errorText: 'Input Invalid', // Tangani error jika ada
+              errorText: '', // Tangani error jika ada
               commandTextController: TextEditingController(),
               //onChanged: (value) {},
             ),
@@ -166,13 +166,20 @@ void showPouringDialog(BuildContext context) {
           ),
           TextButton(
             onPressed: () {
+              debugPrint('step: ${CommandController.currentStep.value}');
               if (CommandController.currentStep.value <
-                  CommandController.stepsCount.value) {
+                  CommandController.stepsCount.value - 1) {
                 CommandController.currentStep.value++;
-                debugPrint('step: $CommandController.currentStep.value');
+                debugPrint('step: ${CommandController.currentStep.value}');
                 Navigator.pop(context);
-                showPouringDialog(
-                    context); // Menampilkan dialog untuk langkah berikutnya
+                showPouringDialog(); // Menampilkan dialog untuk langkah berikutnya
+              } else if (CommandController.currentStep.value ==
+                  CommandController.stepsCount.value - 1) {
+                CommandController.currentStep.value++;
+                CommandController.saveNewCommand(
+                    CommandController.commandCtrl.text);
+                debugPrint('step: ${CommandController.currentStep.value}');
+                Navigator.pop(context);
               } else {
                 Navigator.pop(context);
                 CommandController.resetSteps();
