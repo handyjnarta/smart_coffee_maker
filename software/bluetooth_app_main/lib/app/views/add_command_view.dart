@@ -141,7 +141,7 @@ void showPouringDialog(BuildContext context) {
               title: 'Pouring Time',
               commandText: '0-30',
               errorText:
-                  'Please input the right Time Pouring', // Tangani error jika ada
+                  'Please input the right Time Pouring', // Handle error if any
               commandTextController: CommandController.commandTimePouring,
               //onChanged: (value) {},
             ),
@@ -149,7 +149,7 @@ void showPouringDialog(BuildContext context) {
               title: 'Delay Time',
               commandText: '0-30',
               errorText:
-                  'Please input the right Time Interval', // Tangani error jika ada
+                  'Please input the right Time Interval', // Handle error if any
               commandTextController: CommandController.commandTimeInterval,
               //onChanged: (value) {},
             ),
@@ -159,33 +159,29 @@ void showPouringDialog(BuildContext context) {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              CommandController.saveNewCommand();
               CommandController.resetSteps();
             },
             child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () {
-              //debugPrint('step: ${CommandController.currentStep.value}');
               showGetxSnackbar(
                   'step: ${int.parse(CommandController.commandnumStepCtrl.text)}',
                   'current step: ${CommandController.currentStep.value}');
+              CommandController.validateCommandInput();
+              if (CommandController.isInputCommandValid.isFalse) {
+                return;
+              }
               if (CommandController.currentStep.value <
                   int.parse(CommandController.commandnumStepCtrl.text) - 1) {
-                CommandController.currentStep.value =
-                    CommandController.currentStep.value + 1;
-                //showGetxSnackbar('step: ${CommandController.currentStep.value}', 'Device list refreshed');
-                //debugPrint('step: ${CommandController.currentStep.value}');
+                CommandController.currentStep.value++;
                 Navigator.pop(context);
                 CommandController.saveNewCommand();
-                CommandController.commandCtrl.text;
-                showPouringDialog(
-                    context); // Menampilkan dialog untuk langkah berikutnya
+                showPouringDialog(context); // Show the dialog for the next step
               } else if (CommandController.currentStep.value ==
                   int.parse(CommandController.commandnumStepCtrl.text) - 1) {
                 CommandController.currentStep.value++;
                 CommandController.saveNewCommand();
-                //debugPrint('step: ${CommandController.currentStep.value}');
                 CommandController.resetSteps();
                 Navigator.pop(context);
               } else {

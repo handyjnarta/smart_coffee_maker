@@ -19,8 +19,8 @@ class CommandController extends GetxController {
   static var commandTimeIntervalErrorText = ''.obs;
   static var commandErrorText = ''.obs;
   static String oldCommand = '';
-  static var stepsCount = 0.obs; // Jumlah langkah pouring
-  static var currentStep = 0.obs; // Langkah pouring saat ini
+  static var stepsCount = 0.obs; // Number of pouring steps
+  static var currentStep = 0.obs; // Current pouring step
   static var commandTitleCtrl = TextEditingController();
   //static var commandTitleErrorText = ''.obs;
   static var commandCtrl = TextEditingController();
@@ -45,10 +45,11 @@ class CommandController extends GetxController {
           growable: false);
 
   static void saveNewCommand() {
-    //validateCommandInput();
-    if (!isInputCommandValid.value) return;
+    // Validate command input before saving
+    validateCommandInput();
 
-    //commandTextEditCtrlList[commandId].text = commandCtrl.text;
+    // If input is not valid, do not proceed with saving
+    if (!isInputCommandValid.value) return;
 
     var newCommand = Commands(
       numStep: commandnumStepCtrl.text,
@@ -58,13 +59,15 @@ class CommandController extends GetxController {
     );
 
     if (RecipeController().currentRecipe.value == null) {
-      RecipeController().currentRecipe = Recipes(
-        id: RecipeController().selectedTitle.value,
-        setpoint: RecipeController.recipeSetpointController.text,
-        recipeName: RecipeController.recipeNameController.text,
-        status: false,
-        commandList: [newCommand],
-      ) as Rxn<Recipes>;
+      RecipeController().currentRecipe = Rxn<Recipes>(
+        Recipes(
+          id: RecipeController().selectedTitle.value,
+          setpoint: RecipeController.recipeSetpointController.text,
+          recipeName: RecipeController.recipeNameController.text,
+          status: false,
+          commandList: [newCommand],
+        ),
+      );
     } else {
       if (isEditCommand.isTrue) {
         RecipeController()
@@ -99,6 +102,7 @@ class CommandController extends GetxController {
     }
 
     RecipeController().refreshSaveRecipeButtonState();
+    debugPrint('New Command: $newCommand');
   }
 
   static void validateCommandInput() {
@@ -108,24 +112,31 @@ class CommandController extends GetxController {
     commandTimePouringErrorText.value = '';
     commandTimeIntervalErrorText.value = '';
 
-    //commandErrorText.value = '';
-
-    if (int.parse(commandnumStepCtrl.text) < 0) {
+    if (commandnumStepCtrl.text.isEmpty ||
+        int.tryParse(commandnumStepCtrl.text) == null ||
+        int.parse(commandnumStepCtrl.text) < 0) {
       debugPrint('[command_controller] input title command not valid');
       commandnumStepErrorText.value = 'Numstep minimal 1 kak';
       return;
     }
-    if (int.parse(commandvolumeCtrl.text) < 0) {
+    if (commandvolumeCtrl.text.isEmpty ||
+        int.tryParse(commandvolumeCtrl.text) == null ||
+        int.parse(commandvolumeCtrl.text) < 0) {
       debugPrint('[command_controller] input command not valid');
       commandvolumeErrorText.value = 'Please input the right volume';
       return;
     }
-    if (int.parse(commandTimeInterval.text) < 0) {
+    if (commandTimeInterval.text.isEmpty ||
+        int.tryParse(commandTimeInterval.text) == null ||
+        int.parse(commandTimeInterval.text) < 0) {
       debugPrint('[command_controller] input command not valid');
-      commandTimeIntervalErrorText.value = 'Please input the right Time Interval';
+      commandTimeIntervalErrorText.value =
+          'Please input the right Time Interval';
       return;
     }
-    if (int.parse(commandTimePouring.text) < 0) {
+    if (commandTimePouring.text.isEmpty ||
+        int.tryParse(commandTimePouring.text) == null ||
+        int.parse(commandTimePouring.text) < 0) {
       debugPrint('[command_controller] input command not valid');
       commandTimePouringErrorText.value = 'Please input the right Time Pouring';
       return;
@@ -133,5 +144,4 @@ class CommandController extends GetxController {
 
     isInputCommandValid.value = true;
   }
-
 }
