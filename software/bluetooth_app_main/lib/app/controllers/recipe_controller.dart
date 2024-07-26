@@ -37,15 +37,27 @@ class RecipeController extends GetxController {
   void refreshNewCommandButtonState() {
     enableNewCommandBtn.value = false;
 
-    if (recipeNameController.text.length < 3) {
-      errorText.value = 'Recipe name minimal 3 characters';
-    } else if (recipeSetpointController.text.isEmpty ||
-        int.tryParse(recipeSetpointController.text) == null) {
-      errorText.value = 'Invalid setpoint';
+    // Attempt to parse the recipe name as an integer
+    final recipeName = int.tryParse(recipeNameController.text);
+
+    // Debug print the value of recipeName
+    debugPrint('Parsed recipeName as integer: $recipeName');
+
+    // Check if the recipe name length is less than 3 characters
+    if (recipeNameController.text.isEmpty) {
+      errorText.value = 'Recipe name required';
     } else {
+      // Clear the error message if input is valid
       errorText.value = '';
+
+      // Debug print the current recipe name
+      debugPrint('Recipe name entered: ${recipeNameController.text}');
+
+      // Check if the recipe name already exists
       int newDevIndex = recipeList.indexWhere(
           (element) => element.recipeName == recipeNameController.text);
+
+      debugPrint('Index of existing recipe with the same name: $newDevIndex');
 
       if ((isInsertNewRecipe.value && newDevIndex > -1) ||
           (isEditRecipe.value &&
@@ -57,9 +69,11 @@ class RecipeController extends GetxController {
         if (currentRecipe.value != null) {
           if (currentRecipe.value!.commandList.length < maxCommandCount) {
             enableNewCommandBtn.value = true;
+            debugPrint('New command button enabled');
           }
         } else {
           enableNewCommandBtn.value = true;
+          debugPrint('New command button enabled in different way');
         }
       }
     }

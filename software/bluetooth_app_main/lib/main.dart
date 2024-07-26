@@ -17,6 +17,7 @@ late ScrollController listScrollController;
 late SharedPreferences prefs;
 
 void main() async {
+  Get.lazyPut(() => RecipeController());
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,

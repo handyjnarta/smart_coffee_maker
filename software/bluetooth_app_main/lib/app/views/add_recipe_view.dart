@@ -13,6 +13,9 @@ class AddRecipeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Use Get.find to access the controller instance
+    final RecipeController recipeController = Get.find<RecipeController>();
+
     return Padding(
       padding: MediaQuery.of(context).viewInsets,
       child: ConstrainedBox(
@@ -45,13 +48,12 @@ class AddRecipeView extends StatelessWidget {
                     children: [
                       buildTextField(
                         title: 'Recipe Name',
-                        commandText:
-                            RecipeController().recipeNameController.text,
-                        errorText: RecipeController().errorText.value,
+                        commandText: recipeController.recipeNameController.text,
+                        errorText: recipeController.errorText.value,
                         commandTextController:
-                            RecipeController().recipeNameController,
+                            recipeController.recipeNameController,
                         onChanged: (value) {
-                          RecipeController().refreshNewCommandButtonState();
+                          recipeController.refreshNewCommandButtonState();
                         },
                       ),
                       Row(
@@ -67,24 +69,27 @@ class AddRecipeView extends StatelessWidget {
                           const Expanded(child: SizedBox(width: 20)),
                           OutlinedButton(
                             onPressed: () {
-                              if (RecipeController()
-                                  .enableNewCommandBtn
-                                  .isTrue) {
-                                createNewCommand(context);
+                              // Get the current RecipeController instance
+                              final recipeController =
+                                  Get.find<RecipeController>();
+
+                              // Check if the recipe name is empty
+                              if (recipeController
+                                  .recipeNameController.text.isEmpty) {
+                                // Set the error text if the recipe name is not provided
+                                recipeController.errorText.value =
+                                    'Recipe name is required';
+                                debugPrint('Error: Recipe name is required');
+                              } else if (recipeController
+                                  .enableNewCommandBtn.isTrue) {
+                                // Proceed to create a new command if the button is enabled
+                                createNewCommand(context, recipeController);
+                                debugPrint('createNewCommand called');
                               } else {
                                 final recipeName = int.tryParse(
-                                    RecipeController()
-                                        .recipeNameController
-                                        .text);
-                                if (recipeName == null ||
-                                    recipeName < 30 ||
-                                    recipeName > 95) {
-                                  RecipeController().errorText.value =
-                                      'Suhu harus diantara 30 dan 95';
-                                } else {
-                                  RecipeController().errorText.value =
-                                      'Max command is $maxCommandCount';
-                                }
+                                    recipeController.recipeNameController.text);
+                                debugPrint(
+                                    'createNewCommand not called. Recipe name: $recipeName');
                               }
                             },
                             style: buildButtonStyle(
@@ -96,7 +101,7 @@ class AddRecipeView extends StatelessWidget {
                       const SizedBox(height: 4),
                       const Divider(thickness: 2),
                       const SizedBox(height: 10),
-                      saveButton(context),
+                      saveButton(context, recipeController),
                     ],
                   );
                 }),
@@ -130,14 +135,14 @@ class AddRecipeView extends StatelessWidget {
     );
   }
 
-  Widget saveButton(BuildContext context) {
+  Widget saveButton(BuildContext context, RecipeController recipeController) {
     return SizedBox(
       width: 200,
       height: 50,
       child: OutlinedButton(
         onPressed: () {
-          if (RecipeController().currentRecipe.value == null ||
-              RecipeController().currentRecipe.value!.commandList.length <
+          if (recipeController.currentRecipe.value == null ||
+              recipeController.currentRecipe.value!.commandList.length <
                   minCommandCount) {
             showCustomDialog(
               context: context,
@@ -147,9 +152,9 @@ class AddRecipeView extends StatelessWidget {
               title: 'Command < $minCommandCount',
             );
           } else {
-            RecipeController().refreshSaveRecipeButtonState();
-            if (RecipeController().enableSaveRecipeBtn.isTrue) {
-              RecipeController().saveRecipeData();
+            recipeController.refreshSaveRecipeButtonState();
+            if (recipeController.enableSaveRecipeBtn.isTrue) {
+              recipeController.saveRecipeData();
               Navigator.of(context).pop();
             }
           }
@@ -167,8 +172,10 @@ class AddRecipeView extends StatelessWidget {
     );
   }
 
-  void createNewCommand(BuildContext context) {
-    RecipeController().onNewCommandButtonPressed();
+  void createNewCommand(
+      BuildContext context, RecipeController recipeController) {
+    recipeController.onNewCommandButtonPressed();
+
     showCustomDialog(
       context: context,
       actionList: [const CommandView()],
