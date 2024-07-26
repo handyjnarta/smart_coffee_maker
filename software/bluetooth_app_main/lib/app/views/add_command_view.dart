@@ -139,7 +139,7 @@ void showPouringDialog(BuildContext context) {
             ),
             buildTextField(
               title: 'Pouring Time',
-              commandText: 
+              commandText: '0-30',
               errorText:
                   'Please input the right Time Pouring', // Tangani error jika ada
               commandTextController: CommandController.commandTimePouring,
