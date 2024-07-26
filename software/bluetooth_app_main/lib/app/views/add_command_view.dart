@@ -1,38 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bluetooth/app/controllers/device_controller.dart';
+//import 'package:flutter_bluetooth/app/controllers/device_controller.dart';
+import 'package:flutter_bluetooth/app/controllers/recipe_controller.dart';
 import 'package:flutter_bluetooth/app/helper/popup_dialogs.dart';
-import 'package:flutter_bluetooth/app/views/add_pouring_view.dart';
+//import 'package:flutter_bluetooth/app/views/add_pouring_view.dart';
 import 'package:get/get.dart';
-import '../controllers/command_controller.dart';
+import 'package:flutter_bluetooth/app/controllers/command_controller.dart';
 import '../custom_widget/custom_button.dart';
 import '../helper/widget_helper.dart';
-
-class CommandController extends GetxController {
-  static var commandTitleCtrl = TextEditingController();
-  static var commandTitleErrorText = ''.obs;
-  static var commandCtrl = TextEditingController();
-  static var commandErrorText = ''.obs;
-  static var isEditCommand = false.obs;
-  static var isInputCommandValid = false.obs;
-
-  static var stepsCount = 0.obs; // Jumlah langkah pouring
-  static var currentStep = 0.obs; // Langkah pouring saat ini
-
-  static void validateCommandInput(String value) {
-    // Logika validasi
-    isInputCommandValid.value = true; // Sederhana: asumsikan input valid
-  }
-
-  static void saveNewCommand() {
-    // Logika untuk menyimpan perintah baru
-  }
-
-  static void resetSteps() {
-    stepsCount.value = 0;
-    currentStep.value = 0;
-  }
-}
-
 
 class CommandView extends StatelessWidget {
   const CommandView({Key? key}) : super(key: key);
@@ -71,15 +45,7 @@ class CommandView extends StatelessWidget {
               //onChanged: CommandController.validateCommandInput,
             ),
             const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () {
-                CommandController.stepsCount.value =
-                    int.parse(CommandController.commandCtrl.text);
-                CommandController.currentStep.value = 1;
-                showPouringDialog(context);
-              },
-              child: const Text('Next'),
-            ),
+            
           ],
         );
       }),
@@ -94,7 +60,7 @@ class CommandView extends StatelessWidget {
             child: MyCustomButton(
               customWidget: const Text('Cancel'),
               isCircleButton: false,
-              buttonWidth: 100,
+              buttonWidth: 60,
               onPressedAction: () {
                 CommandController.isEditCommand.value = false;
                 CommandController.resetSteps();
@@ -102,19 +68,38 @@ class CommandView extends StatelessWidget {
               },
             ),
           ),
-          const SizedBox(width: 20),
+          const SizedBox(width: 10),
           Flexible(
             child: MyCustomButton(
               customWidget: const Text('Save'),
               isCircleButton: false,
-              buttonWidth: 100,
+              buttonWidth: 60,
               onPressedAction: () {
                 CommandController.validateCommandInput(CommandController.commandCtrl.text);
 
                 if (CommandController.isInputCommandValid.isTrue) {
-                  CommandController.saveNewCommand();
-                  DeviceController.refreshNewCommandButtonState();
+                  CommandController.saveNewCommand(CommandController.commandCtrl.text);
+                  RecipeController().refreshNewCommandButtonState();
 
+                  if (CommandController.isEditCommand.isTrue) {
+                    CommandController.isEditCommand.value = false;
+                  }
+                  CommandController.resetSteps();
+                  Navigator.pop(context);
+                }
+              },
+            ),
+          ),
+          Flexible(
+            child: MyCustomButton(
+              customWidget: const Text('Next'),
+              isCircleButton: false,
+              buttonWidth: 60,
+              onPressedAction: () {
+                CommandController.validateCommandInput(CommandController.commandCtrl.text);
+
+                if (CommandController.isInputCommandValid.isTrue) {
+                  showPouringDialog(context);
                   if (CommandController.isEditCommand.isTrue) {
                     CommandController.isEditCommand.value = false;
                   }
@@ -170,6 +155,7 @@ void showPouringDialog(BuildContext context) {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
+              CommandController.saveNewCommand(CommandController.commandCtrl.text);
               CommandController.resetSteps();
             },
             child: const Text('Cancel'),

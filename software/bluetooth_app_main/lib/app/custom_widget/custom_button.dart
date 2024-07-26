@@ -1,4 +1,7 @@
+//import 'dart:ffi';
+
 import 'package:flutter/material.dart';
+import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import '../controllers/recipe_controller.dart';
 import '../helper/widget_helper.dart';
 
@@ -29,14 +32,13 @@ class MyCustomButton extends StatelessWidget {
           if (commandTitle != null) {
             debugPrint('');
             debugPrint('[widget_helper]commandTitle: $commandTitle');
-            RecipeController.selectedTitle = commandTitle!;
+            RecipeController().selectedTitle = commandTitle! as RxString;
           }
 
           onPressedAction?.call();
 
-          if (RecipeController.isEditRecipe ||
-              RecipeController.isInsertNewRecipe) {
-            RecipeController.refreshSaveRecipeButtonState();
+          if (RecipeController().isEditRecipe() || RecipeController().isInsertNewRecipe()) {
+              RecipeController().refreshSaveRecipeButtonState;
           }
           // onPressedAction;
         },

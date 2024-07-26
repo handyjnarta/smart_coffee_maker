@@ -30,13 +30,12 @@ ButtonStyle buildButtonStyle(
 }
 
 Widget buildTextField({
-  required String numStep,
-  required String volume,
-  required String timePouring,
-  required String timeInterval,
+  required String title,
+  required String commandText,
   String? errorText,
   bool isReadOnly = false,
-  VoidCallback? onChanged,
+  VoidCallback? onChanged, 
+  required commandTextController,
 }) {
   return TextField(
     onChanged: (value) {
@@ -63,12 +62,11 @@ Widget buildTextField({
               : Colors.red,
         ),
       ),
-      hintText:
-          "Num Step: $numStep\nVolume: $volume\nTime Pouring: $timePouring\nTime Interval: $timeInterval",
+      hintText: "Command: $commandText",
       floatingLabelBehavior: isReadOnly
           ? FloatingLabelBehavior.always
           : FloatingLabelBehavior.auto,
-      labelText: "Command Details",
+      labelText: title,
       labelStyle: const TextStyle(
         color: Colors.black,
       ),

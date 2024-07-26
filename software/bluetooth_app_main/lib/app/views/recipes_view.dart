@@ -82,7 +82,7 @@ class RecipesView extends StatelessWidget {
 
   void createNewRecipe(BuildContext context) {
     RecipeController().createNewRecipe();
-
+    AddRecipeView.editCommand(context);
     showModalBottomSheet(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),

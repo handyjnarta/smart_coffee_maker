@@ -86,10 +86,10 @@ class MainView extends StatelessWidget {
                           }
                         }, itemBuilder: (BuildContext context) {
                           return [
-                            PopupMenuItem<RecipePopupMenuItem>(
+                            const PopupMenuItem<RecipePopupMenuItem>(
                               value: RecipePopupMenuItem.newRecipe,
                               child: Row(
-                                children: const [
+                                children: [
                                   Text('New Recipe'),
                                   Expanded(
                                       child: SizedBox(
@@ -127,10 +127,10 @@ class MainView extends StatelessWidget {
                                 ],
                               ),
                             ),
-                            PopupMenuItem<RecipePopupMenuItem>(
+                            const PopupMenuItem<RecipePopupMenuItem>(
                               value: RecipePopupMenuItem.loadRecipe,
                               child: Row(
-                                children: const [
+                                children: [
                                   Text('Load Recipe'),
                                   Expanded(
                                       child: SizedBox(
@@ -152,11 +152,11 @@ class MainView extends StatelessWidget {
         bottom: TabBar(
           controller: ctrl.tabController,
           indicatorColor: Colors.white,
-          tabs: [
+          tabs: const [
             Tab(
                 icon: Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
+              children: [
                 Icon(Icons.bluetooth),
                 SizedBox(
                   width: 2,
@@ -167,7 +167,7 @@ class MainView extends StatelessWidget {
             Tab(
                 icon: Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
+              children: [
                 Icon(Icons.terminal),
                 SizedBox(
                   width: 2,
@@ -178,7 +178,7 @@ class MainView extends StatelessWidget {
             Tab(
                 icon: Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
+              children: [
                 Icon(Icons.list_alt_outlined),
                 SizedBox(
                   width: 2,
