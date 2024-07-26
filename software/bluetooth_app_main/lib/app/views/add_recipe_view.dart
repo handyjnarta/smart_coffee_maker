@@ -48,10 +48,10 @@ class AddRecipeView extends StatelessWidget {
                     children: [
                       buildTextField(
                         title: 'Recipe Name',
-                        commandText: recipeController.recipeNameController.text,
+                        commandText: RecipeController.recipeNameController.text,
                         errorText: recipeController.errorText.value,
                         commandTextController:
-                            recipeController.recipeNameController,
+                            RecipeController.recipeNameController,
                         onChanged: (value) {
                           recipeController.refreshNewCommandButtonState();
                         },
@@ -74,7 +74,7 @@ class AddRecipeView extends StatelessWidget {
                                   Get.find<RecipeController>();
 
                               // Check if the recipe name is empty
-                              if (recipeController
+                              if (RecipeController
                                   .recipeNameController.text.isEmpty) {
                                 // Set the error text if the recipe name is not provided
                                 recipeController.errorText.value =
@@ -87,7 +87,7 @@ class AddRecipeView extends StatelessWidget {
                                 debugPrint('createNewCommand called');
                               } else {
                                 final recipeName = int.tryParse(
-                                    recipeController.recipeNameController.text);
+                                    RecipeController.recipeNameController.text);
                                 debugPrint(
                                     'createNewCommand not called. Recipe name: $recipeName');
                               }

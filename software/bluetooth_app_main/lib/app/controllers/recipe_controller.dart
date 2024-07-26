@@ -24,10 +24,16 @@ class RecipeController extends GetxController {
   var recipeCount = 0.obs;
   var oldRecipeData = {}.obs;
 
+  static TextEditingController recipeNameController= TextEditingController();
+  static TextEditingController turnOffTextController= TextEditingController();
+  static TextEditingController turnOnTextController= TextEditingController();
+  static TextEditingController recipeSetpointController= TextEditingController();
+
+  /*
   final recipeNameController = TextEditingController();
   final turnOnTextController = TextEditingController();
   final turnOffTextController = TextEditingController();
-  final recipeSetpointController = TextEditingController();
+  final recipeSetpointController = TextEditingController(); */
 
   var selectedTitle = ''.obs;
   var errorText = ''.obs;
@@ -199,7 +205,7 @@ class RecipeController extends GetxController {
       currentRecipe.value?.setNewRecipe = recipeNameController.text;
     }
 
-    if (currentRecipe.value?.setpoint !=
+    if (int.parse(currentRecipe.value!.setpoint) !=
         int.parse(recipeSetpointController.text)) {
       refreshLogs(
           'Setpoint "${currentRecipe.value?.setpoint}" changed to "${recipeSetpointController.text}"');

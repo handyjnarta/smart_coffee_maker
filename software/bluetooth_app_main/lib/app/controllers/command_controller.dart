@@ -13,7 +13,10 @@ class CommandController extends GetxController {
   static var isInsertNewRecipe = false.obs;
   static var isInputCommandValid = false.obs;
   static int commandIndexToEdit = -1;
-  static var commandTitleErrorText = ''.obs;
+  static var commandnumStepErrorText = ''.obs;
+  static var commandvolumeErrorText = ''.obs;
+  static var commandTimePouringErrorText = ''.obs;
+  static var commandTimeIntervalErrorText = ''.obs;
   static var commandErrorText = ''.obs;
   static String oldCommand = '';
   static var stepsCount = 0.obs; // Jumlah langkah pouring
@@ -41,7 +44,7 @@ class CommandController extends GetxController {
           maxCommandCount, (index) => TextEditingController(),
           growable: false);
 
-  static void saveNewCommand(String text) {
+  static void saveNewCommand() {
     //validateCommandInput();
     if (!isInputCommandValid.value) return;
 
@@ -57,8 +60,8 @@ class CommandController extends GetxController {
     if (RecipeController().currentRecipe.value == null) {
       RecipeController().currentRecipe = Recipes(
         id: RecipeController().selectedTitle.value,
-        setpoint: RecipeController().recipeSetpointController.text,
-        recipeName: RecipeController().recipeNameController.text,
+        setpoint: RecipeController.recipeSetpointController.text,
+        recipeName: RecipeController.recipeNameController.text,
         status: false,
         commandList: [newCommand],
       ) as Rxn<Recipes>;
@@ -100,27 +103,31 @@ class CommandController extends GetxController {
 
   static void validateCommandInput() {
     isInputCommandValid.value = false;
-    commandTitleErrorText.value = '';
-    commandErrorText.value = '';
+    commandnumStepErrorText.value = '';
+    commandvolumeErrorText.value = '';
+    commandTimePouringErrorText.value = '';
+    commandTimeIntervalErrorText.value = '';
+
+    //commandErrorText.value = '';
 
     if (int.parse(commandnumStepCtrl.text) < 0) {
       debugPrint('[command_controller] input title command not valid');
-      commandTitleErrorText.value = 'Numstep minimal 1 kak';
+      commandnumStepErrorText.value = 'Numstep minimal 1 kak';
       return;
     }
     if (int.parse(commandvolumeCtrl.text) < 0) {
       debugPrint('[command_controller] input command not valid');
-      commandErrorText.value = 'Please input the right volume';
+      commandvolumeErrorText.value = 'Please input the right volume';
       return;
     }
     if (int.parse(commandTimeInterval.text) < 0) {
       debugPrint('[command_controller] input command not valid');
-      commandErrorText.value = 'Please input the right Time Interval';
+      commandTimeIntervalErrorText.value = 'Please input the right Time Interval';
       return;
     }
     if (int.parse(commandTimePouring.text) < 0) {
       debugPrint('[command_controller] input command not valid');
-      commandErrorText.value = 'Please input the right Time Pouring';
+      commandTimePouringErrorText.value = 'Please input the right Time Pouring';
       return;
     }
 

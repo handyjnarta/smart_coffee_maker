@@ -26,15 +26,11 @@ class CommandView extends StatelessWidget {
       Obx(() {
         return buildTextField(
           title: 'Setpoint',
-          commandText: 'Add setpoint',
-          errorText: CommandController.commandTitleErrorText.value,
-          commandTextController: CommandController.commandTitleCtrl,
+          commandText: RecipeController.recipeSetpointController.text,
+          errorText: CommandController.commandErrorText.value,
+          commandTextController: RecipeController.recipeSetpointController,
           //onChanged: CommandController.validateCommandInput,
         );
-      }),
-      Obx(() {
-        return SizedBox(
-            height: CommandController.commandTitleErrorText.isEmpty ? 0 : 20);
       }),
       Obx(() {
         return Column(
@@ -79,8 +75,7 @@ class CommandView extends StatelessWidget {
                 CommandController.validateCommandInput();
 
                 if (CommandController.isInputCommandValid.isTrue) {
-                  CommandController.saveNewCommand(
-                      CommandController.commandCtrl.text);
+                  CommandController.saveNewCommand();
                   RecipeController().refreshNewCommandButtonState();
 
                   if (CommandController.isEditCommand.isTrue) {
@@ -92,6 +87,7 @@ class CommandView extends StatelessWidget {
               },
             ),
           ),
+          const SizedBox(width: 10),
           Flexible(
             child: MyCustomButton(
               customWidget: const Text('Next'),
@@ -126,6 +122,7 @@ void showPouringDialog(BuildContext context) {
   showDialog(
     context: context,
     builder: (BuildContext context) {
+    
       return AlertDialog(
         title: Obx(() {
           return Text('Pouring Step ${CommandController.currentStep.value + 1}');
@@ -135,23 +132,23 @@ void showPouringDialog(BuildContext context) {
           children: [
             buildTextField(
               title: 'Total Water',
-              commandText: '', // Inisialisasi dengan nilai kosong atau yang ada
-              errorText: '', // Tangani error jika ada
-              commandTextController: TextEditingController(),
+              commandText: CommandController.commandvolumeCtrl.text, // Inisialisasi dengan nilai kosong atau yang ada
+              errorText: 'Please input the right volume',
+              commandTextController: CommandController.commandvolumeCtrl,
               //onChanged: (value) {},
             ),
             buildTextField(
               title: 'Pouring Time',
-              commandText: '', // Inisialisasi dengan nilai kosong atau yang ada
-              errorText: '', // Tangani error jika ada
+              commandText: CommandController.commandTimePouring.text, // Inisialisasi dengan nilai kosong atau yang ada
+              errorText: 'Please input the right Time Pouring', // Tangani error jika ada
               commandTextController: CommandController.commandTimePouring,
               //onChanged: (value) {},
             ),
             buildTextField(
               title: 'Delay Time',
-              commandText: 'Input Delay Time', // Inisialisasi dengan nilai kosong atau yang ada
-              errorText: '', // Tangani error jika ada
-              commandTextController: TextEditingController(),
+              commandText: CommandController.commandTimeInterval.text, // Inisialisasi dengan nilai kosong atau yang ada
+              errorText: 'Please input the right Time Interval', // Tangani error jika ada
+              commandTextController: CommandController.commandTimeInterval,
               //onChanged: (value) {},
             ),
           ],
@@ -160,8 +157,7 @@ void showPouringDialog(BuildContext context) {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              CommandController.saveNewCommand(
-                  CommandController.commandCtrl.text);
+              CommandController.saveNewCommand();
               CommandController.resetSteps();
             },
             child: const Text('Cancel'),
@@ -176,15 +172,15 @@ void showPouringDialog(BuildContext context) {
                 //showGetxSnackbar('step: ${CommandController.currentStep.value}', 'Device list refreshed');
                 //debugPrint('step: ${CommandController.currentStep.value}');
                 Navigator.pop(context);
-                CommandController.saveNewCommand;
+                CommandController.saveNewCommand();
                 CommandController.commandCtrl.text;
                 showPouringDialog(context); // Menampilkan dialog untuk langkah berikutnya
               } else if (CommandController.currentStep.value ==
                   int.parse(CommandController.commandnumStepCtrl.text) - 1) {
                 CommandController.currentStep.value++;
-                CommandController.saveNewCommand(
-                    CommandController.commandCtrl.text);
+                CommandController.saveNewCommand();
                 //debugPrint('step: ${CommandController.currentStep.value}');
+                CommandController.resetSteps();
                 Navigator.pop(context);
               } else {
                 Navigator.pop(context);
