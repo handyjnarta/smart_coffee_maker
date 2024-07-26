@@ -41,7 +41,7 @@ class CommandView extends StatelessWidget {
           children: [
             buildTextField(
               title: 'Pouring Steps',
-              commandText: 'Add Pouring Step',
+              commandText: CommandController.commandnumStepCtrl.text,
               errorText: CommandController.commandErrorText.value,
               commandTextController: CommandController.commandnumStepCtrl,
               //onChanged: CommandController.validateCommandInput,
@@ -98,7 +98,7 @@ class CommandView extends StatelessWidget {
               isCircleButton: false,
               buttonWidth: 60,
               onPressedAction: () {
-                
+                showGetxSnackbar('step: ${int.parse(CommandController.commandnumStepCtrl.text)}', 'current step: ${CommandController.currentStep.value}');
                 showPouringDialog(context);
                 CommandController.validateCommandInput();
 
@@ -120,6 +120,7 @@ class CommandView extends StatelessWidget {
     return actionList;
   }
 }
+
 
 void showPouringDialog(BuildContext context) {
   showDialog(
@@ -168,10 +169,10 @@ void showPouringDialog(BuildContext context) {
           TextButton(
             onPressed: () {
               //debugPrint('step: ${CommandController.currentStep.value}');
-              showGetxSnackbar('step: ${CommandController.stepsCount.value}', 'current step: ${CommandController.currentStep.value}');
+              showGetxSnackbar('step: ${int.parse(CommandController.commandnumStepCtrl.text)}', 'current step: ${CommandController.currentStep.value}');
               if (CommandController.currentStep.value <
-                  CommandController.stepsCount.value - 1) {
-                CommandController.currentStep.value++;
+                  int.parse(CommandController.commandnumStepCtrl.text) - 1) {
+                CommandController.currentStep.value = CommandController.currentStep.value + 1;
                 //showGetxSnackbar('step: ${CommandController.currentStep.value}', 'Device list refreshed');
                 //debugPrint('step: ${CommandController.currentStep.value}');
                 Navigator.pop(context);
@@ -179,7 +180,7 @@ void showPouringDialog(BuildContext context) {
                 CommandController.commandCtrl.text;
                 showPouringDialog(context); // Menampilkan dialog untuk langkah berikutnya
               } else if (CommandController.currentStep.value ==
-                  CommandController.stepsCount.value - 1) {
+                  int.parse(CommandController.commandnumStepCtrl.text) - 1) {
                 CommandController.currentStep.value++;
                 CommandController.saveNewCommand(
                     CommandController.commandCtrl.text);
