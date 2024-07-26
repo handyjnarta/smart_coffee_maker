@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bluetooth/app/controllers/command_controller.dart';
 import 'package:flutter_bluetooth/app/helper/widget_helper.dart';
 import '../custom_widget/custom_button.dart';
 
@@ -62,11 +63,10 @@ class CommandMenu extends StatelessWidget {
                   width: 220,
                   height: 40,
                   child: buildTextField(
-                    numStep: numStep,
-                    volume: volume,
-                    timeInterval: timeInterval,
-                    timePouring: timePouring,
-                    isReadOnly: isTextEditingReadOnly,
+                  title: 'Pouring Steps',
+                  commandText: CommandController.commandCtrl.text,
+                  errorText: CommandController.commandErrorText.value,
+                  commandTextController: CommandController.commandCtrl,
                   ),
                 ),
               ),

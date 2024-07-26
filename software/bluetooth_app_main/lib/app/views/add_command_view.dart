@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth/app/controllers/recipe_controller.dart';
 import 'package:flutter_bluetooth/app/helper/popup_dialogs.dart';
-import 'package:flutter_bluetooth/app/views/add_pouring_view.dart';
+//import 'package:flutter_bluetooth/app/views/add_pouring_view.dart';
 import 'package:get/get.dart';
-import '../controllers/command_controller.dart';
+import 'package:flutter_bluetooth/app/controllers/command_controller.dart';
 import '../custom_widget/custom_button.dart';
 import '../helper/widget_helper.dart';
 
@@ -72,15 +72,6 @@ class CommandView extends StatelessWidget {
               //onChanged: CommandController.validateCommandInput,
             ),
             const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () {
-                CommandController.stepsCount.value =
-                    int.parse(CommandController.commandCtrl.text);
-                CommandController.currentStep.value = 1;
-                showPouringDialog(context);
-              },
-              child: const Text('Next'),
-            ),
           ],
         );
       }),
@@ -95,7 +86,7 @@ class CommandView extends StatelessWidget {
             child: MyCustomButton(
               customWidget: const Text('Cancel'),
               isCircleButton: false,
-              buttonWidth: 100,
+              buttonWidth: 60,
               onPressedAction: () {
                 CommandController.isEditCommand.value = false;
                 CommandController.resetSteps();
@@ -103,12 +94,12 @@ class CommandView extends StatelessWidget {
               },
             ),
           ),
-          const SizedBox(width: 20),
+          const SizedBox(width: 10),
           Flexible(
             child: MyCustomButton(
               customWidget: const Text('Save'),
               isCircleButton: false,
-              buttonWidth: 100,
+              buttonWidth: 60,
               onPressedAction: () {
                 CommandController.validateCommandInput(
                     CommandController.commandCtrl.text);
@@ -117,6 +108,26 @@ class CommandView extends StatelessWidget {
                   CommandController.saveNewCommand();
                   RecipeController().refreshNewCommandButtonState();
 
+                  if (CommandController.isEditCommand.isTrue) {
+                    CommandController.isEditCommand.value = false;
+                  }
+                  CommandController.resetSteps();
+                  Navigator.pop(context);
+                }
+              },
+            ),
+          ),
+          Flexible(
+            child: MyCustomButton(
+              customWidget: const Text('Next'),
+              isCircleButton: false,
+              buttonWidth: 60,
+              onPressedAction: () {
+                CommandController.validateCommandInput(
+                    CommandController.commandCtrl.text);
+
+                if (CommandController.isInputCommandValid.isTrue) {
+                  showPouringDialog(context);
                   if (CommandController.isEditCommand.isTrue) {
                     CommandController.isEditCommand.value = false;
                   }
@@ -172,6 +183,8 @@ void showPouringDialog(BuildContext context) {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
+              CommandController.saveNewCommand(
+                  CommandController.commandCtrl.text);
               CommandController.resetSteps();
             },
             child: const Text('Cancel'),
