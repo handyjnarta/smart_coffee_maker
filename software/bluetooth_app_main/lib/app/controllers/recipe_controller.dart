@@ -232,8 +232,6 @@ class RecipeController extends GetxController {
 
   void onNewCommandButtonPressed() {
     showGetxSnackbar('mau refresh tampilan', 'mau refresh');
-    RecipeController.recipeSetpointController.text = '';
-    CommandController.commandnumStepCtrl.text = '';
     CommandController.commandvolumeCtrl.text = '';
     CommandController.commandTimePouring.text = '';
     CommandController.commandTimeInterval.text = '';

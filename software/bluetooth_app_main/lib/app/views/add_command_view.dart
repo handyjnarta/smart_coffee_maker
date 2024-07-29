@@ -95,19 +95,13 @@ class CommandView extends StatelessWidget {
               isCircleButton: false,
               buttonWidth: 60,
               onPressedAction: () {
-                //showPouringDialog(context);
-                //CommandController.validateCommandInput();
                 CommandController.validateNewCommandInput();
                 if (CommandController.isInputCommandValid.isTrue) {
-                  //showGetxSnackbar('aespa', 'armageedoon');
                   if (CommandController.isEditCommand.isTrue) {
                     CommandController.isEditCommand.value = false;
                   }
-                  //showGetxSnackbar('aespa', 'armageedoon');
+
                   showPouringDialog(context);
-                  //CommandController.resetSteps();
-                  //RecipeController().onNewCommandButtonPressed();
-                  //Navigator.pop(context);
                 }
               },
             ),
@@ -165,32 +159,35 @@ class CommandView extends StatelessWidget {
             ),
             TextButton(
               onPressed: () {
-                /*showGetxSnackbar(
-                  'step: ${int.parse(CommandController.commandnumStepCtrl.text)}',
-                  'current step: ${CommandController.currentStep.value}'); */
+                // Print the current step value and commandnumStep
 
                 CommandController.validateCommandInput();
                 if (CommandController.isInputCommandValid.isFalse) {
                   return;
                 }
                 CommandController.saveNewCommand();
-                if ((CommandController.currentStep.value + 2) <
+                if ((CommandController.currentStep.value) + 1 <
                     int.parse(CommandController.commandnumStepCtrl.text)) {
                   CommandController.currentStep.value =
                       CommandController.currentStep.value + 1;
                   RecipeController().onNewCommandButtonPressed;
                   showPouringDialog(
                       context); // Show the dialog for the next step
-                } else if ((CommandController.currentStep.value + 2) ==
+                  Navigator.pop(context);
+                } else if ((CommandController.currentStep.value) + 1 ==
                     int.parse(CommandController.commandnumStepCtrl.text)) {
-                  //CommandController.currentStep.value++;
-                  RecipeController().onNewCommandButtonPressed;
+                  RecipeController().onNewCommandButtonPressed();
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                  CommandController.resetSteps();
+                } else {
                   CommandController.resetSteps();
                   Navigator.pop(context);
-                } else {
-                  //CommandController.resetSteps();
-                  //Navigator.pop(context);
                 }
+                debugPrint(
+                    'Current step: ${CommandController.currentStep.value}');
+                debugPrint(
+                    'Command num step: ${CommandController.commandnumStepCtrl.text}');
               },
               child: const Text('Next 2'),
             ),
