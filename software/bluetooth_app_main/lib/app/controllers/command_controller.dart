@@ -1,3 +1,5 @@
+//import 'dart:js_interop';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth/app/constant/constant.dart';
 import 'package:get/get.dart';
@@ -23,15 +25,29 @@ class CommandController extends GetxController {
   static var currentStep = 0.obs; // Current pouring step
   static var commandTitleCtrl = TextEditingController();
   static var commandCtrl = TextEditingController();
-  static TextEditingController commandnumStepCtrl = TextEditingController();
-  static TextEditingController commandvolumeCtrl = TextEditingController();
-  static TextEditingController commandTimePouring = TextEditingController();
-  static TextEditingController commandTimeInterval = TextEditingController();
+  static var commandnumStepCtrl = TextEditingController();
+  static var commandvolumeCtrl = TextEditingController();
+  static  var commandTimePouring = TextEditingController();
+  static  var commandTimeInterval = TextEditingController();
+  static  var commandSetpointCtrl = TextEditingController();
+  static  var commandSetpointError = TextEditingController();
+  static int numstepA = 0;
+  static String numstepX = '';
+  static String volumeX = '';
+  static String  timePouringX = '';
+  static String timeIntervalX = '';
 
   static void resetSteps() {
     stepsCount.value = 0;
     currentStep.value = 0;
   }
+
+  /*static void resetcommandstep() { //untuk mereset tampilan
+    commandnumStepCtrl.text = '0';
+    commandvolumeCtrl.text = '0';
+    commandTimePouring.text = '0';
+    commandTimeInterval.text = '0';
+  }*/
 
   static List<TextEditingController> commandTextEditCtrlList =
       List<TextEditingController>.generate(
@@ -44,106 +60,129 @@ class CommandController extends GetxController {
 
     // If input is not valid, do not proceed with saving
     if (!isInputCommandValid.value) return;
+    
+    numstepX = commandnumStepCtrl.text;
+    volumeX = commandvolumeCtrl.text;
+    timeIntervalX = commandTimeInterval.text;
+    timePouringX = commandTimePouring.text;
+
 
     var newCommand = Commands(
-      numStep: commandnumStepCtrl.text,
-      volume: commandvolumeCtrl.text,
-      timePouring: commandTimePouring.text,
-      timeInterval: commandTimeInterval.text,
+      numStep: numstepX,
+      volume: volumeX,
+      timePouring: timePouringX,
+      timeInterval: timeIntervalX,
     );
 
-    debugPrint('New Command: $newCommand');
+    // Use the existing instance of RecipeController
+    RecipeController recipeController = Get.find<RecipeController>();
 
-    if (RecipeController().currentRecipe.value == null) {
-      RecipeController().currentRecipe = Rxn<Recipes>(
-        Recipes(
-          id: RecipeController().selectedTitle.value,
-          setpoint: RecipeController.recipeSetpointController.text,
-          recipeName: RecipeController.recipeNameController.text,
-          status: false,
-          commandList: [newCommand],
-        ),
+    // Check if currentRecipe is null before trying to access its properties
+    if (recipeController.currentRecipe.value == null) {
+      debugPrint('Initializing currentRecipe because it is null');
+      recipeController.currentRecipe.value = Recipes(
+        id: recipeController.selectedTitle.value,
+        setpoint: RecipeController
+            .recipeSetpointController.text, // Accessing statically
+        recipeName:
+            RecipeController.recipeNameController.text, // Accessing statically
+        status: false,
+        commandList: [newCommand],
       );
     } else {
+      debugPrint('currentRecipe is not null, proceeding to update it');
       if (isEditCommand.isTrue) {
-        RecipeController()
-            .currentRecipe
-            .value!
-            .commandList[commandIndexToEdit] = newCommand;
+        recipeController.currentRecipe.value!.commandList[commandIndexToEdit] =
+            newCommand;
       } else {
-        RecipeController().currentRecipe.value!.commandList.add(newCommand);
+        recipeController.currentRecipe.value!.commandList.add(newCommand);
       }
     }
 
-    // Print the updated command list
-    debugPrint(
-        'Updated Command List: ${RecipeController().currentRecipe.value!.commandList.map((command) => command.toString()).toList()}');
+    // Debug print the updated currentRecipe
+    if (recipeController.currentRecipe.value != null) {
+      debugPrint(
+          'Updated currentRecipe: ${recipeController.currentRecipe.value!.toString()}');
+      debugPrint(
+          'Updated Command List: ${recipeController.currentRecipe.value!.commandList.map((command) => command.toString()).toList()}');
+    } else {
+      debugPrint('Error: currentRecipe is still null after initialization');
+    }
 
     if (isEditCommand.isFalse) {
       commandMenuList.add(CommandMenu(
-        numStep: commandnumStepCtrl.text,
-        volume: commandvolumeCtrl.text,
-        timeInterval: commandTimeInterval.text,
-        timePouring: commandTimePouring.text,
+        numStep: numstepX,
+        volume: volumeX,
+        timeInterval: timeIntervalX,
+        timePouring: timePouringX,
         readOnly: true,
-        onDeleteButtonPressed: RecipeController().deleteSelectedCommand,
-        onEditButtonPressed: RecipeController().editSelectedCommand,
+        onDeleteButtonPressed: recipeController.deleteSelectedCommand,
+        onEditButtonPressed: recipeController.editSelectedCommand,
       ));
     } else {
       commandMenuList[commandIndexToEdit] = CommandMenu(
-        numStep: commandnumStepCtrl.text,
-        volume: commandvolumeCtrl.text,
-        timeInterval: commandTimeInterval.text,
-        timePouring: commandTimePouring.text,
+        numStep: numstepX,
+        volume: volumeX,
+        timeInterval: timeIntervalX,
+        timePouring: timePouringX,
         readOnly: true,
-        onDeleteButtonPressed: RecipeController().deleteSelectedCommand,
-        onEditButtonPressed: RecipeController().editSelectedCommand,
+        onDeleteButtonPressed: recipeController.deleteSelectedCommand,
+        onEditButtonPressed: recipeController.editSelectedCommand,
       );
     }
 
     // Print the command menu list to verify it is updated
     debugPrint('Command Menu List: $commandMenuList');
 
-    RecipeController().refreshSaveRecipeButtonState();
+    //recipeController.refreshSaveRecipeButtonState();
   }
-
   static void validateCommandInput() {
     isInputCommandValid.value = false;
-    commandnumStepErrorText.value = '';
     commandvolumeErrorText.value = '';
     commandTimePouringErrorText.value = '';
     commandTimeIntervalErrorText.value = '';
 
-    if (commandnumStepCtrl.text.isEmpty ||
-        int.tryParse(commandnumStepCtrl.text) == null ||
-        int.parse(commandnumStepCtrl.text) < 0) {
-      debugPrint('[command_controller] input title command not valid');
-      commandnumStepErrorText.value = 'Numstep minimal 1 kak';
-      return;
-    }
     if (commandvolumeCtrl.text.isEmpty ||
-        int.tryParse(commandvolumeCtrl.text) == null ||
-        int.parse(commandvolumeCtrl.text) < 0) {
+        int.parse(commandvolumeCtrl.text) <= 0 ){
       debugPrint('[command_controller] input command not valid');
       commandvolumeErrorText.value = 'Please input the right volume';
       return;
     }
     if (commandTimeInterval.text.isEmpty ||
-        int.tryParse(commandTimeInterval.text) == null ||
-        int.parse(commandTimeInterval.text) < 0) {
+        int.parse(commandTimeInterval.text) <= 0) {
       debugPrint('[command_controller] input command not valid');
       commandTimeIntervalErrorText.value =
           'Please input the right Time Interval';
       return;
     }
     if (commandTimePouring.text.isEmpty ||
-        int.tryParse(commandTimePouring.text) == null ||
-        int.parse(commandTimePouring.text) < 0) {
+        int.parse(commandTimePouring.text) <= 0) {
       debugPrint('[command_controller] input command not valid');
       commandTimePouringErrorText.value = 'Please input the right Time Pouring';
       return;
     }
-
-    isInputCommandValid.value = true;
+      isInputCommandValid.value = true;
   }
+
+  static void validateNewCommandInput() {
+    isInputCommandValid.value = false;
+    //commandnumStepErrorText.value = '';
+    //commandSetpointCtrl = '';
+    //isInputCommandValid.value = false;
+    
+
+    if (commandnumStepCtrl.text.isEmpty ||
+        int.parse(commandnumStepCtrl.text) <= 0) {
+      debugPrint('[command_controller] input title command not valid');
+      commandnumStepErrorText.value = 'Numstep minimal 1 kak';
+      return;
+    }
+    if (RecipeController.recipeSetpointController.text.isEmpty ||
+        int.parse(RecipeController.recipeSetpointController.text) <= 0 ){
+      debugPrint('[command_controller] input command not valid');
+      commandvolumeErrorText.value = 'Please input the right volume';
+      return;
+    }
+    isInputCommandValid.value = true;
+}
 }

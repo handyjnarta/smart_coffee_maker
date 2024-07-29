@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 //import 'package:flutter_bluetooth/app/controllers/device_controller.dart';
 import 'package:flutter_bluetooth/app/controllers/recipe_controller.dart';
-//import 'package:flutter_bluetooth/app/helper/popup_dialogs.dart';
 import 'package:flutter_bluetooth/utils.dart';
+//import 'package:flutter_bluetooth/app/helper/popup_dialogs.dart';
+//import 'package:flutter_bluetooth/utils.dart';
 //import 'package:flutter_bluetooth/app/views/add_pouring_view.dart';
 import 'package:get/get.dart';
 import 'package:flutter_bluetooth/app/controllers/command_controller.dart';
@@ -90,22 +91,23 @@ class CommandView extends StatelessWidget {
           const SizedBox(width: 10),
           Flexible(
             child: MyCustomButton(
-              customWidget: const Text('Next'),
+              customWidget: const Text('Next 1'),
               isCircleButton: false,
               buttonWidth: 60,
               onPressedAction: () {
-                showGetxSnackbar(
-                    'step: ${int.parse(CommandController.commandnumStepCtrl.text)}',
-                    'current step: ${CommandController.currentStep.value}');
-                showPouringDialog(context);
-                CommandController.validateCommandInput();
-
+                //showPouringDialog(context);
+                //CommandController.validateCommandInput();
+                CommandController.validateNewCommandInput();
                 if (CommandController.isInputCommandValid.isTrue) {
+                  //showGetxSnackbar('aespa', 'armageedoon');
                   if (CommandController.isEditCommand.isTrue) {
                     CommandController.isEditCommand.value = false;
                   }
-                  CommandController.resetSteps();
-                  Navigator.pop(context);
+                  //showGetxSnackbar('aespa', 'armageedoon');
+                  showPouringDialog(context);
+                  //CommandController.resetSteps();
+                  //RecipeController().onNewCommandButtonPressed();
+                  //Navigator.pop(context);
                 }
               },
             ),
@@ -113,10 +115,8 @@ class CommandView extends StatelessWidget {
         ],
       )
     ];
-
     return actionList;
   }
-}
 
 void showPouringDialog(BuildContext context) {
   showDialog(
@@ -133,25 +133,25 @@ void showPouringDialog(BuildContext context) {
             buildTextField(
               title: 'Total Water',
               commandText: '0-600',
-              errorText: 'Please input the right volume',
+              errorText: CommandController.commandvolumeErrorText(),
               commandTextController: CommandController.commandvolumeCtrl,
-              //onChanged: (value) {},
+              //onChanged: CommandController.validateCommandInput,
             ),
             buildTextField(
               title: 'Pouring Time',
               commandText: '0-30',
               errorText:
-                  'Please input the right Time Pouring', // Handle error if any
+                  CommandController.commandTimePouringErrorText(), // Handle error if any
               commandTextController: CommandController.commandTimePouring,
-              //onChanged: (value) {},
+              //onChanged: CommandController.validateCommandInput,//onChanged: (value) {},
             ),
             buildTextField(
               title: 'Delay Time',
               commandText: '0-30',
               errorText:
-                  'Please input the right Time Interval', // Handle error if any
+                  CommandController.commandTimeIntervalErrorText(), // Handle error if any
               commandTextController: CommandController.commandTimeInterval,
-              //onChanged: (value) {},
+              //onChanged: CommandController.validateCommandInput,//onChanged: (value) {},
             ),
           ],
         ),
@@ -159,40 +159,47 @@ void showPouringDialog(BuildContext context) {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              CommandController.resetSteps();
+              //CommandController.resetSteps();
             },
             child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () {
-              showGetxSnackbar(
+              /*showGetxSnackbar(
                   'step: ${int.parse(CommandController.commandnumStepCtrl.text)}',
-                  'current step: ${CommandController.currentStep.value}');
+                  'current step: ${CommandController.currentStep.value}'); */
+              
               CommandController.validateCommandInput();
               if (CommandController.isInputCommandValid.isFalse) {
                 return;
               }
-              if (CommandController.currentStep.value <
-                  int.parse(CommandController.commandnumStepCtrl.text) - 1) {
-                CommandController.currentStep.value++;
-                Navigator.pop(context);
-                CommandController.saveNewCommand();
+              CommandController.saveNewCommand();
+              if ((CommandController.currentStep.value + 2) <
+                  int.parse(CommandController.commandnumStepCtrl.text))  {
+                CommandController.currentStep.value = CommandController.currentStep.value + 1;
+                RecipeController().onNewCommandButtonPressed;
                 showPouringDialog(context); // Show the dialog for the next step
-              } else if (CommandController.currentStep.value ==
-                  int.parse(CommandController.commandnumStepCtrl.text) - 1) {
-                CommandController.currentStep.value++;
-                CommandController.saveNewCommand();
+              } else if ((CommandController.currentStep.value + 2) ==
+                  int.parse(CommandController.commandnumStepCtrl.text))  {
+                //CommandController.currentStep.value++;
+                RecipeController().onNewCommandButtonPressed;
                 CommandController.resetSteps();
                 Navigator.pop(context);
               } else {
-                Navigator.pop(context);
-                CommandController.resetSteps();
+                //CommandController.resetSteps();
+                //Navigator.pop(context);
               }
             },
-            child: const Text('Next'),
+            child: const Text('Next 2'),
           ),
         ],
       );
     },
   );
 }
+
+
+}
+
+
+

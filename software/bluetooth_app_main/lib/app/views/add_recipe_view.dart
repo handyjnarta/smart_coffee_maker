@@ -52,9 +52,9 @@ class AddRecipeView extends StatelessWidget {
                         errorText: recipeController.errorText.value,
                         commandTextController:
                             RecipeController.recipeNameController,
-                        onChanged: (value) {
-                          recipeController.refreshNewCommandButtonState();
-                        },
+                        onChanged: 
+                          recipeController.refreshNewCommandButtonState,
+                        
                       ),
                       Row(
                         children: [
@@ -70,8 +70,8 @@ class AddRecipeView extends StatelessWidget {
                           OutlinedButton(
                             onPressed: () {
                               // Get the current RecipeController instance
-                              final recipeController =
-                                  Get.find<RecipeController>();
+                              //final recipeController =
+                                  //Get.find<RecipeController>();
 
                               // Check if the recipe name is empty
                               if (RecipeController
@@ -86,8 +86,8 @@ class AddRecipeView extends StatelessWidget {
                                 createNewCommand(context, recipeController);
                                 debugPrint('createNewCommand called');
                               } else {
-                                final recipeName = int.tryParse(
-                                    RecipeController.recipeNameController.text);
+                                final recipeName = 
+                                    RecipeController.recipeNameController.text;
                                 debugPrint(
                                     'createNewCommand not called. Recipe name: $recipeName');
                               }
@@ -112,7 +112,7 @@ class AddRecipeView extends StatelessWidget {
       ),
     );
   }
-
+/*
   Widget buildTextField({
     required String title,
     required String commandText,
@@ -134,7 +134,7 @@ class AddRecipeView extends StatelessWidget {
       ],
     );
   }
-
+*/
   Widget saveButton(BuildContext context, RecipeController recipeController) {
     return SizedBox(
       width: 200,

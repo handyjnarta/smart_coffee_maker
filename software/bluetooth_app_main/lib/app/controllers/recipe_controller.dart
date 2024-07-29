@@ -44,10 +44,10 @@ class RecipeController extends GetxController {
     enableNewCommandBtn.value = false;
 
     // Attempt to parse the recipe name as an integer
-    final recipeName = int.tryParse(recipeNameController.text);
+    //final recipeName = int.parse(recipeNameController.text); untuk apa
 
     // Debug print the value of recipeName
-    debugPrint('Parsed recipeName as integer: $recipeName');
+    //debugPrint('Parsed recipeName as integer: $recipeName'); untuk affah
 
     // Check if the recipe name length is less than 3 characters
     if (recipeNameController.text.isEmpty) {
@@ -230,10 +230,12 @@ class RecipeController extends GetxController {
   }
 
   void onNewCommandButtonPressed() {
-    CommandController.commandnumStepCtrl.clear();
-    CommandController.commandvolumeCtrl.clear();
-    CommandController.commandTimePouring.clear();
-    CommandController.commandTimeInterval.clear();
+    showGetxSnackbar('mau refresh tampilan', 'mau refresh');
+    RecipeController.recipeSetpointController.text='';
+    CommandController.commandnumStepCtrl.text = '';
+    CommandController.commandvolumeCtrl.text = '';
+    CommandController.commandTimePouring.text = '';
+    CommandController.commandTimeInterval.text = ''; 
   }
 
   VoidCallback? editSelectedCommand() {

@@ -90,7 +90,7 @@ class ConnectionView extends StatelessWidget {
                 const SizedBox(height: 15,),
                 const Text(
                   "Paired Devices",
-                  style: TextStyle(fontSize: 18, color: Colors.blue),
+                  style: TextStyle(fontSize: 18, color: Color.fromARGB(255, 0, 0, 0)),
                   textAlign: TextAlign.center,
                 ),
                 Obx((){
