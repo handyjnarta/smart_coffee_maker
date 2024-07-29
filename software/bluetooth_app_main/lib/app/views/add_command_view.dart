@@ -170,7 +170,7 @@ class CommandView extends StatelessWidget {
                     int.parse(CommandController.commandnumStepCtrl.text)) {
                   CommandController.currentStep.value =
                       CommandController.currentStep.value + 1;
-                  RecipeController().onNewCommandButtonPressed;
+                  RecipeController().onNewCommandButtonPressed();
                   showPouringDialog(
                       context); // Show the dialog for the next step
                   Navigator.pop(context);
