@@ -10,7 +10,7 @@ import 'recipe_controller.dart';
 
 class CommandController extends GetxController {
   final RecipeController recipeController = Get.find<RecipeController>();
-  static List<CommandMenu> commandMenuList = <CommandMenu>[].obs;
+  static var commandMenuList = <CommandMenu>[].obs;
   static var isEditCommand = false.obs;
   static var isInsertNewRecipe = false.obs;
   static var isInputCommandValid = false.obs;
@@ -54,13 +54,6 @@ class CommandController extends GetxController {
     currentStep.value = 0;
   }
 
-  /*static void resetcommandstep() { //untuk mereset tampilan
-    commandnumStepCtrl.text = '0';
-    commandvolumeCtrl.text = '0';
-    commandTimePouring.text = '0';
-    commandTimeInterval.text = '0';
-  }*/
-
   static List<TextEditingController> commandTextEditCtrlList =
       List<TextEditingController>.generate(
           maxCommandCount, (index) => TextEditingController(),
@@ -73,10 +66,16 @@ class CommandController extends GetxController {
     // If input is not valid, do not proceed with saving
     if (!isInputCommandValid.value) return;
 
-    numstepX = commandnumStepCtrl.text;
+    numstepX = currentStep.value.toString();
     volumeX = commandvolumeCtrl.text;
     timeIntervalX = commandTimeInterval.text;
     timePouringX = commandTimePouring.text;
+
+    debugPrint('Creating new command with:');
+    debugPrint('numStep: $numstepX');
+    debugPrint('volume: $volumeX');
+    debugPrint('timePouring: $timePouringX');
+    debugPrint('timeInterval: $timeIntervalX');
 
     var newCommand = Commands(
       numStep: numstepX,

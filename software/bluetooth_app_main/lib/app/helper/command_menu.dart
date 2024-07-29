@@ -4,22 +4,23 @@ import 'package:flutter_bluetooth/app/helper/widget_helper.dart';
 import '../custom_widget/custom_button.dart';
 
 class CommandMenu extends StatelessWidget {
-  late final String numStep;
-  late final String volume;
-  late final String timePouring;
-  late final String timeInterval;
-  late final bool readOnly;
-  late final VoidCallback? onDeleteButtonPressed;
-  late final VoidCallback? onEditButtonPressed;
-  CommandMenu({
+  final String numStep;
+  final String volume;
+  final String timePouring;
+  final String timeInterval;
+  final bool readOnly;
+  final VoidCallback? onDeleteButtonPressed;
+  final VoidCallback? onEditButtonPressed;
+
+  const CommandMenu({
     Key? key,
     this.readOnly = false,
     this.onEditButtonPressed,
     this.onDeleteButtonPressed,
-    required String numStep,
-    required String volume,
-    required String timeInterval,
-    required String timePouring,
+    required this.numStep,
+    required this.volume,
+    required this.timeInterval,
+    required this.timePouring,
   }) : super(key: key);
 
   @override
@@ -34,8 +35,6 @@ class CommandMenu extends StatelessWidget {
       onDeleteButtonPressed: onDeleteButtonPressed,
     );
   }
-
-  // set setNewCommandMenuTitle(String newTitle) => titleText = newTitle;
 
   Widget buildDeviceCommandMenu({
     required String numStep,
@@ -63,10 +62,10 @@ class CommandMenu extends StatelessWidget {
                   width: 220,
                   height: 40,
                   child: buildTextField(
-                  title: 'Pouring Steps',
-                  commandText: CommandController.commandCtrl.text,
-                  errorText: CommandController.commandErrorText.value,
-                  commandTextController: CommandController.commandCtrl,
+                    title: 'Pouring Steps',
+                    commandText: CommandController.commandCtrl.text,
+                    errorText: CommandController.commandErrorText.value,
+                    commandTextController: CommandController.commandCtrl,
                   ),
                 ),
               ),

@@ -1,9 +1,9 @@
 class Commands {
   // Properties
-  late String numStep;
-  late String volume;
-  late String timePouring;
-  late String timeInterval;
+  final String numStep;
+  final String volume;
+  final String timePouring;
+  final String timeInterval;
 
   // Constructor
   Commands({

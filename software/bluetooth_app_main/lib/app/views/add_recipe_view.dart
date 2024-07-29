@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth/app/constant/constant.dart';
+import 'package:flutter_bluetooth/app/controllers/command_controller.dart';
 import 'package:flutter_bluetooth/app/controllers/recipe_controller.dart';
 import 'package:flutter_bluetooth/app/views/add_command_view.dart';
 import 'package:get/get.dart';
@@ -52,9 +53,8 @@ class AddRecipeView extends StatelessWidget {
                         errorText: recipeController.errorText.value,
                         commandTextController:
                             RecipeController.recipeNameController,
-                        onChanged: 
-                          recipeController.refreshNewCommandButtonState,
-                        
+                        onChanged:
+                            recipeController.refreshNewCommandButtonState,
                       ),
                       Row(
                         children: [
@@ -71,7 +71,7 @@ class AddRecipeView extends StatelessWidget {
                             onPressed: () {
                               // Get the current RecipeController instance
                               //final recipeController =
-                                  //Get.find<RecipeController>();
+                              //Get.find<RecipeController>();
 
                               // Check if the recipe name is empty
                               if (RecipeController
@@ -86,7 +86,7 @@ class AddRecipeView extends StatelessWidget {
                                 createNewCommand(context, recipeController);
                                 debugPrint('createNewCommand called');
                               } else {
-                                final recipeName = 
+                                final recipeName =
                                     RecipeController.recipeNameController.text;
                                 debugPrint(
                                     'createNewCommand not called. Recipe name: $recipeName');
@@ -99,6 +99,9 @@ class AddRecipeView extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 4),
+                      ...CommandController.commandMenuList
+                          .map((commandMenu) => commandMenu)
+                          .toList(),
                       const Divider(thickness: 2),
                       const SizedBox(height: 10),
                       saveButton(context, recipeController),
@@ -112,6 +115,7 @@ class AddRecipeView extends StatelessWidget {
       ),
     );
   }
+
 /*
   Widget buildTextField({
     required String title,
