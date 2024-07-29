@@ -21,12 +21,24 @@ class CommandController extends GetxController {
   static String oldCommand = '';
   static var stepsCount = 0.obs; // Number of pouring steps
   static var currentStep = 0.obs; // Current pouring step
-  static var commandTitleCtrl = TextEditingController();
-  static var commandCtrl = TextEditingController();
+  static TextEditingController commandTitleCtrl = TextEditingController();
+  static TextEditingController commandCtrl = TextEditingController();
   static TextEditingController commandnumStepCtrl = TextEditingController();
   static TextEditingController commandvolumeCtrl = TextEditingController();
   static TextEditingController commandTimePouring = TextEditingController();
   static TextEditingController commandTimeInterval = TextEditingController();
+
+  @override
+  void onInit() {
+    super.onInit();
+    // Ensure controllers are initialized
+    commandTitleCtrl = TextEditingController();
+    commandCtrl = TextEditingController();
+    commandnumStepCtrl = TextEditingController();
+    commandvolumeCtrl = TextEditingController();
+    commandTimePouring = TextEditingController();
+    commandTimeInterval = TextEditingController();
+  }
 
   static void resetSteps() {
     stepsCount.value = 0;
@@ -52,32 +64,40 @@ class CommandController extends GetxController {
       timeInterval: commandTimeInterval.text,
     );
 
-    debugPrint('New Command: $newCommand');
+    // Use the existing instance of RecipeController
+    RecipeController recipeController = Get.find<RecipeController>();
 
-    if (RecipeController().currentRecipe.value == null) {
-      RecipeController().currentRecipe = Rxn<Recipes>(
-        Recipes(
-          id: RecipeController().selectedTitle.value,
-          setpoint: RecipeController.recipeSetpointController.text,
-          recipeName: RecipeController.recipeNameController.text,
-          status: false,
-          commandList: [newCommand],
-        ),
+    // Check if currentRecipe is null before trying to access its properties
+    if (recipeController.currentRecipe.value == null) {
+      debugPrint('Initializing currentRecipe because it is null');
+      recipeController.currentRecipe.value = Recipes(
+        id: recipeController.selectedTitle.value,
+        setpoint: RecipeController
+            .recipeSetpointController.text, // Accessing statically
+        recipeName:
+            RecipeController.recipeNameController.text, // Accessing statically
+        status: false,
+        commandList: [newCommand],
       );
     } else {
+      debugPrint('currentRecipe is not null, proceeding to update it');
       if (isEditCommand.isTrue) {
-        RecipeController()
-            .currentRecipe
-            .value!
-            .commandList[commandIndexToEdit] = newCommand;
+        recipeController.currentRecipe.value!.commandList[commandIndexToEdit] =
+            newCommand;
       } else {
-        RecipeController().currentRecipe.value!.commandList.add(newCommand);
+        recipeController.currentRecipe.value!.commandList.add(newCommand);
       }
     }
 
-    // Print the updated command list
-    debugPrint(
-        'Updated Command List: ${RecipeController().currentRecipe.value!.commandList.map((command) => command.toString()).toList()}');
+    // Debug print the updated currentRecipe
+    if (recipeController.currentRecipe.value != null) {
+      debugPrint(
+          'Updated currentRecipe: ${recipeController.currentRecipe.value!.toString()}');
+      debugPrint(
+          'Updated Command List: ${recipeController.currentRecipe.value!.commandList.map((command) => command.toString()).toList()}');
+    } else {
+      debugPrint('Error: currentRecipe is still null after initialization');
+    }
 
     if (isEditCommand.isFalse) {
       commandMenuList.add(CommandMenu(
@@ -86,8 +106,8 @@ class CommandController extends GetxController {
         timeInterval: commandTimeInterval.text,
         timePouring: commandTimePouring.text,
         readOnly: true,
-        onDeleteButtonPressed: RecipeController().deleteSelectedCommand,
-        onEditButtonPressed: RecipeController().editSelectedCommand,
+        onDeleteButtonPressed: recipeController.deleteSelectedCommand,
+        onEditButtonPressed: recipeController.editSelectedCommand,
       ));
     } else {
       commandMenuList[commandIndexToEdit] = CommandMenu(
@@ -96,15 +116,15 @@ class CommandController extends GetxController {
         timeInterval: commandTimeInterval.text,
         timePouring: commandTimePouring.text,
         readOnly: true,
-        onDeleteButtonPressed: RecipeController().deleteSelectedCommand,
-        onEditButtonPressed: RecipeController().editSelectedCommand,
+        onDeleteButtonPressed: recipeController.deleteSelectedCommand,
+        onEditButtonPressed: recipeController.editSelectedCommand,
       );
     }
 
     // Print the command menu list to verify it is updated
     debugPrint('Command Menu List: $commandMenuList');
 
-    RecipeController().refreshSaveRecipeButtonState();
+    recipeController.refreshSaveRecipeButtonState();
   }
 
   static void validateCommandInput() {

@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
-//import 'package:flutter_bluetooth/app/controllers/device_controller.dart';
 import 'package:flutter_bluetooth/app/controllers/recipe_controller.dart';
-//import 'package:flutter_bluetooth/app/helper/popup_dialogs.dart';
 import 'package:flutter_bluetooth/utils.dart';
-//import 'package:flutter_bluetooth/app/views/add_pouring_view.dart';
 import 'package:get/get.dart';
 import 'package:flutter_bluetooth/app/controllers/command_controller.dart';
 import '../custom_widget/custom_button.dart';
 import '../helper/widget_helper.dart';
-//import 'dart:js_util';
 
 class CommandView extends StatelessWidget {
   const CommandView({Key? key}) : super(key: key);
@@ -29,7 +25,6 @@ class CommandView extends StatelessWidget {
           commandText: '30-90',
           errorText: CommandController.commandErrorText.value,
           commandTextController: RecipeController.recipeSetpointController,
-          //onChanged: CommandController.validateCommandInput,
         );
       }),
       Obx(() {
@@ -40,7 +35,6 @@ class CommandView extends StatelessWidget {
               commandText: '0-10',
               errorText: CommandController.commandErrorText.value,
               commandTextController: CommandController.commandnumStepCtrl,
-              //onChanged: CommandController.validateCommandInput,
             ),
             const SizedBox(height: 10),
           ],
@@ -135,23 +129,18 @@ void showPouringDialog(BuildContext context) {
               commandText: '0-600',
               errorText: 'Please input the right volume',
               commandTextController: CommandController.commandvolumeCtrl,
-              //onChanged: (value) {},
             ),
             buildTextField(
               title: 'Pouring Time',
               commandText: '0-30',
-              errorText:
-                  'Please input the right Time Pouring', // Handle error if any
+              errorText: 'Please input the right Time Pouring',
               commandTextController: CommandController.commandTimePouring,
-              //onChanged: (value) {},
             ),
             buildTextField(
               title: 'Delay Time',
               commandText: '0-30',
-              errorText:
-                  'Please input the right Time Interval', // Handle error if any
+              errorText: 'Please input the right Time Interval',
               commandTextController: CommandController.commandTimeInterval,
-              //onChanged: (value) {},
             ),
           ],
         ),
@@ -177,7 +166,7 @@ void showPouringDialog(BuildContext context) {
                 CommandController.currentStep.value++;
                 Navigator.pop(context);
                 CommandController.saveNewCommand();
-                showPouringDialog(context); // Show the dialog for the next step
+                showPouringDialog(context);
               } else if (CommandController.currentStep.value ==
                   int.parse(CommandController.commandnumStepCtrl.text) - 1) {
                 CommandController.currentStep.value++;

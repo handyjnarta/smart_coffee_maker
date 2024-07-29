@@ -24,10 +24,11 @@ class RecipeController extends GetxController {
   var recipeCount = 0.obs;
   var oldRecipeData = {}.obs;
 
-  static TextEditingController recipeNameController= TextEditingController();
-  static TextEditingController turnOffTextController= TextEditingController();
-  static TextEditingController turnOnTextController= TextEditingController();
-  static TextEditingController recipeSetpointController= TextEditingController();
+  static TextEditingController recipeNameController = TextEditingController();
+  static TextEditingController turnOffTextController = TextEditingController();
+  static TextEditingController turnOnTextController = TextEditingController();
+  static TextEditingController recipeSetpointController =
+      TextEditingController();
 
   /*
   final recipeNameController = TextEditingController();
@@ -42,12 +43,6 @@ class RecipeController extends GetxController {
 
   void refreshNewCommandButtonState() {
     enableNewCommandBtn.value = false;
-
-    // Attempt to parse the recipe name as an integer
-    final recipeName = int.tryParse(recipeNameController.text);
-
-    // Debug print the value of recipeName
-    debugPrint('Parsed recipeName as integer: $recipeName');
 
     // Check if the recipe name length is less than 3 characters
     if (recipeNameController.text.isEmpty) {
