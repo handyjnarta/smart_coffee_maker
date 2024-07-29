@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+//import 'package:flutter_bluetooth/app/controllers/device_controller.dart';
 import 'package:flutter_bluetooth/app/controllers/recipe_controller.dart';
 import 'package:flutter_bluetooth/utils.dart';
+//import 'package:flutter_bluetooth/app/helper/popup_dialogs.dart';
+//import 'package:flutter_bluetooth/utils.dart';
+//import 'package:flutter_bluetooth/app/views/add_pouring_view.dart';
 import 'package:get/get.dart';
 import 'package:flutter_bluetooth/app/controllers/command_controller.dart';
 import '../custom_widget/custom_button.dart';
 import '../helper/widget_helper.dart';
+//import 'dart:js_util';
 
 class CommandView extends StatelessWidget {
   const CommandView({Key? key}) : super(key: key);
@@ -25,6 +30,7 @@ class CommandView extends StatelessWidget {
           commandText: '30-90',
           errorText: CommandController.commandErrorText.value,
           commandTextController: RecipeController.recipeSetpointController,
+          //onChanged: CommandController.validateCommandInput,
         );
       }),
       Obx(() {
@@ -35,6 +41,7 @@ class CommandView extends StatelessWidget {
               commandText: '0-10',
               errorText: CommandController.commandErrorText.value,
               commandTextController: CommandController.commandnumStepCtrl,
+              //onChanged: CommandController.validateCommandInput,
             ),
             const SizedBox(height: 10),
           ],
@@ -84,22 +91,23 @@ class CommandView extends StatelessWidget {
           const SizedBox(width: 10),
           Flexible(
             child: MyCustomButton(
-              customWidget: const Text('Next'),
+              customWidget: const Text('Next 1'),
               isCircleButton: false,
               buttonWidth: 60,
               onPressedAction: () {
-                showGetxSnackbar(
-                    'step: ${int.parse(CommandController.commandnumStepCtrl.text)}',
-                    'current step: ${CommandController.currentStep.value}');
-                showPouringDialog(context);
-                CommandController.validateCommandInput();
-
+                //showPouringDialog(context);
+                //CommandController.validateCommandInput();
+                CommandController.validateNewCommandInput();
                 if (CommandController.isInputCommandValid.isTrue) {
+                  //showGetxSnackbar('aespa', 'armageedoon');
                   if (CommandController.isEditCommand.isTrue) {
                     CommandController.isEditCommand.value = false;
                   }
-                  CommandController.resetSteps();
-                  Navigator.pop(context);
+                  //showGetxSnackbar('aespa', 'armageedoon');
+                  showPouringDialog(context);
+                  //CommandController.resetSteps();
+                  //RecipeController().onNewCommandButtonPressed();
+                  //Navigator.pop(context);
                 }
               },
             ),
@@ -107,81 +115,88 @@ class CommandView extends StatelessWidget {
         ],
       )
     ];
-
     return actionList;
   }
-}
 
-void showPouringDialog(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Obx(() {
-          return Text(
-              'Pouring Step ${CommandController.currentStep.value + 1}');
-        }),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            buildTextField(
-              title: 'Total Water',
-              commandText: '0-600',
-              errorText: 'Please input the right volume',
-              commandTextController: CommandController.commandvolumeCtrl,
+  void showPouringDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Obx(() {
+            return Text(
+                'Pouring Step ${CommandController.currentStep.value + 1}');
+          }),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              buildTextField(
+                title: 'Total Water',
+                commandText: '0-600',
+                errorText: CommandController.commandvolumeErrorText(),
+                commandTextController: CommandController.commandvolumeCtrl,
+                //onChanged: CommandController.validateCommandInput,
+              ),
+              buildTextField(
+                title: 'Pouring Time',
+                commandText: '0-30',
+                errorText: CommandController
+                    .commandTimePouringErrorText(), // Handle error if any
+                commandTextController: CommandController.commandTimePouring,
+                //onChanged: CommandController.validateCommandInput,//onChanged: (value) {},
+              ),
+              buildTextField(
+                title: 'Delay Time',
+                commandText: '0-30',
+                errorText: CommandController
+                    .commandTimeIntervalErrorText(), // Handle error if any
+                commandTextController: CommandController.commandTimeInterval,
+                //onChanged: CommandController.validateCommandInput,//onChanged: (value) {},
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                //CommandController.resetSteps();
+              },
+              child: const Text('Cancel'),
             ),
-            buildTextField(
-              title: 'Pouring Time',
-              commandText: '0-30',
-              errorText: 'Please input the right Time Pouring',
-              commandTextController: CommandController.commandTimePouring,
-            ),
-            buildTextField(
-              title: 'Delay Time',
-              commandText: '0-30',
-              errorText: 'Please input the right Time Interval',
-              commandTextController: CommandController.commandTimeInterval,
+            TextButton(
+              onPressed: () {
+                /*showGetxSnackbar(
+                  'step: ${int.parse(CommandController.commandnumStepCtrl.text)}',
+                  'current step: ${CommandController.currentStep.value}'); */
+
+                CommandController.validateCommandInput();
+                if (CommandController.isInputCommandValid.isFalse) {
+                  return;
+                }
+                CommandController.saveNewCommand();
+                if ((CommandController.currentStep.value + 2) <
+                    int.parse(CommandController.commandnumStepCtrl.text)) {
+                  CommandController.currentStep.value =
+                      CommandController.currentStep.value + 1;
+                  RecipeController().onNewCommandButtonPressed;
+                  showPouringDialog(
+                      context); // Show the dialog for the next step
+                } else if ((CommandController.currentStep.value + 2) ==
+                    int.parse(CommandController.commandnumStepCtrl.text)) {
+                  //CommandController.currentStep.value++;
+                  RecipeController().onNewCommandButtonPressed;
+                  CommandController.resetSteps();
+                  Navigator.pop(context);
+                } else {
+                  //CommandController.resetSteps();
+                  //Navigator.pop(context);
+                }
+              },
+              child: const Text('Next 2'),
             ),
           ],
-        ),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              CommandController.resetSteps();
-            },
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              showGetxSnackbar(
-                  'step: ${int.parse(CommandController.commandnumStepCtrl.text)}',
-                  'current step: ${CommandController.currentStep.value}');
-              CommandController.validateCommandInput();
-              if (CommandController.isInputCommandValid.isFalse) {
-                return;
-              }
-              if (CommandController.currentStep.value <
-                  int.parse(CommandController.commandnumStepCtrl.text) - 1) {
-                CommandController.currentStep.value++;
-                Navigator.pop(context);
-                CommandController.saveNewCommand();
-                showPouringDialog(context);
-              } else if (CommandController.currentStep.value ==
-                  int.parse(CommandController.commandnumStepCtrl.text) - 1) {
-                CommandController.currentStep.value++;
-                CommandController.saveNewCommand();
-                CommandController.resetSteps();
-                Navigator.pop(context);
-              } else {
-                Navigator.pop(context);
-                CommandController.resetSteps();
-              }
-            },
-            child: const Text('Next'),
-          ),
-        ],
-      );
-    },
-  );
+        );
+      },
+    );
+  }
 }

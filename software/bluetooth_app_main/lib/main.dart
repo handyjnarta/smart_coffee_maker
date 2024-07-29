@@ -36,7 +36,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     debugPrint('[main] building UI');
     ctrl = Get.put(Controller());
-
     // Listen to BluetoothData messages
     BluetoothData.instance.messageStream.listen((message) {
       debugPrint('Received message: $message');
