@@ -14,7 +14,7 @@ class CommandController extends GetxController {
   static var isEditCommand = false.obs;
   static var isInsertNewRecipe = false.obs;
   static var isInputCommandValid = false.obs;
-  static int commandIndexToEdit = -1;
+  static int commandIndexToEdit = 0;
   static var commandnumStepErrorText = ''.obs;
   static var commandvolumeErrorText = ''.obs;
   static var commandTimePouringErrorText = ''.obs;

@@ -240,15 +240,15 @@ class RecipeController extends GetxController {
     debugPrint('[recipe_controller] selected title to edit: $selectedTitle');
     CommandController.isEditCommand.value = true;
 
-    var commandToEdit =
-        currentRecipe.value!.commandList[CommandController.commandIndexToEdit];
+    // var commandToEdit =
+    //     currentRecipe.value!.commandList[CommandController.commandIndexToEdit];
 
-    CommandController.commandnumStepCtrl.text = commandToEdit.numStep;
-    CommandController.commandvolumeCtrl.text = commandToEdit.volume;
-    CommandController.commandTimePouring.text = commandToEdit.timePouring;
-    CommandController.commandTimeInterval.text = commandToEdit.timeInterval;
+    //CommandController.commandnumStepCtrl.text = commandToEdit.numStep;
+    // CommandController.commandvolumeCtrl.text = commandToEdit.volume;
+    // CommandController.commandTimePouring.text = commandToEdit.timePouring;
+    // CommandController.commandTimeInterval.text = commandToEdit.timeInterval;
 
-    AddRecipeView.editCommand(Get.context!);
+    //AddRecipeView.editCommand(Get.context!);
     return null;
   }
 
