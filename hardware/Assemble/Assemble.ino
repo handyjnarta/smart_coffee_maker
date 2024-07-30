@@ -172,11 +172,6 @@ void askForInputs() {
         ESP_BT.println('\n');
         ESP_BT.println("Number of pouring steps from recipe: ");
         numSteps = readIntFromSerial();
-        while (numSteps < 1) {
-          ESP_BT.println("Input is wrong");
-          ESP_BT.println("Enter again number of pouring steps: ");
-          numSteps = readIntFromSerial();
-        }
         for (int step = 1; step <= numSteps; ++step) {
           ESP_BT.print("Desired water volume for step from recipe: ");
           ESP_BT.print(step);
