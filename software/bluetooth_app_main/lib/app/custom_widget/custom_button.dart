@@ -32,7 +32,7 @@ class MyCustomButton extends StatelessWidget {
           if (commandTitle != null) {
             debugPrint('');
             debugPrint('[widget_helper]commandTitle: $commandTitle');
-            RecipeController().selectedTitle = commandTitle! as RxString;
+            RecipeController().selectedTitle = commandTitle!;
           }
 
           onPressedAction?.call();

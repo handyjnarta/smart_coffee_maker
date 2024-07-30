@@ -5,7 +5,7 @@ import 'commands.dart';
 
 class Recipes {
   String recipeName;
-  String id;
+  int id;
   String setpoint;
   bool status;
   List<Commands> commandList;

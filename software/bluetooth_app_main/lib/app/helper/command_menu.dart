@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth/app/controllers/command_controller.dart';
 import 'package:flutter_bluetooth/app/helper/widget_helper.dart';
+import 'package:get/get.dart';
 import '../custom_widget/custom_button.dart';
 
 class CommandMenu extends StatelessWidget {
@@ -73,12 +74,12 @@ class CommandMenu extends StatelessWidget {
                 ),
               ),
               MyCustomButton(
-                commandTitle: "Edit Command",
+                commandTitle: 'Edit',
                 customWidget: const Icon(Icons.edit),
                 onPressedAction: onEditButtonPressed,
               ),
               MyCustomButton(
-                commandTitle: "Delete Command",
+                commandTitle: 'Delete',
                 customWidget: const Icon(Icons.delete),
                 onPressedAction: onDeleteButtonPressed,
               ),

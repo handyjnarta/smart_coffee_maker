@@ -156,11 +156,13 @@ class AddRecipeView extends StatelessWidget {
               title: 'Command < $minCommandCount',
             );
           } else {
+            recipeController.saveRecipeData();
+            Navigator.of(context).pop();
             recipeController.refreshSaveRecipeButtonState();
-            if (recipeController.enableSaveRecipeBtn.isTrue) {
-              recipeController.saveRecipeData();
-              Navigator.of(context).pop();
-            }
+            // if (recipeController.enableSaveRecipeBtn.isTrue) {
+            //   recipeController.saveRecipeData();
+            //   Navigator.of(context).pop();
+            // }
           }
         },
         style: buildButtonStyle(),

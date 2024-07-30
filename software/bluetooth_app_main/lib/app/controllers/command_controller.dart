@@ -21,8 +21,7 @@ class CommandController extends GetxController {
   static var commandTimeIntervalErrorText = ''.obs;
   static var commandErrorText = ''.obs;
   static String oldCommand = '';
-  static var stepsCount = 0.obs;
-  static var currentStep = 0.obs;
+  static var currentStep = 1.obs;
 
   // TextEditingControllers
   static var commandTitleCtrl = TextEditingController();
@@ -42,8 +41,7 @@ class CommandController extends GetxController {
   }
 
   static void resetSteps() {
-    stepsCount.value = 0;
-    currentStep.value = 0;
+    currentStep.value = 1;
   }
 
   // List of TextEditingControllers
@@ -64,11 +62,17 @@ class CommandController extends GetxController {
       timeInterval: commandTimePouring.text,
     );
 
+    // Debug print each field before creating the Commands object
+    debugPrint('numStep: ${currentStep.value}');
+    debugPrint('volume: ${commandvolumeCtrl.text}');
+    debugPrint('timePouring: ${commandTimeInterval.text}');
+    debugPrint('timeInterval: ${commandTimePouring.text}');
+
     RecipeController recipeController = Get.find<RecipeController>();
 
     if (recipeController.currentRecipe.value == null) {
       recipeController.currentRecipe.value = Recipes(
-        id: recipeController.selectedTitle.value,
+        id: recipeController.recipeCount.value,
         setpoint: RecipeController.recipeSetpointController.text,
         recipeName: RecipeController.recipeNameController.text,
         status: false,

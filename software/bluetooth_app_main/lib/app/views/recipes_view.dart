@@ -26,24 +26,25 @@ class RecipesView extends StatelessWidget {
     int timePouringval = 0;
     ctrl.changeTab(1);
     String message = 'r';
-    BluetoothData().sendMessageToBluetooth(message,true);
+    BluetoothData().sendMessageToBluetooth(message, true);
     message = setpointval as String;
-    BluetoothData().sendMessageToBluetooth(message,true);
+    BluetoothData().sendMessageToBluetooth(message, true);
     message = numstepsval as String;
-    BluetoothData().sendMessageToBluetooth(message,true);
+    BluetoothData().sendMessageToBluetooth(message, true);
     for (int i = 0; i < numstepsval; i++) {
       volumeval = 0; // masukin untuk volume val di index numstepval nya
       message = volumeval as String;
-      BluetoothData().sendMessageToBluetooth(message,true);
-      timePouringval = 0; // masukin untuk timePouring val di index numstepval nya
+      BluetoothData().sendMessageToBluetooth(message, true);
+      timePouringval =
+          0; // masukin untuk timePouring val di index numstepval nya
       message = timePouringval as String;
-      BluetoothData().sendMessageToBluetooth(message,true);
-      timeIntervalval = 0; // masukin untuk timeInterval val di index numstepval nya
+      BluetoothData().sendMessageToBluetooth(message, true);
+      timeIntervalval =
+          0; // masukin untuk timeInterval val di index numstepval nya
       message = timeIntervalval as String;
-      BluetoothData().sendMessageToBluetooth(message,true);
+      BluetoothData().sendMessageToBluetooth(message, true);
     }
   }
-
 
   void deleteRecipe() {
     Navigator.pop(Get.context!);
@@ -60,9 +61,8 @@ class RecipesView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      return RecipeController().recipeList.isNotEmpty
-          ? 
-          ListView.builder(
+      return (RecipeController().recipeList.isNotEmpty)
+          ? ListView.builder(
               itemCount: RecipeController().recipeList.length,
               itemBuilder: (BuildContext context, int index) {
                 debugPrint('[recipe_view] rebuilding listview');
@@ -74,7 +74,7 @@ class RecipesView extends StatelessWidget {
               })
           : const Center(
               child: Text(
-              'No recipe found',
+              'No recipe found mmk',
               style: TextStyle(fontSize: 22),
             ));
     });
@@ -177,9 +177,7 @@ class RecipesView extends StatelessWidget {
                           text: 'Want to run ($recipeName) recipe ?',
                           onOkPressed: runrecipe,
                         );
-                      }
-                        
-                       else {
+                      } else {
                         showConfirmDialog(
                           context: context,
                           title: 'Delete confirm',
@@ -197,7 +195,7 @@ class RecipesView extends StatelessWidget {
                               Text('Run'),
                               Expanded(child: SizedBox(width: 10)),
                               Icon(
-                                Icons.delete,
+                                Icons.run_circle,
                                 size: 20.0,
                               )
                             ],
