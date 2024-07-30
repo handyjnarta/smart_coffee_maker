@@ -247,6 +247,11 @@ class RecipeController extends GetxController {
     var commandToEdit = currentRecipe.value!.commandList.firstWhere(
         (cmd) => cmd.numStep == CommandController.currentStep.value.toString());
 
+    debugPrint('commandtoEdit : $commandToEdit');
+
+    CommandController.commandIndexToEdit =
+        currentRecipe.value!.commandList.indexOf(commandToEdit);
+
     // Update the text controllers with the command data
     CommandController.commandvolumeCtrl.text = commandToEdit.volume;
     CommandController.commandTimePouring.text = commandToEdit.timePouring;

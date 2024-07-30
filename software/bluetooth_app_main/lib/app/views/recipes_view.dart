@@ -74,7 +74,7 @@ class RecipesView extends StatelessWidget {
               })
           : const Center(
               child: Text(
-              'No recipe found mmk',
+              'No recipe found',
               style: TextStyle(fontSize: 22),
             ));
     });
