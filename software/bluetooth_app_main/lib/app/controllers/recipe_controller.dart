@@ -239,14 +239,15 @@ class RecipeController extends GetxController {
   VoidCallback? editSelectedCommand() {
     debugPrint('[recipe_controller] selected title to edit: $selectedTitle');
     CommandController.isEditCommand.value = true;
-    CommandController.commandnumStepCtrl.text = currentRecipe
-        .value!.commandList[CommandController.commandIndexToEdit].numStep;
-    CommandController.commandvolumeCtrl.text = currentRecipe
-        .value!.commandList[CommandController.commandIndexToEdit].volume;
-    CommandController.commandTimePouring.text = currentRecipe
-        .value!.commandList[CommandController.commandIndexToEdit].timePouring;
-    CommandController.commandTimeInterval.text = currentRecipe
-        .value!.commandList[CommandController.commandIndexToEdit].timeInterval;
+
+    var commandToEdit =
+        currentRecipe.value!.commandList[CommandController.commandIndexToEdit];
+
+    CommandController.commandnumStepCtrl.text = commandToEdit.numStep;
+    CommandController.commandvolumeCtrl.text = commandToEdit.volume;
+    CommandController.commandTimePouring.text = commandToEdit.timePouring;
+    CommandController.commandTimeInterval.text = commandToEdit.timeInterval;
+
     AddRecipeView.editCommand(Get.context!);
     return null;
   }

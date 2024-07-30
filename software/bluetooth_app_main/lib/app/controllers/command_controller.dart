@@ -1,5 +1,3 @@
-//import 'dart:js_interop';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth/app/constant/constant.dart';
 import 'package:get/get.dart';
@@ -10,6 +8,8 @@ import 'recipe_controller.dart';
 
 class CommandController extends GetxController {
   final RecipeController recipeController = Get.find<RecipeController>();
+
+  // Observable lists and variables
   static var commandMenuList = <CommandMenu>[].obs;
   static var isEditCommand = false.obs;
   static var isInsertNewRecipe = false.obs;
@@ -21,8 +21,10 @@ class CommandController extends GetxController {
   static var commandTimeIntervalErrorText = ''.obs;
   static var commandErrorText = ''.obs;
   static String oldCommand = '';
-  static var stepsCount = 0.obs; // Number of pouring steps
-  static var currentStep = 0.obs; // Current pouring step
+  static var stepsCount = 0.obs;
+  static var currentStep = 0.obs;
+
+  // TextEditingControllers
   static var commandTitleCtrl = TextEditingController();
   static var commandCtrl = TextEditingController();
   static var commandnumStepCtrl = TextEditingController();
@@ -32,21 +34,11 @@ class CommandController extends GetxController {
   static var commandSetpointCtrl = TextEditingController();
   static var commandSetpointError = TextEditingController();
   static int numstepA = 0;
-  static String numstepX = '';
-  static String volumeX = '';
-  static String timePouringX = '';
-  static String timeIntervalX = '';
 
   @override
   void onInit() {
     super.onInit();
-    // Ensure controllers are initialized
-    commandTitleCtrl = TextEditingController();
-    commandCtrl = TextEditingController();
-    commandnumStepCtrl = TextEditingController();
-    commandvolumeCtrl = TextEditingController();
-    commandTimePouring = TextEditingController();
-    commandTimeInterval = TextEditingController();
+    // Initialize controllers if necessary
   }
 
   static void resetSteps() {
@@ -54,53 +46,35 @@ class CommandController extends GetxController {
     currentStep.value = 0;
   }
 
+  // List of TextEditingControllers
   static List<TextEditingController> commandTextEditCtrlList =
       List<TextEditingController>.generate(
           maxCommandCount, (index) => TextEditingController(),
           growable: false);
 
   static void saveNewCommand() {
-    // Validate command input before saving
     validateCommandInput();
 
-    // If input is not valid, do not proceed with saving
     if (!isInputCommandValid.value) return;
 
-    numstepX = currentStep.value.toString();
-    volumeX = commandvolumeCtrl.text;
-    timeIntervalX = commandTimeInterval.text;
-    timePouringX = commandTimePouring.text;
-
-    debugPrint('Creating new command with:');
-    debugPrint('numStep: $numstepX');
-    debugPrint('volume: $volumeX');
-    debugPrint('timePouring: $timePouringX');
-    debugPrint('timeInterval: $timeIntervalX');
-
     var newCommand = Commands(
-      numStep: numstepX,
-      volume: volumeX,
-      timePouring: timePouringX,
-      timeInterval: timeIntervalX,
+      numStep: currentStep.value.toString(),
+      volume: commandvolumeCtrl.text,
+      timePouring: commandTimeInterval.text,
+      timeInterval: commandTimePouring.text,
     );
 
-    // Use the existing instance of RecipeController
     RecipeController recipeController = Get.find<RecipeController>();
 
-    // Check if currentRecipe is null before trying to access its properties
     if (recipeController.currentRecipe.value == null) {
-      debugPrint('Initializing currentRecipe because it is null');
       recipeController.currentRecipe.value = Recipes(
         id: recipeController.selectedTitle.value,
-        setpoint: RecipeController
-            .recipeSetpointController.text, // Accessing statically
-        recipeName:
-            RecipeController.recipeNameController.text, // Accessing statically
+        setpoint: RecipeController.recipeSetpointController.text,
+        recipeName: RecipeController.recipeNameController.text,
         status: false,
         commandList: [newCommand],
       );
     } else {
-      debugPrint('currentRecipe is not null, proceeding to update it');
       if (isEditCommand.isTrue) {
         recipeController.currentRecipe.value!.commandList[commandIndexToEdit] =
             newCommand;
@@ -109,66 +83,51 @@ class CommandController extends GetxController {
       }
     }
 
-    // Debug print the updated currentRecipe
-    if (recipeController.currentRecipe.value != null) {
-      debugPrint(
-          'Updated currentRecipe: ${recipeController.currentRecipe.value!.toString()}');
-      debugPrint(
-          'Updated Command List: ${recipeController.currentRecipe.value!.commandList.map((command) => command.toString()).toList()}');
-    } else {
-      debugPrint('Error: currentRecipe is still null after initialization');
-    }
-
+    // Update the command menu list based on the command state
     if (isEditCommand.isFalse) {
       commandMenuList.add(CommandMenu(
-        numStep: numstepX,
-        volume: volumeX,
-        timeInterval: timeIntervalX,
-        timePouring: timePouringX,
+        numStep: currentStep.value.toString(),
+        volume: commandvolumeCtrl.text,
+        timePouring: commandTimeInterval.text,
+        timeInterval: commandTimePouring.text,
         readOnly: true,
         onDeleteButtonPressed: recipeController.deleteSelectedCommand,
         onEditButtonPressed: recipeController.editSelectedCommand,
       ));
     } else {
       commandMenuList[commandIndexToEdit] = CommandMenu(
-        numStep: numstepX,
-        volume: volumeX,
-        timeInterval: timeIntervalX,
-        timePouring: timePouringX,
+        numStep: currentStep.value.toString(),
+        volume: commandvolumeCtrl.text,
+        timePouring: commandTimeInterval.text,
+        timeInterval: commandTimePouring.text,
         readOnly: true,
         onDeleteButtonPressed: recipeController.deleteSelectedCommand,
         onEditButtonPressed: recipeController.editSelectedCommand,
       );
     }
-
-    // Print the command menu list to verify it is updated
-    debugPrint('Command Menu List: $commandMenuList');
-
-    //recipeController.refreshSaveRecipeButtonState();
   }
 
   static void validateCommandInput() {
+    // Reset validation state
     isInputCommandValid.value = false;
     commandvolumeErrorText.value = '';
     commandTimePouringErrorText.value = '';
     commandTimeIntervalErrorText.value = '';
 
+    // Validation checks
     if (commandvolumeCtrl.text.isEmpty ||
         int.parse(commandvolumeCtrl.text) <= 0) {
-      debugPrint('[command_controller] input command not valid');
       commandvolumeErrorText.value = 'Please input the right volume';
       return;
     }
     if (commandTimeInterval.text.isEmpty ||
         int.parse(commandTimeInterval.text) <= 0) {
-      debugPrint('[command_controller] input command not valid');
       commandTimeIntervalErrorText.value =
           'Please input the right Time Interval';
       return;
     }
     if (commandTimePouring.text.isEmpty ||
         int.parse(commandTimePouring.text) <= 0) {
-      debugPrint('[command_controller] input command not valid');
       commandTimePouringErrorText.value = 'Please input the right Time Pouring';
       return;
     }
@@ -177,19 +136,15 @@ class CommandController extends GetxController {
 
   static void validateNewCommandInput() {
     isInputCommandValid.value = false;
-    //commandnumStepErrorText.value = '';
-    //commandSetpointCtrl = '';
-    //isInputCommandValid.value = false;
+    commandnumStepErrorText.value = '';
 
     if (commandnumStepCtrl.text.isEmpty ||
         int.parse(commandnumStepCtrl.text) <= 0) {
-      debugPrint('[command_controller] input title command not valid');
       commandnumStepErrorText.value = 'Numstep minimal 1 kak';
       return;
     }
     if (RecipeController.recipeSetpointController.text.isEmpty ||
         int.parse(RecipeController.recipeSetpointController.text) <= 0) {
-      debugPrint('[command_controller] input command not valid');
       commandvolumeErrorText.value = 'Please input the right volume';
       return;
     }

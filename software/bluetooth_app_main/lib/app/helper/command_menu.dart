@@ -55,27 +55,30 @@ class CommandMenu extends StatelessWidget {
             border: Border.all(color: Colors.deepPurple),
           ),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Flexible(
-                child: SizedBox(
-                  width: 220,
-                  height: 40,
-                  child: buildTextField(
-                    title: 'Pouring Steps',
-                    commandText: CommandController.commandCtrl.text,
-                    errorText: CommandController.commandErrorText.value,
-                    commandTextController: CommandController.commandCtrl,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: SizedBox(
+                    width: 220,
+                    height: 100,
+                    child: buildTextField(
+                      title: 'Pouring Steps :',
+                      commandText: CommandController.commandCtrl.text,
+                      errorText: CommandController.commandErrorText.value,
+                      commandTextController: CommandController.commandCtrl,
+                    ),
                   ),
                 ),
               ),
               MyCustomButton(
-                commandTitle: "Edit Command", // or any relevant title
+                commandTitle: "Edit Command",
                 customWidget: const Icon(Icons.edit),
                 onPressedAction: onEditButtonPressed,
               ),
               MyCustomButton(
-                commandTitle: "Delete Command", // or any relevant title
+                commandTitle: "Delete Command",
                 customWidget: const Icon(Icons.delete),
                 onPressedAction: onDeleteButtonPressed,
               ),
