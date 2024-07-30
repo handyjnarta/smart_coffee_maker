@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth/app/controllers/recipe_controller.dart';
+//import 'package:flutter_bluetooth/app/controllers/global_controller.dart';
 import 'package:flutter_bluetooth/app/helper/popup_dialogs.dart';
 import 'package:get/get.dart';
 import '../../bluetooth_data.dart';
@@ -8,10 +9,41 @@ import '../../utils.dart';
 import '../constant/constant.dart';
 import 'add_recipe_view.dart';
 
-enum PopupItems { edit, delete }
+enum PopupItems { edit, delete, run }
 
 class RecipesView extends StatelessWidget {
   const RecipesView({Key? key}) : super(key: key);
+
+  void runrecipe() {
+    String recipeName = RecipeController()
+        .recipeList[RecipeController().recipeIndex.value]
+        .recipeName;
+    showGetxSnackbar('Recipe deleted', 'Recipe "$recipeName" ran now');
+    double setpointval = 0.0;
+    int numstepsval = 0;
+    int volumeval = 0;
+    int timeIntervalval = 0;
+    int timePouringval = 0;
+    ctrl.changeTab(1);
+    String message = 'r';
+    BluetoothData().sendMessageToBluetooth(message,true);
+    message = setpointval as String;
+    BluetoothData().sendMessageToBluetooth(message,true);
+    message = numstepsval as String;
+    BluetoothData().sendMessageToBluetooth(message,true);
+    for (int i = 0; i < numstepsval; i++) {
+      volumeval = 0; // masukin untuk volume val di index numstepval nya
+      message = volumeval as String;
+      BluetoothData().sendMessageToBluetooth(message,true);
+      timePouringval = 0; // masukin untuk timePouring val di index numstepval nya
+      message = timePouringval as String;
+      BluetoothData().sendMessageToBluetooth(message,true);
+      timeIntervalval = 0; // masukin untuk timeInterval val di index numstepval nya
+      message = timeIntervalval as String;
+      BluetoothData().sendMessageToBluetooth(message,true);
+    }
+  }
+
 
   void deleteRecipe() {
     Navigator.pop(Get.context!);
@@ -29,11 +61,11 @@ class RecipesView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Obx(() {
       return RecipeController().recipeList.isNotEmpty
-          ? ListView.builder(
+          ? 
+          ListView.builder(
               itemCount: RecipeController().recipeList.length,
               itemBuilder: (BuildContext context, int index) {
                 debugPrint('[recipe_view] rebuilding listview');
-
                 return buildRecipeContainer(
                     context: context,
                     recipeName: RecipeController().recipeList[index].recipeName,
@@ -129,20 +161,6 @@ class RecipesView extends StatelessWidget {
                           fontSize: 20, color: colors['neutralTextColor']!),
                     ),
                   ),
-                  ElevatedButton(
-                    onPressed: () {
-                      debugPrint('[recipes_view] To turn On Command: r');
-
-                      if (ctrl.isConnected.isTrue) {
-                        BluetoothData.instance
-                            .sendMessageToBluetooth('r', false);
-                        RecipeController().recipeList[recipeIndex].status =
-                            true;
-                        RecipeController().recipeList.refresh();
-                      }
-                    },
-                    child: const Text("ON"),
-                  ),
                   const SizedBox(width: 10),
                   PopupMenuButton<PopupItems>(
                     onSelected: (PopupItems item) {
@@ -152,7 +170,16 @@ class RecipesView extends StatelessWidget {
 
                       if (item == PopupItems.edit) {
                         editSelectedRecipe(context);
-                      } else {
+                      } else if (item == PopupItems.run) {
+                        showConfirmDialog(
+                          context: context,
+                          title: 'Run This recipe',
+                          text: 'Want to run ($recipeName) recipe ?',
+                          onOkPressed: runrecipe,
+                        );
+                      }
+                        
+                       else {
                         showConfirmDialog(
                           context: context,
                           title: 'Delete confirm',
@@ -163,6 +190,19 @@ class RecipesView extends StatelessWidget {
                     },
                     itemBuilder: (BuildContext context) {
                       return [
+                        const PopupMenuItem<PopupItems>(
+                          value: PopupItems.run,
+                          child: Row(
+                            children: [
+                              Text('Run'),
+                              Expanded(child: SizedBox(width: 10)),
+                              Icon(
+                                Icons.delete,
+                                size: 20.0,
+                              )
+                            ],
+                          ),
+                        ),
                         const PopupMenuItem<PopupItems>(
                           value: PopupItems.edit,
                           child: Row(

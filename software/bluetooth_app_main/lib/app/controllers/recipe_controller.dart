@@ -221,6 +221,7 @@ class RecipeController extends GetxController {
           'Recipe "${currentRecipe.value?.recipeName}" edited successfully');
     } else {
       recipeList.add(currentRecipe.value!);
+      debugPrint('ada resep ${currentRecipe.value!}');
       showGetxSnackbar('Save recipe OK',
           'Recipe: "${currentRecipe.value?.recipeName}" saved');
       refreshLogs('Recipe "${currentRecipe.value?.recipeName}" saved');

@@ -161,29 +161,16 @@ void askForInputs() {
       currentState = POURING;
     }
     else if (incoming == 'r') {
-      ESP_BT.println("Are you sure want to run this recipe?");
-      char incomingdua ;
-      incomingdua = readSingleCharFromSerial();
-      while (incomingdua != 'y') {
-          //ESP_BT.println("Input is wrong");
-          incomingdua = readSingleCharFromSerial();
-          //ESP_BT.println("belum bener inputnya, kalau gamau running resep ini refresh aja ya");
-          //delay(1000);
-        }
-
-      if (incomingdua == 'y') {
-      //delay(1000);
-      //ESP_BT.println("Masuk");
         Setpoint = readDoubleFromSerial();
         while (Setpoint < 30.00 || Setpoint > 94.00) {
           //ESP_BT.println("Input is wrong");
-          ESP_BT.println("Enter desired temperature setpoint: ");
+          ESP_BT.println("Desired temperature setpoint from recipe: ");
           Setpoint = readDoubleFromSerial();
           //delay(1000);
         }
         ESP_BT.printf("Setpoint accepted: %.2f", Setpoint);
         ESP_BT.println('\n');
-        ESP_BT.println("Enter number of pouring steps: ");
+        ESP_BT.println("Number of pouring steps from recipe: ");
         numSteps = readIntFromSerial();
         while (numSteps < 1) {
           ESP_BT.println("Input is wrong");
@@ -191,33 +178,29 @@ void askForInputs() {
           numSteps = readIntFromSerial();
         }
         for (int step = 1; step <= numSteps; ++step) {
-          ESP_BT.print("Enter desired water volume for step ");
+          ESP_BT.print("Desired water volume for step from recipe: ");
           ESP_BT.print(step);
           ESP_BT.println(": ");
           int volwater = readIntFromSerial();
           pouringVolumes[step - 1] = volwater;
           totalVolume += volwater;
-          ESP_BT.print("Enter duration (in seconds) for pouring step ");
+          ESP_BT.print("Duration (in seconds) from recipe for pouring step  ");
           ESP_BT.print(step);
           ESP_BT.println(": ");
           pouringDurations[step - 1] = readIntFromSerial();
-          ESP_BT.print("Enter interval time (in seconds) between pouring step ");
+          ESP_BT.print("Interval time (in seconds) from recipe between pouring step ");
           ESP_BT.print(step);
           ESP_BT.println(": ");
           pouringIntervals[step - 1] = readIntFromSerial();
         }
-
-        //ESP_BT.print("Total water volume: ");
-        //ESP_BT.println(totalVolume);
 
         currentState = POURING;
     } else {
       ESP_BT.print("kalau gamau running resep ini refresh aja ya ");
     }
     }
+    dimmer.setPower(0);
   }
-  dimmer.setPower(0);
-}
 
 void updateLoadCell() {
   static boolean newDataReady = 0;
