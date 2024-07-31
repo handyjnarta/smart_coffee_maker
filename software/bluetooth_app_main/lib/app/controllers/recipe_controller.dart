@@ -249,7 +249,7 @@ class RecipeController extends GetxController {
     // Find the command index by numStep
     CommandController.commandIndexToEdit = currentRecipe!.commandList
         .indexWhere(
-            (element) => element.numStep == (stepToEdit + 1).toString());
+            (element) => element.numStep == (stepToEdit).toString());
 
     if (CommandController.commandIndexToEdit != -1) {
       var commandToEdit =

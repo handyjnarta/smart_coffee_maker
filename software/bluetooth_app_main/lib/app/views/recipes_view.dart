@@ -165,7 +165,8 @@ class RecipesView extends StatelessWidget {
                           context: context,
                           title: 'Run This recipe',
                           text: 'Want to run ($recipeName) recipe ?',
-                          onOkPressed: runrecipe,
+                          onOkPressed: 
+                          runrecipe,
                         );
                       } else {
                         showConfirmDialog(
