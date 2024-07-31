@@ -10,11 +10,11 @@ class CommandController extends GetxController {
   final RecipeController recipeController = Get.find<RecipeController>();
 
   // Observable lists and variables
-  static var commandMenuList = <CommandMenu>[].obs;
+  static List<CommandMenu> commandMenuList = <CommandMenu>[].obs;
   static var isEditCommand = false.obs;
   static var isInsertNewRecipe = false.obs;
   static var isInputCommandValid = false.obs;
-  static int commandIndexToEdit = 0;
+  static int commandIndexToEdit = -1;
   static var commandnumStepErrorText = ''.obs;
   static var commandvolumeErrorText = ''.obs;
   static var commandTimePouringErrorText = ''.obs;
@@ -58,20 +58,20 @@ class CommandController extends GetxController {
     var newCommand = Commands(
       numStep: currentStep.value.toString(),
       volume: commandvolumeCtrl.text,
-      timePouring: commandTimeInterval.text,
-      timeInterval: commandTimePouring.text,
+      timePouring: commandTimePouring.text,
+      timeInterval: commandTimeInterval.text,
     );
 
     // Debug print each field before creating the Commands object
     debugPrint('numStep: ${currentStep.value}');
     debugPrint('volume: ${commandvolumeCtrl.text}');
-    debugPrint('timePouring: ${commandTimeInterval.text}');
-    debugPrint('timeInterval: ${commandTimePouring.text}');
+    debugPrint('timePouring: ${commandTimePouring.text}');
+    debugPrint('timeInterval: ${commandTimeInterval.text}');
 
     RecipeController recipeController = Get.find<RecipeController>();
 
-    if (recipeController.currentRecipe.value == null) {
-      recipeController.currentRecipe.value = Recipes(
+    if (RecipeController.currentRecipe == null) {
+      RecipeController.currentRecipe = Recipes(
         id: recipeController.recipeCount.value,
         setpoint: RecipeController.recipeSetpointController.text,
         recipeName: RecipeController.recipeNameController.text,
@@ -80,10 +80,13 @@ class CommandController extends GetxController {
       );
     } else {
       if (isEditCommand.isTrue) {
-        recipeController.currentRecipe.value!.commandList[commandIndexToEdit] =
+        RecipeController.currentRecipe!.commandList[commandIndexToEdit] =
             newCommand;
       } else {
-        recipeController.currentRecipe.value!.commandList.add(newCommand);
+        RecipeController.currentRecipe!.commandList.add(newCommand);
+        // Debug print the entire command list
+        debugPrint(
+            'Updated command list: ${RecipeController.currentRecipe!.commandList.map((command) => command.toJson()).toList()}');
       }
     }
 
@@ -92,21 +95,23 @@ class CommandController extends GetxController {
       commandMenuList.add(CommandMenu(
         numStep: currentStep.value.toString(),
         volume: commandvolumeCtrl.text,
-        timePouring: commandTimeInterval.text,
-        timeInterval: commandTimePouring.text,
+        timePouring: commandTimePouring.text,
+        timeInterval: commandTimeInterval.text,
         readOnly: true,
         onDeleteButtonPressed: recipeController.deleteSelectedCommand,
-        onEditButtonPressed: recipeController.editSelectedCommand,
+        onEditButtonPressed: () =>
+            recipeController.editSelectedCommand(currentStep.value),
       ));
     } else {
       commandMenuList[commandIndexToEdit] = CommandMenu(
         numStep: currentStep.value.toString(),
         volume: commandvolumeCtrl.text,
-        timePouring: commandTimeInterval.text,
-        timeInterval: commandTimePouring.text,
+        timePouring: commandTimePouring.text,
+        timeInterval: commandTimeInterval.text,
         readOnly: true,
         onDeleteButtonPressed: recipeController.deleteSelectedCommand,
-        onEditButtonPressed: recipeController.editSelectedCommand,
+        onEditButtonPressed: () =>
+            recipeController.editSelectedCommand(currentStep.value),
       );
     }
   }
@@ -153,5 +158,17 @@ class CommandController extends GetxController {
       return;
     }
     isInputCommandValid.value = true;
+  }
+
+  // Method to add an index to the list
+  static void addCommandIndexToEdit(int commandNumber) {
+    // Directly set the value of commandIndexToEdit
+    commandIndexToEdit = commandNumber;
+    debugPrint('Command index to edit: $commandIndexToEdit');
+  }
+
+  // Method to get the command index for a given step
+  static int getCommandIndexForStep(int step) {
+    return commandIndexToEdit; // Assuming step is 1-based
   }
 }

@@ -146,8 +146,8 @@ class AddRecipeView extends StatelessWidget {
       height: 50,
       child: OutlinedButton(
         onPressed: () {
-          if (recipeController.currentRecipe.value == null ||
-              recipeController.currentRecipe.value!.commandList.length <
+          if (RecipeController.currentRecipe == null ||
+              RecipeController.currentRecipe!.commandList.length <
                   minCommandCount) {
             showCustomDialog(
               context: context,

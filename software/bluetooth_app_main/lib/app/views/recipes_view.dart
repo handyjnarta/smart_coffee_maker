@@ -17,9 +17,8 @@ class RecipesView extends StatelessWidget {
   final int index = 1;
 
   void runrecipe() {
-    String recipeName = RecipeController()
-        .recipeList[RecipeController().recipeIndex.value]
-        .recipeName;
+    String recipeName = RecipeController
+        .recipeList[RecipeController().recipeIndex.value].recipeName;
     showGetxSnackbar('Recipe deleted', 'Recipe "$recipeName" ran now');
     double setpointval = 0.0;
     int numstepsval = 0;
@@ -50,12 +49,9 @@ class RecipesView extends StatelessWidget {
 
   void deleteRecipe() {
     Navigator.pop(Get.context!);
-    String recipeName = RecipeController()
-        .recipeList[RecipeController().recipeIndex.value]
-        .recipeName;
-    RecipeController()
-        .recipeList
-        .removeAt(RecipeController().recipeIndex.value);
+    String recipeName = RecipeController
+        .recipeList[RecipeController().recipeIndex.value].recipeName;
+    RecipeController.recipeList.removeAt(RecipeController().recipeIndex.value);
     ctrl.refreshLogs(text: 'Recipe "$recipeName" deleted');
     showGetxSnackbar('Recipe deleted', 'Recipe "$recipeName" deleted');
   }
@@ -64,15 +60,15 @@ class RecipesView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Obx(() {
       // ignore: prefer_is_empty
-      return (RecipeController().recipeList.isNotEmpty)
+      return (RecipeController.recipeList.isBlank == false)
           ? ListView.builder(
-              itemCount: RecipeController().recipeList.length,
+              itemCount: RecipeController.recipeList.length,
               itemBuilder: (BuildContext context, index) {
                 debugPrint('[recipe_view] rebuilding listview');
-                return buildRecipeContainer( 
+                return buildRecipeContainer(
                     context: context,
-                    recipeName: RecipeController().recipeList[index].recipeName,
-                    status: RecipeController().recipeList[index].status,
+                    recipeName: RecipeController.recipeList[index].recipeName,
+                    status: RecipeController.recipeList[index].status,
                     recipeIndex: index);
               })
           : const Center(
@@ -102,15 +98,14 @@ class RecipesView extends StatelessWidget {
 
       if (RecipeController().isSaveRecipeBtnClicked() == false) {
         debugPrint('[recipe_view] old recipe rolled back');
-        RecipeController()
-                .recipeList[RecipeController().recipeIndex.value]
-                .commandList =
+        RecipeController
+                .recipeList[RecipeController().recipeIndex.value].commandList =
             RecipeController().oldRecipeData['oldRecipe']['commandList'];
         ctrl.refreshLogs(
             text:
-                'Recipe "${RecipeController().recipeList[RecipeController().recipeIndex.value].recipeName}" editing canceled');
+                'Recipe "${RecipeController.recipeList[RecipeController().recipeIndex.value].recipeName}" editing canceled');
         showGetxSnackbar('Cancel to edit',
-            'Recipe "${RecipeController().recipeList[RecipeController().recipeIndex.value].recipeName}" editing canceled');
+            'Recipe "${RecipeController.recipeList[RecipeController().recipeIndex.value].recipeName}" editing canceled');
       }
     });
   }
@@ -167,7 +162,7 @@ class RecipesView extends StatelessWidget {
                   const SizedBox(width: 10),
                   PopupMenuButton<PopupItems>(
                     onSelected: (PopupItems item) {
-                      RecipeController().recipeIndex.value = RecipeController()
+                      RecipeController().recipeIndex.value = RecipeController
                           .recipeList
                           .indexWhere((dev) => dev.recipeName == recipeName);
 
