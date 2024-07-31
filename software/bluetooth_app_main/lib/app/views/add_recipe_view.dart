@@ -3,6 +3,7 @@ import 'package:flutter_bluetooth/app/constant/constant.dart';
 import 'package:flutter_bluetooth/app/controllers/command_controller.dart';
 import 'package:flutter_bluetooth/app/controllers/recipe_controller.dart';
 import 'package:flutter_bluetooth/app/views/add_command_view.dart';
+import 'package:flutter_bluetooth/utils.dart';
 import 'package:get/get.dart';
 import '../helper/widget_helper.dart';
 import '../helper/popup_dialogs.dart';
@@ -157,12 +158,6 @@ class AddRecipeView extends StatelessWidget {
             );
           } else {
             recipeController.saveRecipeData();
-            Navigator.of(context).pop();
-            recipeController.refreshSaveRecipeButtonState();
-            // if (recipeController.enableSaveRecipeBtn.isTrue) {
-            //   recipeController.saveRecipeData();
-            //   Navigator.of(context).pop();
-            // }
           }
         },
         style: buildButtonStyle(),

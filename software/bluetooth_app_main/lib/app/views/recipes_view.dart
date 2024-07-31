@@ -11,8 +11,10 @@ import 'add_recipe_view.dart';
 
 enum PopupItems { edit, delete, run }
 
+// ignore: must_be_immutable
 class RecipesView extends StatelessWidget {
   const RecipesView({Key? key}) : super(key: key);
+  final int index = 1;
 
   void runrecipe() {
     String recipeName = RecipeController()
@@ -61,12 +63,13 @@ class RecipesView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
+      // ignore: prefer_is_empty
       return (RecipeController().recipeList.isNotEmpty)
           ? ListView.builder(
               itemCount: RecipeController().recipeList.length,
-              itemBuilder: (BuildContext context, int index) {
+              itemBuilder: (BuildContext context, index) {
                 debugPrint('[recipe_view] rebuilding listview');
-                return buildRecipeContainer(
+                return buildRecipeContainer( 
                     context: context,
                     recipeName: RecipeController().recipeList[index].recipeName,
                     status: RecipeController().recipeList[index].status,
@@ -74,7 +77,7 @@ class RecipesView extends StatelessWidget {
               })
           : const Center(
               child: Text(
-              'No recipe found mmk',
+              'No recipe found',
               style: TextStyle(fontSize: 22),
             ));
     });
@@ -97,7 +100,7 @@ class RecipesView extends StatelessWidget {
       debugPrint(
           '[recipe_view] RecipeController.isSaveRecipeBtnClicked: ${RecipeController().isSaveRecipeBtnClicked}');
 
-      if (RecipeController().isSaveRecipeBtnClicked == false) {
+      if (RecipeController().isSaveRecipeBtnClicked() == false) {
         debugPrint('[recipe_view] old recipe rolled back');
         RecipeController()
                 .recipeList[RecipeController().recipeIndex.value]

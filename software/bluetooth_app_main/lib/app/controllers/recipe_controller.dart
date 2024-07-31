@@ -187,6 +187,7 @@ class RecipeController extends GetxController {
     if (currentRecipe.value != null) {
       if (currentRecipe.value!.commandList.length < minCommandCount ||
           errorText.isNotEmpty) {
+        showGetxSnackbar('gatau', 'gatauuuuuuuuuuuuuuu');
         enableSaveRecipeBtn.value = false;
 
         if (errorText.isNotEmpty && enableNewCommandBtn.isFalse) {
@@ -200,7 +201,7 @@ class RecipeController extends GetxController {
 
   void saveRecipeData() {
     isSaveRecipeBtnClicked.value = true;
-/*
+
     if (currentRecipe.value?.recipeName != recipeNameController.text) {
       refreshLogs(
           'Recipe "${currentRecipe.value?.recipeName}" changed to "${recipeNameController.text}"');
@@ -213,7 +214,7 @@ class RecipeController extends GetxController {
           'Setpoint "${currentRecipe.value?.setpoint}" changed to "${recipeSetpointController.text}"');
       currentRecipe.value?.setpoint = recipeSetpointController.text;
     }
-*/
+
     if (isEditRecipe.value) {
       recipeList[recipeIndex.value] = currentRecipe.value!;
       showGetxSnackbar('Edit success',
@@ -221,8 +222,8 @@ class RecipeController extends GetxController {
       refreshLogs(
           'Recipe "${currentRecipe.value?.recipeName}" edited successfully');
     } else {
-      currentRecipeX = currentRecipe.value!;
-      recipeList.add(currentRecipeX!);
+      //currentRecipeX = currentRecipe.value!;
+      recipeList.add(currentRecipe.value!);
       showGetxSnackbar(
           'ada berapa ya', 'Recipe: "ada ${recipeList.length}" saved');
       refreshLogs('Recipe "${currentRecipe.value?.recipeName}" saved');

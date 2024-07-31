@@ -73,7 +73,7 @@ class MainView extends StatelessWidget {
                       PopupMenuButton<RecipePopupMenuItem>(
                           onSelected: (RecipePopupMenuItem item) {
                           if (item == RecipePopupMenuItem.newRecipe) {
-                            const RecipesView().createNewRecipe(context);
+                            RecipesView().createNewRecipe(context);
                           } else if (item == RecipePopupMenuItem.saveRecipe) {
                             if (RecipeController().recipeList.isNotEmpty) {
                               RecipeController().saveRecipeListIntoStorage();
