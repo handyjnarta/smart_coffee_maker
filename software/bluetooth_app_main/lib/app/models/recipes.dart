@@ -7,13 +7,13 @@ class Recipes {
   String recipeName;
   int id;
   String setpoint;
-  bool status;
+  //bool status;
   List<Commands> commandList;
 
   Recipes({
     required this.recipeName,
     required this.id,
-    required this.status,
+    //required this.status,
     required this.setpoint,
     required this.commandList,
   });
@@ -21,7 +21,7 @@ class Recipes {
   Map<String, dynamic> toJson() => {
         "recipeName": recipeName,
         "id": id,
-        "status": status,
+        //"status": status,
         "setpoint": setpoint,
         "commandList": commandList.map((cmd) => cmd.toJson()).toList(),
       };
@@ -29,7 +29,7 @@ class Recipes {
   static Recipes fromJson(Map<String, dynamic> json) => Recipes(
         recipeName: json["recipeName"],
         id: json["id"],
-        status: json["status"],
+        //status: json["status"],
         setpoint: json["setpoint"],
         commandList: (json["commandList"] as List)
             .map((cmd) => Commands.fromJson(cmd))
@@ -37,6 +37,8 @@ class Recipes {
       );
 
   set setNewRecipe(String newRecipeName) => recipeName = newRecipeName;
+  set setNewRecipeSetpoint(String setRecipeSetpoint) => setpoint = setRecipeSetpoint;
+  set setNewRecipeId(int setRecipeId) => id = setRecipeId;
 }
 
 class RecipesManager {
@@ -59,9 +61,6 @@ class RecipesManager {
   Future<List<Recipes>> loadRecipesListFromFirestore() async {
     final allRecipes = await _firestoreService.loadRecipesListFromFirestore();
     _statusList.clear();
-    for (final recipe in allRecipes) {
-      _statusList.add(recipe.status);
-    }
     return allRecipes;
   }
 }
