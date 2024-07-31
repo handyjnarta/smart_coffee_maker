@@ -68,7 +68,7 @@ class RecipesView extends StatelessWidget {
                 return buildRecipeContainer(
                     context: context,
                     recipeName: RecipeController.recipeList[index].recipeName,
-                    status: RecipeController.recipeList[index].status,
+                    //status: RecipeController.recipeList[index].status,
                     recipeIndex: index);
               })
           : const Center(
@@ -129,22 +129,14 @@ class RecipesView extends StatelessWidget {
 
   Widget buildRecipeContainer({
     required String recipeName,
-    required bool status,
+    //required bool status,
     required int recipeIndex,
     required BuildContext context,
   }) {
     return Padding(
       padding: const EdgeInsets.all(6.0),
       child: Card(
-        shape: RoundedRectangleBorder(
-          side: BorderSide(
-            color: status
-                ? colors['onBorderColor']!
-                : colors['neutralBorderColor']!,
-            width: 3,
-          ),
-          borderRadius: BorderRadius.circular(4.0),
-        ),
+        shape: RoundedRectangleBorder(),
         elevation: 4,
         child: Padding(
           padding: const EdgeInsets.all(8.0),

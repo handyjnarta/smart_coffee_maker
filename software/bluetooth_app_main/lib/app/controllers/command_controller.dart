@@ -6,15 +6,16 @@ import '../models/commands.dart';
 import '../models/recipes.dart';
 import 'recipe_controller.dart';
 
+
 class CommandController extends GetxController {
   final RecipeController recipeController = Get.find<RecipeController>();
 
   // Observable lists and variables
-  static List<CommandMenu> commandMenuList = <CommandMenu>[].obs;
+  static var commandMenuList = <CommandMenu>[].obs;
   static var isEditCommand = false.obs;
   static var isInsertNewRecipe = false.obs;
   static var isInputCommandValid = false.obs;
-  static int commandIndexToEdit = -1;
+  static int commandIndexToEdit = 0;
   static var commandnumStepErrorText = ''.obs;
   static var commandvolumeErrorText = ''.obs;
   static var commandTimePouringErrorText = ''.obs;
@@ -50,7 +51,7 @@ class CommandController extends GetxController {
           maxCommandCount, (index) => TextEditingController(),
           growable: false);
 
-  static void saveNewCommand() {
+    static void saveNewCommand() {
     validateCommandInput();
 
     if (!isInputCommandValid.value) return;
@@ -75,7 +76,7 @@ class CommandController extends GetxController {
         id: recipeController.recipeCount.value,
         setpoint: RecipeController.recipeSetpointController.text,
         recipeName: RecipeController.recipeNameController.text,
-        status: false,
+        //status: false,
         commandList: [newCommand],
       );
     } else {
@@ -84,11 +85,12 @@ class CommandController extends GetxController {
             newCommand;
       } else {
         RecipeController.currentRecipe!.commandList.add(newCommand);
-        // Debug print the entire command list
-        debugPrint(
-            'Updated command list: ${RecipeController.currentRecipe!.commandList.map((command) => command.toJson()).toList()}');
       }
     }
+
+    // Debug print the entire command list
+    debugPrint(
+        'Updated command list: ${RecipeController.currentRecipe!.commandList.map((command) => command.toJson()).toList()}');
 
     // Update the command menu list based on the command state
     if (isEditCommand.isFalse) {
@@ -160,7 +162,7 @@ class CommandController extends GetxController {
     isInputCommandValid.value = true;
   }
 
-  // Method to add an index to the list
+    // Method to add an index to the list
   static void addCommandIndexToEdit(int commandNumber) {
     // Directly set the value of commandIndexToEdit
     commandIndexToEdit = commandNumber;
@@ -170,5 +172,28 @@ class CommandController extends GetxController {
   // Method to get the command index for a given step
   static int getCommandIndexForStep(int step) {
     return commandIndexToEdit; // Assuming step is 1-based
+  }
+  static addCommandtoCommandList({
+    required String numStep,
+    required String volume,
+    required String timePouring,
+    required String timeInterval,
+  }) {
+    Commands newCommand = Commands(
+      numStep: numStep,
+      volume: volume,
+      timePouring: timePouring,
+      timeInterval: timeInterval,
+    );
+
+    int initialLength = RecipeController.currentRecipe!.commandList.length;
+    RecipeController.currentRecipe?.commandList.add(newCommand);
+    int finalLength = RecipeController.currentRecipe!.commandList.length;
+
+    if (finalLength > initialLength) {
+      debugPrint('Command successfully added: $newCommand');
+    } else {
+      debugPrint('Failed to add command: $newCommand');
+    }
   }
 }

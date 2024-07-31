@@ -9,6 +9,7 @@ class PouringDialogController extends GetxController {
     Navigator.pop(context);
   }
 
+
   static void onNextPressed(BuildContext context) {
     debugPrint('Current step: ${CommandController.currentStep.value}');
     debugPrint(

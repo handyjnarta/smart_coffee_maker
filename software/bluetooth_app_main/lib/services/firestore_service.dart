@@ -10,7 +10,7 @@ class FirestoreService {
       final recipeData = {
         'recipeName': recipe.recipeName,
         'id': recipe.id,
-        'status': recipe.status,
+        //'status': recipe.status,
         'setpoint': recipe.setpoint,
         'commandList': recipe.commandList.map((cmd) => cmd.toJson()).toList(),
       };
@@ -29,7 +29,7 @@ class FirestoreService {
       allRecipes.add(Recipes(
         recipeName: data['recipeName'],
         id: data['id'],
-        status: data['status'],
+        //status: data['status'],
         setpoint: data['setpoint'],
         commandList: commandList,
       ));

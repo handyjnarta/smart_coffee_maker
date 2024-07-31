@@ -128,7 +128,7 @@ class RecipeController extends GetxController {
     currentRecipe = Recipes(
       recipeName: '',
       id: recipeCount.value,
-      status: false,
+      //status: false,
       setpoint: '',
       commandList: [],
     );
@@ -198,37 +198,44 @@ class RecipeController extends GetxController {
   }
 
   void saveRecipeData() {
-    isSaveRecipeBtnClicked.value = true;
+  isSaveRecipeBtnClicked.value = true;
 
-    if (currentRecipe?.recipeName != recipeNameController.text) {
-      refreshLogs(
-          'Recipe "${currentRecipe?.recipeName}" changed to "${recipeNameController.text}"');
-      currentRecipe?.setNewRecipe = recipeNameController.text;
-    }
-
-    if (int.parse(currentRecipe!.setpoint) !=
-        int.parse(recipeSetpointController.text)) {
-      refreshLogs(
-          'Setpoint "${currentRecipe?.setpoint}" changed to "${recipeSetpointController.text}"');
-      currentRecipe?.setpoint = recipeSetpointController.text;
-    }
-
-    if (isEditRecipe.value) {
-      recipeList[recipeIndex.value] = currentRecipe!;
-      showGetxSnackbar('Edit success',
-          'Recipe "${currentRecipe?.recipeName}" edited successfully');
-      refreshLogs('Recipe "${currentRecipe?.recipeName}" edited successfully');
-    } else {
-      recipeList.add(currentRecipe!);
-      showGetxSnackbar(
-          'ada berapa ya', 'Recipe: "ada ${recipeList.length}" saved');
-      refreshLogs('Recipe "${currentRecipe?.recipeName}" saved');
-    }
-    for (final data in recipeList) {
-      debugPrint('[recipe_controller] recipe name: ${data.recipeName}');
-    }
+  if (currentRecipe?.recipeName != recipeNameController.text) {
+    refreshLogs('Recipe "${currentRecipe?.recipeName}" changed to "${recipeNameController.text}"');
+    currentRecipe?.setNewRecipe = recipeNameController.text;
   }
 
+  if (currentRecipe?.setpoint != recipeSetpointController.text) {
+    refreshLogs('Setpoint "${currentRecipe?.setpoint}" changed to "${recipeSetpointController.text}"');
+    currentRecipe?.setNewRecipeSetpoint = recipeSetpointController.text;
+  }
+
+  int newDevIndex = recipeList.indexWhere((element) => element.id == currentRecipe!.id);
+
+  if (isInsertNewRecipe.value && newDevIndex > -1) {
+    errorText.value = 'Recipe ID already used';
+    // Mengubah ID hanya jika ID sudah digunakan dan ini adalah resep baru
+    int currID = currentRecipe!.id;
+    currentRecipe!.setNewRecipeId = (currID + 1);
+  }
+
+  if (isEditRecipe.value) {
+    recipeList[recipeIndex.value] = currentRecipe!;
+    showGetxSnackbar('Edit success', 'Recipe "${currentRecipe!.recipeName}" edited successfully');
+    refreshLogs('Recipe "${currentRecipe!.recipeName}" edited successfully');
+  } else {
+    recipeList.add(currentRecipe!);//buat void untuk menambahkan
+    showGetxSnackbar('Recipe saved', 'Recipe count: "${recipeList.length}" saved');
+    refreshLogs('Recipe "${currentRecipe!.recipeName}" saved');
+  }
+  
+  for (final data in recipeList) {
+    debugPrint('[recipe_controller] recipe name: ${data.recipeName}');
+    //debugPrint('[recipe_controller] bool: ${data.status}');
+    debugPrint('[recipe_controller] id: ${data.id}');
+    debugPrint('[recipe_controller] Setpoint: ${data.setpoint}');
+  }
+}
   void onNewCommandButtonPressed() {
     CommandController.commandvolumeCtrl.text = '';
     CommandController.commandTimePouring.text = '';
