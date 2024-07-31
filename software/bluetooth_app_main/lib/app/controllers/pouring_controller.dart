@@ -11,6 +11,9 @@ class PouringDialogController {
   }
 
   static void onNextPressed(BuildContext context) {
+    debugPrint('Current step: ${CommandController.currentStep.value}');
+    debugPrint(
+        'Command num step: ${CommandController.commandnumStepCtrl.text}');
     CommandController.validateCommandInput();
     if (CommandController.isInputCommandValid.isFalse) {
       return;
@@ -34,8 +37,5 @@ class PouringDialogController {
       CommandController.resetSteps();
       Navigator.pop(context);
     }
-    debugPrint('Current step: ${CommandController.currentStep.value}');
-    debugPrint(
-        'Command num step: ${CommandController.commandnumStepCtrl.text}');
   }
 }
