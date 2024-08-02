@@ -30,7 +30,7 @@ class CommandController extends GetxController {
   static var commandTimeInterval = TextEditingController();
   static var commandSetpointCtrl = TextEditingController();
   static var commandSetpointError = TextEditingController();
-  static int numstepA = 0;
+  static var numstepA = 0.obs; // untuk ke custom button
 
   @override
   void onInit() {

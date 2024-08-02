@@ -296,22 +296,33 @@ class RecipeController extends GetxController {
     return null;
   }
 
+<<<<<<< Updated upstream
   VoidCallback? deleteSelectedCommand() {
     int commandIndexToDelete = 0;
 
+=======
+  void deleteSelectedCommand() {
+    int commandIndexToDelete = int.parse(selectedNumSteps) - 1; //salah disini uuuuuuuuuuuu
+>>>>>>> Stashed changes
     // Convert selectedNumSteps to int for comparison
     int selectedStep = int.parse(selectedNumSteps);
 
+<<<<<<< Updated upstream
     // Find the index of the command to delete
     commandIndexToDelete = RecipeController.currentRecipe!.commandList
         .indexWhere((element) => int.parse(element.numStep) == selectedStep);
+=======
+    //Find the index of the command to delete
+    commandIndexToDelete = RecipeController.currentRecipe!.commandList
+        .indexWhere((element) => int.parse(element.numStep) == int.parse(selectedNumSteps));
+>>>>>>> Stashed changes
 
     debugPrint('Attempting to delete command at index: $commandIndexToDelete');
     debugPrint(
         'Current command list: ${RecipeController.currentRecipe!.commandList.map((e) => e.numStep).toList()}');
     debugPrint(
         'Current command menu list: ${CommandController.commandMenuList.map((e) => e.numStep).toList()}');
-
+      //ini juga saalah
     if (commandIndexToDelete != -1 && currentRecipe!.commandList.isNotEmpty) {
       currentRecipe?.commandList.removeAt(commandIndexToDelete);
       CommandController.commandMenuList.removeAt(commandIndexToDelete);
@@ -326,12 +337,44 @@ class RecipeController extends GetxController {
       // Log an error if the command is not found
       debugPrint('Error: Command not found or list is empty');
     }
-
-    refreshNewCommandButtonState();
+    //refreshNewCommandButtonState(); // SALAH DISINI
     //refreshSaveRecipeButtonState();
-
-    return null;
+    //return null;
   }
+
+  // VoidCallback? deleteSelectedCommand() {
+  //   int commandIndexToDelete = int.parse(selectedNumSteps) - 1; //salah disini uuuuuuuuuuuu
+  //   // Convert selectedNumSteps to int for comparison
+  //   //int selectedStep = int.parse(selectedNumSteps);
+
+  //   //Find the index of the command to delete
+  //   commandIndexToDelete = RecipeController.currentRecipe!.commandList
+  //       .indexWhere((element) => int.parse(element.numStep) == int.parse(selectedNumSteps));
+
+  //   debugPrint('Attempting to delete command at index: $commandIndexToDelete');
+  //   debugPrint(
+  //       'Current command list: ${RecipeController.currentRecipe!.commandList.map((e) => e.numStep).toList()}');
+  //   debugPrint(
+  //       'Current command menu list: ${CommandController.commandMenuList.map((e) => e.numStep).toList()}');
+  //     //ini juga saalah
+  //   if (commandIndexToDelete != -1 && currentRecipe!.commandList.isNotEmpty) {
+  //     currentRecipe?.commandList.removeAt(commandIndexToDelete);
+  //     CommandController.commandMenuList.removeAt(commandIndexToDelete);
+
+  //     // Log the updated lists after deletion
+  //     debugPrint('Deleted command at index: $commandIndexToDelete');
+  //     debugPrint(
+  //         'Updated command list: ${RecipeController.currentRecipe!.commandList.map((e) => e.numStep).toList()}');
+  //     debugPrint(
+  //         'Updated command menu list: ${CommandController.commandMenuList.map((e) => e.numStep).toList()}');
+  //   } else {
+  //     // Log an error if the command is not found
+  //     debugPrint('Error: Command not found or list is empty');
+  //   }
+  //   //refreshNewCommandButtonState(); // SALAH DISINI
+  //   //refreshSaveRecipeButtonState();
+  //   return null;
+  // }
 
   void refreshLogs(String text) {
     ctrl.refreshLogs(text: text, sourceId: SourceId.statusId);

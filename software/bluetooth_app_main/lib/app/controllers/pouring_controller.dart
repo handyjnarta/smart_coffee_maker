@@ -5,6 +5,7 @@ import 'recipe_controller.dart';
 import '../views/add_command_view.dart';
 
 class PouringDialogController extends GetxController {
+  
   static void onCancelPressed(BuildContext context) {
     Navigator.pop(context);
   }
@@ -29,8 +30,8 @@ class PouringDialogController extends GetxController {
 
       if (CommandController.currentStep.value < commandNumStep) {
         RecipeController().onNewCommandButtonPressed();
-
         CommandView.showPouringDialog(context);
+        CommandController.currentStep.value++;
         Navigator.pop(context);
       } else if (CommandController.currentStep.value == commandNumStep) {
         RecipeController().onNewCommandButtonPressed();
