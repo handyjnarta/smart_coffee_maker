@@ -105,7 +105,13 @@ class AddRecipeView extends StatelessWidget {
                           .toList(),
                       const Divider(thickness: 2),
                       const SizedBox(height: 10),
-                      saveButton(context, recipeController),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly, // Atur jarak antar tombol
+                        children: [
+                          saveButton(context, recipeController),
+                          cancelButtonRecipe(context, recipeController),
+                        ],
+                      )
                     ],
                   );
                 }),
@@ -158,6 +164,8 @@ class AddRecipeView extends StatelessWidget {
             );
           } else {
             recipeController.saveRecipeData();
+            Navigator.pop(context);
+            //Navigator.pop(context);
           }
         },
         style: buildButtonStyle(),
@@ -167,6 +175,27 @@ class AddRecipeView extends StatelessWidget {
             Icon(Icons.save),
             SizedBox(width: 10),
             Text('Save Recipe'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget cancelButtonRecipe(BuildContext context, RecipeController recipeController) {
+    return SizedBox(
+      width: 100,
+      height: 50,
+      child: OutlinedButton(
+        onPressed: () {
+            Navigator.pop(context);
+        },
+        style: buildButtonStyle(),
+        child: const Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.cancel),
+            SizedBox(width: 10),
+            Text('Cancel'),
           ],
         ),
       ),
@@ -184,5 +213,5 @@ class AddRecipeView extends StatelessWidget {
     );
   }
 
-  static void editCommand(BuildContext buildContext) {}
+  //static void editCommand(BuildContext buildContext) {}
 }

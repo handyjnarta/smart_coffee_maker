@@ -29,7 +29,8 @@ ButtonStyle buildButtonStyle(
   );
 }
 
-Widget buildTextField({required String title,
+Widget buildTextField({
+  required String title,
   String? errorText,
   required String commandText,
   required TextEditingController commandTextController,
@@ -74,4 +75,26 @@ Widget buildTextField({required String title,
           border: const OutlineInputBorder()
       ),
     );
+}
+
+Widget untukCommand({
+  required String title,
+  bool isReadOnly = false,
+  VoidCallback? onChanged,
+}) {
+  return TextField(
+    onChanged: (value) {
+      onChanged?.call();
+    },
+    readOnly: isReadOnly,
+    autofocus: false,
+    decoration: InputDecoration(
+      floatingLabelBehavior: isReadOnly ? FloatingLabelBehavior.always : FloatingLabelBehavior.auto,
+      labelText: title,
+      labelStyle: const TextStyle(color: Colors.black),
+      isDense: true,
+      contentPadding: const EdgeInsets.all(12),
+      border: const OutlineInputBorder(),
+    ),
+  );
 }
