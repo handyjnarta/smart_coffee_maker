@@ -58,7 +58,7 @@ class CommandView extends StatelessWidget {
               buttonWidth: 60,
               onPressedAction: () {
                 CommandController.isEditCommand.value = false;
-                CommandController.resetSteps();
+                //CommandController.resetSteps();
                 Navigator.pop(context);
               },
             ),
@@ -79,7 +79,7 @@ class CommandView extends StatelessWidget {
                   if (CommandController.isEditCommand.isTrue) {
                     CommandController.isEditCommand.value = false;
                   }
-                  CommandController.resetSteps();
+                  //CommandController.resetSteps();
                   Navigator.pop(context);
                 }
               },
@@ -110,12 +110,15 @@ class CommandView extends StatelessWidget {
   }
 
   static void showPouringDialog(BuildContext context) {
+    debugPrint(
+        'Current step value before showing dialog: ${CommandController.currentStep.value}');
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Obx(() {
-            return Text('Pouring Step ${CommandController.currentStep.value}');
+            return Text(
+                'Pouring Step ${(CommandController.currentStep.value + 1).toString()}');
           }),
           content: Column(
             mainAxisSize: MainAxisSize.min,

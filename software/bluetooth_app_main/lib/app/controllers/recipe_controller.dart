@@ -37,7 +37,7 @@ class RecipeController extends GetxController {
   final turnOffTextController = TextEditingController();
   final recipeSetpointController = TextEditingController(); */
 
-  String selectedTitle = '';
+  String selectedNumSteps = '';
   var errorText = ''.obs;
 
   final FirestoreService firestoreService = FirestoreService();
@@ -175,8 +175,7 @@ class RecipeController extends GetxController {
         timePouring: CommandController.commandTimePouring.text,
         readOnly: true,
         onDeleteButtonPressed: () => deleteSelectedCommand(),
-        onEditButtonPressed: () =>
-            editSelectedCommand(CommandController.currentStep.value),
+        onEditButtonPressed: () => editSelectedCommand,
       ));
     }
   }
@@ -185,7 +184,6 @@ class RecipeController extends GetxController {
     if (currentRecipe != null) {
       if (currentRecipe!.commandList.length < minCommandCount ||
           errorText.isNotEmpty) {
-        showGetxSnackbar('gatau', 'gatauuuuuuuuuuuuuuu');
         enableSaveRecipeBtn.value = false;
 
         if (errorText.isNotEmpty && enableNewCommandBtn.isFalse) {
@@ -198,58 +196,63 @@ class RecipeController extends GetxController {
   }
 
   void saveRecipeData() {
-  isSaveRecipeBtnClicked.value = true;
+    isSaveRecipeBtnClicked.value = true;
 
-  if (currentRecipe?.recipeName != recipeNameController.text) {
-    refreshLogs('Recipe "${currentRecipe?.recipeName}" changed to "${recipeNameController.text}"');
-    currentRecipe?.setNewRecipe = recipeNameController.text;
+    if (currentRecipe?.recipeName != recipeNameController.text) {
+      refreshLogs(
+          'Recipe "${currentRecipe?.recipeName}" changed to "${recipeNameController.text}"');
+      currentRecipe?.setNewRecipe = recipeNameController.text;
+    }
+
+    if (currentRecipe?.setpoint != recipeSetpointController.text) {
+      refreshLogs(
+          'Setpoint "${currentRecipe?.setpoint}" changed to "${recipeSetpointController.text}"');
+      currentRecipe?.setNewRecipeSetpoint = recipeSetpointController.text;
+    }
+
+    int newDevIndex =
+        recipeList.indexWhere((element) => element.id == currentRecipe!.id);
+
+    if (isInsertNewRecipe.value && newDevIndex > -1) {
+      errorText.value = 'Recipe ID already used';
+      // Mengubah ID hanya jika ID sudah digunakan dan ini adalah resep baru
+      int currID = currentRecipe!.id;
+      currentRecipe!.setNewRecipeId = (currID + 1);
+    }
+
+    if (isEditRecipe.value) {
+      recipeList[recipeIndex.value] = currentRecipe!;
+      showGetxSnackbar('Edit success',
+          'Recipe "${currentRecipe!.recipeName}" edited successfully');
+      refreshLogs('Recipe "${currentRecipe!.recipeName}" edited successfully');
+    } else {
+      recipeList.add(currentRecipe!); //buat void untuk menambahkan
+      showGetxSnackbar(
+          'Recipe saved', 'Recipe count: "${recipeList.length}" saved');
+      refreshLogs('Recipe "${currentRecipe!.recipeName}" saved');
+    }
+
+    for (final data in recipeList) {
+      debugPrint('[recipe_controller] recipe name: ${data.recipeName}');
+      //debugPrint('[recipe_controller] bool: ${data.status}');
+      debugPrint('[recipe_controller] id: ${data.id}');
+      debugPrint('[recipe_controller] Setpoint: ${data.setpoint}');
+    }
   }
 
-  if (currentRecipe?.setpoint != recipeSetpointController.text) {
-    refreshLogs('Setpoint "${currentRecipe?.setpoint}" changed to "${recipeSetpointController.text}"');
-    currentRecipe?.setNewRecipeSetpoint = recipeSetpointController.text;
-  }
-
-  int newDevIndex = recipeList.indexWhere((element) => element.id == currentRecipe!.id);
-
-  if (isInsertNewRecipe.value && newDevIndex > -1) {
-    errorText.value = 'Recipe ID already used';
-    // Mengubah ID hanya jika ID sudah digunakan dan ini adalah resep baru
-    int currID = currentRecipe!.id;
-    currentRecipe!.setNewRecipeId = (currID + 1);
-  }
-
-  if (isEditRecipe.value) {
-    recipeList[recipeIndex.value] = currentRecipe!;
-    showGetxSnackbar('Edit success', 'Recipe "${currentRecipe!.recipeName}" edited successfully');
-    refreshLogs('Recipe "${currentRecipe!.recipeName}" edited successfully');
-  } else {
-    recipeList.add(currentRecipe!);//buat void untuk menambahkan
-    showGetxSnackbar('Recipe saved', 'Recipe count: "${recipeList.length}" saved');
-    refreshLogs('Recipe "${currentRecipe!.recipeName}" saved');
-  }
-  
-  for (final data in recipeList) {
-    debugPrint('[recipe_controller] recipe name: ${data.recipeName}');
-    //debugPrint('[recipe_controller] bool: ${data.status}');
-    debugPrint('[recipe_controller] id: ${data.id}');
-    debugPrint('[recipe_controller] Setpoint: ${data.setpoint}');
-  }
-}
   void onNewCommandButtonPressed() {
     CommandController.commandvolumeCtrl.text = '';
     CommandController.commandTimePouring.text = '';
     CommandController.commandTimeInterval.text = '';
   }
 
-  VoidCallback? editSelectedCommand(int stepToEdit) {
+  VoidCallback? editSelectedCommand() {
     CommandController.isEditCommand.value = true;
     CommandView.showPouringDialog(Get.context!);
-
-    // Find the command index by numStep
-    CommandController.commandIndexToEdit = currentRecipe!.commandList
-        .indexWhere(
-            (element) => element.numStep == (stepToEdit).toString());
+    CommandController.commandIndexToEdit = RecipeController
+        .currentRecipe!.commandList
+        .indexWhere((element) => (element.numStep) == selectedNumSteps);
+    debugPrint('Commandindextoedit: ${CommandController.commandIndexToEdit}');
 
     if (CommandController.commandIndexToEdit != -1) {
       var commandToEdit =
@@ -261,13 +264,18 @@ class RecipeController extends GetxController {
       debugPrint('Volume: ${commandToEdit.volume}');
       debugPrint('Time Pouring: ${commandToEdit.timePouring}');
       debugPrint('Time Interval: ${commandToEdit.timeInterval}');
+      commandToEdit.numStep = selectedNumSteps;
+      // Debug print command details after updating
+      debugPrint('Num Step after update: ${commandToEdit.numStep}');
 
+      // Update the numStep to match selectedNumSteps
       // Update the text controllers with the command data
       CommandController.commandvolumeCtrl.text = commandToEdit.volume;
       CommandController.commandTimePouring.text = commandToEdit.timePouring;
       CommandController.commandTimeInterval.text = commandToEdit.timeInterval;
     } else {
-      debugPrint('Command with numStep $stepToEdit not found');
+      debugPrint(
+          'Command with numStep ${CommandController.commandIndexToEdit} not found');
     }
 
     return null;
@@ -275,7 +283,7 @@ class RecipeController extends GetxController {
 
   VoidCallback? deleteSelectedCommand() {
     debugPrint(
-        '[recipe_controller] selected title to delete: $selectedTitle from recipe ${currentRecipe!.recipeName}');
+        '[recipe_controller] selected title to delete: $selectedNumSteps from recipe ${currentRecipe!.recipeName}');
     int commandIndexToDelete = currentRecipe!.id;
 
     if (currentRecipe!.commandList.isNotEmpty) {

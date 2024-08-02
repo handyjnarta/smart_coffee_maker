@@ -65,7 +65,7 @@ class CommandMenu extends StatelessWidget {
                     width: 220,
                     height: 100,
                     child: buildTextField(
-                      title: 'Pouring Steps :',
+                      title: CommandController.currentStep.value.toString(),
                       commandText: CommandController.commandCtrl.text,
                       errorText: CommandController.commandErrorText.value,
                       commandTextController: CommandController.commandCtrl,
@@ -74,12 +74,12 @@ class CommandMenu extends StatelessWidget {
                 ),
               ),
               MyCustomButton(
-                commandTitle: 'Edit',
+                commandNumStep: numStep,
                 customWidget: const Icon(Icons.edit),
                 onPressedAction: onEditButtonPressed,
               ),
               MyCustomButton(
-                commandTitle: 'Delete',
+                commandNumStep: numStep,
                 customWidget: const Icon(Icons.delete),
                 onPressedAction: onDeleteButtonPressed,
               ),

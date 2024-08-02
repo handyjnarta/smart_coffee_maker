@@ -9,38 +9,33 @@ class PouringDialogController extends GetxController {
     Navigator.pop(context);
   }
 
-
   static void onNextPressed(BuildContext context) {
-    debugPrint('Current step: ${CommandController.currentStep.value}');
+    CommandController.validateCommandInput();
+    CommandController.saveNewCommand();
+    debugPrint('Command currennt step: ${CommandController.currentStep.value}');
     debugPrint(
         'Command num step: ${CommandController.commandnumStepCtrl.text}');
 
-    CommandController.validateCommandInput();
-
     if (CommandController.isInputCommandValid.isFalse) {
+      debugPrint('Command input is not valid.');
       return;
     }
-
-    CommandController.saveNewCommand();
 
     if (CommandController.isEditCommand.isTrue) {
       RecipeController().onNewCommandButtonPressed();
       Navigator.pop(context);
-      CommandController.isEditCommand.value = false;
+      //CommandController.isEditCommand.value = false;
     } else {
-      if (CommandController.currentStep.value <
-          int.parse(CommandController.commandnumStepCtrl.text)) {
-        CommandController.addCommandIndexToEdit(
-            CommandController.currentStep.value);
-        CommandController.currentStep.value++;
+      int commandNumStep = int.parse(CommandController.commandnumStepCtrl.text);
+
+      if (CommandController.currentStep.value < commandNumStep) {
         RecipeController().onNewCommandButtonPressed();
+
         CommandView.showPouringDialog(context);
         Navigator.pop(context);
-      } else if (CommandController.currentStep.value ==
-          int.parse(CommandController.commandnumStepCtrl.text)) {
-        CommandController.addCommandIndexToEdit(
-            CommandController.currentStep.value);
+      } else if (CommandController.currentStep.value == commandNumStep) {
         RecipeController().onNewCommandButtonPressed();
+
         Navigator.pop(context);
         Navigator.pop(context);
         CommandController.resetSteps();
