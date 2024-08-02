@@ -295,28 +295,15 @@ class RecipeController extends GetxController {
 
     return null;
   }
-
-<<<<<<< Updated upstream
-  VoidCallback? deleteSelectedCommand() {
-    int commandIndexToDelete = 0;
-
-=======
   void deleteSelectedCommand() {
     int commandIndexToDelete = int.parse(selectedNumSteps) - 1; //salah disini uuuuuuuuuuuu
->>>>>>> Stashed changes
     // Convert selectedNumSteps to int for comparison
-    int selectedStep = int.parse(selectedNumSteps);
+    //int selectedStep = int.parse(selectedNumSteps);
 
-<<<<<<< Updated upstream
-    // Find the index of the command to delete
-    commandIndexToDelete = RecipeController.currentRecipe!.commandList
-        .indexWhere((element) => int.parse(element.numStep) == selectedStep);
-=======
+
     //Find the index of the command to delete
     commandIndexToDelete = RecipeController.currentRecipe!.commandList
         .indexWhere((element) => int.parse(element.numStep) == int.parse(selectedNumSteps));
->>>>>>> Stashed changes
-
     debugPrint('Attempting to delete command at index: $commandIndexToDelete');
     debugPrint(
         'Current command list: ${RecipeController.currentRecipe!.commandList.map((e) => e.numStep).toList()}');
@@ -337,7 +324,7 @@ class RecipeController extends GetxController {
       // Log an error if the command is not found
       debugPrint('Error: Command not found or list is empty');
     }
-    //refreshNewCommandButtonState(); // SALAH DISINI
+    //refreshNewCommandButtonState();
     //refreshSaveRecipeButtonState();
     //return null;
   }
