@@ -34,9 +34,9 @@ class PouringDialogController extends GetxController {
         Navigator.pop(context);
       } else if (CommandController.currentStep.value == commandNumStep) {
         RecipeController().onNewCommandButtonPressed();
-
         Navigator.pop(context);
         Navigator.pop(context);
+        CommandController.commandnumStepCtrl.clear();
         CommandController.resetSteps();
       } else {
         CommandController.resetSteps();

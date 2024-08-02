@@ -139,57 +139,65 @@ class RecipeController extends GetxController {
     CommandController.commandMenuList.clear();
   }
 
-  void editRecipe(String namaresep) {
-    int index = -1;
-    String targetName = namaresep;
-    for (int i = 0; i < RecipeController.recipeList.length; i++) {
-      if (RecipeController.recipeList[i].recipeName == targetName) {
-        index = i;
-        break;
-      }
-    }
-    recipeIndex.value = index;
-    debugPrint('hey syang index : ${recipeIndex.value}');
-    debugPrint('nama resep di recipe View: $namaresep');
-    isSaveRecipeBtnClicked.value = false;
-    isInsertNewRecipe.value = false;
-    isEditRecipe.value = true;
-    errorText.value = '';
-    //CommandController.commandIndexToEdit = currentRecipe!.commandList.indexWhere((element) => element.numStep == RecipeController.currentRecipe!.commandList[int.parse(numStep) - 1].numStep);
-    currentRecipe = recipeList[recipeIndex.value];
-    oldRecipeData['oldRecipe'] = {
-      'recipeName': currentRecipe!.recipeName,
-      'recipeSetpoint': currentRecipe!.setpoint,
-      'commandList': [...currentRecipe!.commandList],
-    };
+   void editRecipe(String namaresep) {
+  isSaveRecipeBtnClicked.value = false;
+  isInsertNewRecipe.value = false;
+  isEditRecipe.value = true;
+  errorText.value = '';
+  int index = -1;
+  String targetName = namaresep;
 
-    recipeNameController.text = currentRecipe!.recipeName;
-    recipeSetpointController.text = currentRecipe!.setpoint.toString();
-
-    if (currentRecipe!.commandList.length < maxCommandCount) {
-      enableNewCommandBtn.value = true;
-    } else {
-      enableNewCommandBtn.value = false;
-    }
-
-    CommandController.commandMenuList.clear();
-
-    // ignore: unused_local_variable
-    for (final cmd in currentRecipe!.commandList) {
-      CommandController
-          .commandTextEditCtrlList[CommandController.currentStep.value]
-          .text = cmd.numStep;
-      CommandController.commandMenuList.add(CommandMenu(
-        numStep: CommandController.currentStep.value.toString(),
-        volume: CommandController.commandvolumeCtrl.text,
-        timeInterval: CommandController.commandTimeInterval.text,
-        timePouring: CommandController.commandTimePouring.text,
-        readOnly: true,
-        onDeleteButtonPressed: () => deleteSelectedCommand(),
-        onEditButtonPressed: () => editSelectedCommand(),
-      ));
+  // Find the index of the recipe with the given name
+  for (int i = 0; i < RecipeController.recipeList.length; i++) {
+    if (RecipeController.recipeList[i].recipeName == targetName) {
+      index = i;
+      break;
     }
   }
+
+  // Check if the recipe was found
+  if (index == -1) {
+    debugPrint('Recipe not found: $namaresep');
+    errorText.value = 'Recipe not found';
+    return;
+  }
+
+  recipeIndex.value = index;
+  debugPrint('hey syang index : ${recipeIndex.value}');
+  debugPrint('[recipe_con]nama resep di recipe View: $namaresep');
+
+  // Set the current recipe and backup the old data
+  currentRecipe = RecipeController.recipeList[recipeIndex.value];
+  oldRecipeData['oldRecipe'] = {
+    'recipeName': currentRecipe!.recipeName,
+    'recipeSetpoint': currentRecipe!.setpoint,
+    'commandList': [...currentRecipe!.commandList],
+  };
+
+  recipeNameController.text = currentRecipe!.recipeName;
+  recipeSetpointController.text = currentRecipe!.setpoint.toString();
+
+  // Enable or disable the new command button
+  enableNewCommandBtn.value = currentRecipe!.commandList.length < maxCommandCount;
+
+  // Clear and populate the command menu list
+  CommandController.commandMenuList.clear();
+  for (final cmd in currentRecipe!.commandList) {
+    CommandController.commandTextEditCtrlList[CommandController.currentStep.value].text = cmd.numStep.toString();
+    CommandController.commandMenuList.add(CommandMenu(
+      numStep: cmd.numStep.toString(),
+      volume: cmd.volume.toString(),
+      timeInterval: cmd.timeInterval.toString(),
+      timePouring: cmd.timePouring.toString(),
+      readOnly: true,
+      onDeleteButtonPressed: () => deleteSelectedCommand(),
+      onEditButtonPressed: () => editSelectedCommand(),
+    ));
+
+    // Increment the current step after adding each command
+    CommandController.currentStep.value++;
+  }
+}
 
   void refreshSaveRecipeButtonState() {
     if (currentRecipe != null) {
@@ -252,6 +260,8 @@ class RecipeController extends GetxController {
   }
 
   void onNewCommandButtonPressed() {
+    CommandController.resetSteps();
+    //CommandController.commandnumStepCtrl.clear();
     CommandController.commandvolumeCtrl.text = '';
     CommandController.commandTimePouring.text = '';
     CommandController.commandTimeInterval.text = '';
@@ -286,14 +296,13 @@ class RecipeController extends GetxController {
   }
 
   VoidCallback? deleteSelectedCommand() {
-    int commandIndexToDelete = 0;
-
+    int commandIndexToDelete = int.parse(selectedNumSteps) + 1; //salah disini uuuuuuuuuuuu
     // Convert selectedNumSteps to int for comparison
-    int selectedStep = int.parse(selectedNumSteps);
+    //int selectedStep = int.parse(selectedNumSteps);
 
     // Find the index of the command to delete
-    commandIndexToDelete = RecipeController.currentRecipe!.commandList
-        .indexWhere((element) => int.parse(element.numStep) == selectedStep);
+    // commandIndexToDelete = RecipeController.currentRecipe!.commandList
+    //     .indexWhere((element) => int.parse(element.numStep) == selectedStep);
 
     debugPrint('Attempting to delete command at index: $commandIndexToDelete');
     debugPrint(
