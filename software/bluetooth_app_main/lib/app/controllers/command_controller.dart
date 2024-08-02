@@ -91,7 +91,9 @@ class CommandController extends GetxController {
         timePouring: commandTimePouring.text,
         timeInterval: commandTimeInterval.text,
         readOnly: true,
-        onDeleteButtonPressed: recipeController.deleteSelectedCommand,
+        onDeleteButtonPressed: () {
+          recipeController.deleteSelectedCommand();
+        },
         onEditButtonPressed: () {
           debugPrint('Editing command at step: ${commandIndexToEdit + 1}');
           recipeController.editSelectedCommand();

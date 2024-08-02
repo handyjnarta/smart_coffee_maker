@@ -122,7 +122,7 @@ class CommandView extends StatelessWidget {
               return Text('Pouring Step ${recipeController.selectedNumSteps}');
             } else {
               return Text(
-                  'Pouring Step ${(CommandController.currentStep.value).toString()}');
+                  'Pouring Step ${(CommandController.currentStep.value)}');
             }
           }),
           content: Column(

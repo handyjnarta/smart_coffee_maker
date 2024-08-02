@@ -29,8 +29,9 @@ class PouringDialogController extends GetxController {
 
       if (CommandController.currentStep.value < commandNumStep) {
         RecipeController().onNewCommandButtonPressed();
-
+        debugPrint('[pouring cont], sebelum dialog, ${CommandController.currentStep.value}');
         CommandView.showPouringDialog(context);
+        debugPrint('[pouring cont], setelah dialog, ${CommandController.currentStep.value}');
         Navigator.pop(context);
       } else if (CommandController.currentStep.value == commandNumStep) {
         RecipeController().onNewCommandButtonPressed();

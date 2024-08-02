@@ -190,7 +190,7 @@ class RecipeController extends GetxController {
       timeInterval: cmd.timeInterval.toString(),
       timePouring: cmd.timePouring.toString(),
       readOnly: true,
-      onDeleteButtonPressed: () => deleteSelectedCommand(),
+      onDeleteButtonPressed: deleteSelectedCommand,
       onEditButtonPressed: () => editSelectedCommand(),
     ));
 
@@ -295,14 +295,14 @@ class RecipeController extends GetxController {
     return null;
   }
 
-  VoidCallback? deleteSelectedCommand() {
-    int commandIndexToDelete = int.parse(selectedNumSteps) + 1; //salah disini uuuuuuuuuuuu
-    // Convert selectedNumSteps to int for comparison
-    //int selectedStep = int.parse(selectedNumSteps);
+  void deleteSelectedCommand() {
+  try {
+    // Konversi selectedNumSteps ke int untuk perbandingan
+    int selectedStep = int.parse(selectedNumSteps);
 
-    // Find the index of the command to delete
-    // commandIndexToDelete = RecipeController.currentRecipe!.commandList
-    //     .indexWhere((element) => int.parse(element.numStep) == selectedStep);
+    // Temukan indeks dari perintah yang akan dihapus
+    int commandIndexToDelete = CommandController.commandMenuList
+        .indexWhere((element) => int.parse(element.numStep) == selectedStep);
 
     debugPrint('Attempting to delete command at index: $commandIndexToDelete');
     debugPrint(
@@ -310,26 +310,94 @@ class RecipeController extends GetxController {
     debugPrint(
         'Current command menu list: ${CommandController.commandMenuList.map((e) => e.numStep).toList()}');
 
-    if (commandIndexToDelete != -1 && currentRecipe!.commandList.isNotEmpty) {
-      currentRecipe?.commandList.removeAt(commandIndexToDelete);
-      CommandController.commandMenuList.removeAt(commandIndexToDelete);
+    int validRangeStart = 0;
+    int validRangeEnd = RecipeController.currentRecipe!.commandList.length - 1;
+
+    debugPrint('Valid index range: $validRangeStart to $validRangeEnd');
+
+    if (commandIndexToDelete > -1 && commandIndexToDelete >= validRangeStart && commandIndexToDelete <= validRangeEnd) {
+      
+      //surrend sih gue:"
+      //Solusinya paksa user untuk hapus command harus berurutan (dari max ke min, itu bisa), karena menurut gue jg lebih bagus gitu sih
+      //ada satu solusi yang dia nyoba buat list pasti untuk command menu nya. 
+      // pake https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&cad=rja&uact=8&ved=2ahUKEwimmoju6NWHAxUlSWwGHQVrA9kQFnoECBMQAQ&url=https%3A%2F%2Fmedium.com%2F%40khalidmeftu%2Fflutter-range-error-index-invalid-value-only-valid-value-is-0-1-or-0-2-5da5b2594ef2&usg=AOvVaw0iIA0pdJRtWtlitpRRgIWF&opi=89978449
+      //customRemoveAt(currentRecipe!.commandList, commandIndexToDelete);
+      //BISA YEAY
+      //Karena di recipe view pakenya yang dari command controller, makanya kalau delete dari recipe controller bakal error
+      customRemoveAt(CommandController.commandMenuList, commandIndexToDelete);
 
       // Log the updated lists after deletion
       debugPrint('Deleted command at index: $commandIndexToDelete');
-      debugPrint(
-          'Updated command list: ${RecipeController.currentRecipe!.commandList.map((e) => e.numStep).toList()}');
+      // debugPrint(
+      //     'Updated command list: ${RecipeController.currentRecipe!.commandList.map((e) => e.numStep).toList()}');
       debugPrint(
           'Updated command menu list: ${CommandController.commandMenuList.map((e) => e.numStep).toList()}');
+      debugPrint(
+          'Updated pas index ke 1: ${CommandController.commandMenuList.map((e) => e.numStep).toList()[0]}');
+      debugPrint(
+          'Updated pas index ke 2: ${CommandController.commandMenuList.map((e) => e.numStep).toList()[1]}');
     } else {
-      // Log an error if the command is not found
-      debugPrint('Error: Command not found or list is empty');
+      // Log an error if the command is not found or list is empty
+      debugPrint('Error: Command not found or index is out of valid range');
     }
-
-    refreshNewCommandButtonState();
-    //refreshSaveRecipeButtonState();
-
-    return null;
+  } catch (e) {
+    debugPrint('Exception occurred: $e');
   }
+
+  refreshNewCommandButtonState();
+  refreshSaveRecipeButtonState();
+}
+
+  // VoidCallback? deleteSelectedCommand() {
+  //   int commandIndexToDelete = int.parse(selectedNumSteps) + 1; //salah disini uuuuuuuuuuuu
+  //   // Convert selectedNumSteps to int for comparison
+  //   //int selectedStep = int.parse(selectedNumSteps);
+
+  //   // Find the index of the command to delete
+  //   commandIndexToDelete = RecipeController.currentRecipe!.commandList
+  //       .indexWhere((element) => int.parse(element.numStep) == int.parse(selectedNumSteps));
+
+  //   debugPrint('Attempting to delete command at index: $commandIndexToDelete');
+  //   debugPrint(
+  //       'Current command list: ${RecipeController.currentRecipe!.commandList.map((e) => e.numStep).toList()}');
+  //   debugPrint(
+  //       'Current command menu list: ${CommandController.commandMenuList.map((e) => e.numStep).toList()}');
+
+  //   if (commandIndexToDelete != -1 && currentRecipe!.commandList.isNotEmpty) {
+  //     currentRecipe?.commandList.removeAt(commandIndexToDelete);
+  //     CommandController.commandMenuList.removeAt(commandIndexToDelete);
+
+  //     // Log the updated lists after deletion
+  //     debugPrint('Deleted command at index: $commandIndexToDelete');
+  //     debugPrint(
+  //         'Updated command list: ${RecipeController.currentRecipe!.commandList.map((e) => e.numStep).toList()}');
+  //     debugPrint(
+  //         'Updated command menu list: ${CommandController.commandMenuList.map((e) => e.numStep).toList()}');
+  //   } else {
+  //     // Log an error if the command is not found
+  //     debugPrint('Error: Command not found or list is empty');
+  //   }
+
+  //   refreshNewCommandButtonState();
+  //   refreshSaveRecipeButtonState();
+
+  //   return null;
+  // }
+
+  void customRemoveAt(List list, int index) {
+  // Check if the index is valid
+  if (index < 0 || index >= list.length) {
+    throw RangeError('Index out of range: $index');
+  }
+
+  // Shift elements to the left to fill the gap
+  for (int i = index; i < list.length - 1; i++) {
+    list[i] = list[i + 1];
+  }
+
+  // Remove the last element as it is now duplicated
+  list.removeLast();
+}
 
   void refreshLogs(String text) {
     ctrl.refreshLogs(text: text, sourceId: SourceId.statusId);

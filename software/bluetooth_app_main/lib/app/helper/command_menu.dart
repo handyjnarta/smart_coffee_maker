@@ -64,9 +64,9 @@ class CommandMenu extends StatelessWidget {
                     width: 220,
                     height: 100,
                     child: Text(
-                      //'Command ke ${RecipeController.currentRecipe!.commandList[int.parse(numStep) - 1].numStep}',
-                      'Command ke ${CommandController.commandMenuList[int.parse(numStep) - 1].numStep}',
-                      style: TextStyle(fontSize: 16),
+                      'Command ke ${RecipeController.currentRecipe!.commandList[int.parse(numStep) - 1].numStep}',//kemungkinan salahnya disini
+                      //'Command ke ${CommandController.commandMenuList[int.parse(numStep) - 1].numStep}',
+                      style: const TextStyle(fontSize: 16),
                     ),
                   ),
                 ),
