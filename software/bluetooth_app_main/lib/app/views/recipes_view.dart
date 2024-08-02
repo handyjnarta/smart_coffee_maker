@@ -21,8 +21,7 @@ class RecipesView extends StatelessWidget {
     Navigator.pop(Get.context!);
     final RecipeController recipeController = Get.find<RecipeController>();
     int index = recipeController.recipeIndex.value;
-    String recipeName = RecipeController
-        .recipeList[index].recipeName;
+    String recipeName = RecipeController.recipeList[index].recipeName;
     showGetxSnackbar('Recipe run', 'Recipe "$recipeName" ran now');
     int setpointval = int.parse(RecipeController.recipeList[index].setpoint);
     int numstepsval = RecipeController.recipeList[index].commandList.length;
@@ -39,28 +38,34 @@ class RecipesView extends StatelessWidget {
     message = numstepsval.toString();
     BluetoothData().sendMessageToBluetooth(message, true);
     for (int i = 0; i < numstepsval; i++) {
-      volumeval = int.parse(RecipeController.recipeList[index].commandList[i].volume); // masukin untuk volume val di index numstepval nya
+      volumeval = int.parse(RecipeController.recipeList[index].commandList[i]
+          .volume); // masukin untuk volume val di index numstepval nya
       message = volumeval.toString();
       BluetoothData().sendMessageToBluetooth(message, true);
       debugPrint('message: $message'); //volume
-      timePouringval = int.parse(RecipeController.recipeList[index].commandList[i].timePouring); // masukin untuk timePouring val di index numstepval nya
+      timePouringval = int.parse(RecipeController
+          .recipeList[index]
+          .commandList[i]
+          .timePouring); // masukin untuk timePouring val di index numstepval nya
       message = timePouringval.toString();
       BluetoothData().sendMessageToBluetooth(message, true);
       debugPrint('message: $message');
-      timeIntervalval =
-          int.parse(RecipeController.recipeList[index].commandList[i].timeInterval); // masukin untuk timeInterval val di index numstepval nya
+      timeIntervalval = int.parse(RecipeController
+          .recipeList[index]
+          .commandList[i]
+          .timeInterval); // masukin untuk timeInterval val di index numstepval nya
       message = timeIntervalval.toString();
       BluetoothData().sendMessageToBluetooth(message, true);
       debugPrint('message: $message');
     }
   }
+
 //////////////////////////////////////////////////////////LOVEYU//////////////////////////////////////////
   void deleteRecipe() {
-      final RecipeController recipeController = Get.find<RecipeController>();
-      int index = recipeController.recipeIndex.value;
+    final RecipeController recipeController = Get.find<RecipeController>();
+    int index = recipeController.recipeIndex.value;
     Navigator.pop(Get.context!);
-    String recipeName = RecipeController
-        .recipeList[index].recipeName;
+    String recipeName = RecipeController.recipeList[index].recipeName;
     RecipeController.recipeList.removeAt(index);
     ctrl.refreshLogs(text: 'Recipe "$recipeName" deleted');
     showGetxSnackbar('Recipe deleted', 'Recipe "$recipeName" deleted');
@@ -68,7 +73,6 @@ class RecipesView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Obx(() {
       return (RecipeController.recipeList.isNotEmpty)
           ? ListView.builder(
@@ -92,7 +96,10 @@ class RecipesView extends StatelessWidget {
   void editSelectedRecipe(BuildContext context) {
     final RecipeController recipeController = Get.find<RecipeController>();
     int index = recipeController.recipeIndex.value;
-    RecipeController().editRecipe(RecipeController.recipeList[index].recipeName);
+    RecipeController()
+        .editRecipe(RecipeController.recipeList[index].recipeName);
+    debugPrint(
+        'nama resep di recipe View: ${RecipeController.recipeList[index].recipeName}');
     showModalBottomSheet(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
@@ -139,13 +146,12 @@ class RecipesView extends StatelessWidget {
   }
 
   Widget buildRecipeContainer({
-    
     required String recipeName,
     //required bool status,
     required int recipeIndex,
     required BuildContext context,
   }) {
-        RecipeController recipeController = Get.find<RecipeController>();
+    RecipeController recipeController = Get.find<RecipeController>();
     return Padding(
       padding: const EdgeInsets.all(6.0),
       child: Card(
@@ -171,9 +177,13 @@ class RecipesView extends StatelessWidget {
                       //      .recipeList
                       //       .indexWhere((dev) => dev.recipeName == RecipeController.recipeList[recipeIndex].recipeName);
                       int index = -1;
-                      String targetName = RecipeController.recipeList[recipeIndex].recipeName;
-                      for (int i = 0; i < RecipeController.recipeList.length; i++) {
-                        if (RecipeController.recipeList[i].recipeName == targetName) {
+                      String targetName =
+                          RecipeController.recipeList[recipeIndex].recipeName;
+                      for (int i = 0;
+                          i < RecipeController.recipeList.length;
+                          i++) {
+                        if (RecipeController.recipeList[i].recipeName ==
+                            targetName) {
                           index = i;
                           //debugPrint('dapet nih: $index');
                           break;
@@ -181,12 +191,14 @@ class RecipesView extends StatelessWidget {
                       }
                       //debugPrint('kayanya ada error: $index');
 
-                      recipeController.recipeIndex.value = RecipeController().recipeIndex.value;
+                      //recipeController.recipeIndex.value = RecipeController().recipeIndex.value;
                       recipeController.recipeIndex.value = index;
-                      debugPrint('index resep: ${recipeController.recipeIndex.value}');
-                      debugPrint('nama resep: ${RecipeController.recipeList[recipeController.recipeIndex.value].recipeName}');
-                           //int indexRecipe = int.parse(RecipeController.recipeList[recipeIndex].recipeName);
-                           //RecipeController().recipeIndex.value = indexRecipe;
+                      debugPrint(
+                          'index resep: ${recipeController.recipeIndex.value}');
+                      debugPrint(
+                          'nama resep: ${RecipeController.recipeList[recipeController.recipeIndex.value].recipeName}');
+                      //int indexRecipe = int.parse(RecipeController.recipeList[recipeIndex].recipeName);
+                      //RecipeController().recipeIndex.value = indexRecipe;
 
                       if (item == PopupItems.edit) {
                         editSelectedRecipe(context);
@@ -194,17 +206,16 @@ class RecipesView extends StatelessWidget {
                         showConfirmDialog(
                           context: context,
                           title: 'Run This recipe',
-                          text: 'Want to run ${RecipeController.recipeList[recipeController.recipeIndex.value].recipeName} recipe ?',
-                          onOkPressed: 
-                              runrecipe,
-
-                          
+                          text:
+                              'Want to run ${RecipeController.recipeList[recipeController.recipeIndex.value].recipeName} recipe ?',
+                          onOkPressed: runrecipe,
                         );
                       } else {
                         showConfirmDialog(
                           context: context,
                           title: 'Delete confirm',
-                          text: 'Delete current recipe (${RecipeController.recipeList[recipeIndex].recipeName})?',
+                          text:
+                              'Delete current recipe (${RecipeController.recipeList[recipeIndex].recipeName})?',
                           onOkPressed: deleteRecipe,
                         );
                       }

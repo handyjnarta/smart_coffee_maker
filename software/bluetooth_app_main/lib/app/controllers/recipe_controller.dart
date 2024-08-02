@@ -140,7 +140,6 @@ class RecipeController extends GetxController {
   }
 
   void editRecipe(String namaresep) {
-    //debugPrint('hey syang index : ${recipeIndex.value}');
     int index = -1;
     String targetName = namaresep;
     for (int i = 0; i < RecipeController.recipeList.length; i++) {
@@ -150,6 +149,8 @@ class RecipeController extends GetxController {
       }
     }
     recipeIndex.value = index;
+    debugPrint('hey syang index : ${recipeIndex.value}');
+    debugPrint('nama resep di recipe View: $namaresep');
     isSaveRecipeBtnClicked.value = false;
     isInsertNewRecipe.value = false;
     isEditRecipe.value = true;
@@ -185,7 +186,7 @@ class RecipeController extends GetxController {
         timePouring: CommandController.commandTimePouring.text,
         readOnly: true,
         onDeleteButtonPressed: () => deleteSelectedCommand(),
-        onEditButtonPressed: () => editSelectedCommand,
+        onEditButtonPressed: () => editSelectedCommand(),
       ));
     }
   }
@@ -268,21 +269,20 @@ class RecipeController extends GetxController {
       var commandToEdit =
           currentRecipe!.commandList[CommandController.commandIndexToEdit];
 
-      // Debug print command details
+      // Update the text controllers with the command data
+      commandToEdit.numStep = selectedNumSteps;
+      commandToEdit.volume = CommandController.commandvolumeCtrl.text;
+      commandToEdit.timePouring = CommandController.commandTimePouring.text;
+      commandToEdit.timeInterval = CommandController.commandTimeInterval.text;
       debugPrint('Command to Edit:');
       debugPrint('Num Step: ${commandToEdit.numStep}');
       debugPrint('Volume: ${commandToEdit.volume}');
       debugPrint('Time Pouring: ${commandToEdit.timePouring}');
       debugPrint('Time Interval: ${commandToEdit.timeInterval}');
-      commandToEdit.numStep = selectedNumSteps;
-      // Debug print command details after updating
-      debugPrint('Num Step after update: ${commandToEdit.numStep}');
 
-      // Update the numStep to match selectedNumSteps
-      // Update the text controllers with the command data
-      CommandController.commandvolumeCtrl.text = commandToEdit.volume;
-      CommandController.commandTimePouring.text = commandToEdit.timePouring;
-      CommandController.commandTimeInterval.text = commandToEdit.timeInterval;
+      debugPrint(
+          'Currentrecipe command list: ${currentRecipe!.commandList.map((command) => command.toJson()).toList()}');
+      // Debug print the new command details
     } else {
       debugPrint(
           'Command with numStep ${CommandController.commandIndexToEdit} not found');

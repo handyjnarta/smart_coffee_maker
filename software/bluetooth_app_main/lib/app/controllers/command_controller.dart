@@ -52,7 +52,7 @@ class CommandController extends GetxController {
     if (!isInputCommandValid.value) return;
 
     if (isEditCommand.isTrue) {
-      //commandIndexToEdit = currentStep.value;
+      commandIndexToEdit = currentStep.value;
       debugPrint('Editing command at  glia step: ${commandIndexToEdit}');
     } else {
       currentStep.value = commandMenuList.length + 1;
@@ -107,8 +107,8 @@ class CommandController extends GetxController {
         readOnly: true,
         onDeleteButtonPressed: recipeController.deleteSelectedCommand,
         onEditButtonPressed: () {
-          //debugPrint('Editing command at current step: ${commandIndexToEdit}');
-          recipeController.editSelectedCommand;
+          debugPrint('Editing command at current step: ${commandIndexToEdit}');
+          recipeController.editSelectedCommand();
         },
       );
     }

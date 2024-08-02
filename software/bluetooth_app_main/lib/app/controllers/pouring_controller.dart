@@ -10,22 +10,21 @@ class PouringDialogController extends GetxController {
   }
 
   static void onNextPressed(BuildContext context) {
-    CommandController.validateCommandInput();
-    CommandController.saveNewCommand();
-    debugPrint('Command currennt step: ${CommandController.currentStep.value}');
-    debugPrint(
-        'Command num step: ${CommandController.commandnumStepCtrl.text}');
-
-    if (CommandController.isInputCommandValid.isFalse) {
-      debugPrint('Command input is not valid.');
-      return;
-    }
-
     if (CommandController.isEditCommand.isTrue) {
-      RecipeController().onNewCommandButtonPressed();
       Navigator.pop(context);
-      //CommandController.isEditCommand.value = false;
+      CommandController.isEditCommand.value = false;
     } else {
+      CommandController.validateCommandInput();
+      CommandController.saveNewCommand();
+      debugPrint(
+          'Command currennt step: ${CommandController.currentStep.value}');
+      debugPrint(
+          'Command num step: ${CommandController.commandnumStepCtrl.text}');
+
+      if (CommandController.isInputCommandValid.isFalse) {
+        debugPrint('Command input is not valid.');
+        return;
+      }
       int commandNumStep = int.parse(CommandController.commandnumStepCtrl.text);
 
       if (CommandController.currentStep.value < commandNumStep) {

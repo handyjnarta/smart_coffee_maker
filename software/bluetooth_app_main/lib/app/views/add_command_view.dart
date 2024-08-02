@@ -110,6 +110,7 @@ class CommandView extends StatelessWidget {
   }
 
   static void showPouringDialog(BuildContext context) {
+    final RecipeController recipeController = Get.find<RecipeController>();
     debugPrint(
         'Current step value before showing dialog: ${CommandController.currentStep.value}');
     showDialog(
@@ -117,8 +118,12 @@ class CommandView extends StatelessWidget {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Obx(() {
-            return Text(
-                'Pouring Step ${(CommandController.currentStep.value + 1).toString()}');
+            if (CommandController.isEditCommand.isTrue) {
+              return Text('Pouring Step ${recipeController.selectedNumSteps}');
+            } else {
+              return Text(
+                  'Pouring Step ${(CommandController.currentStep.value + 1).toString()}');
+            }
           }),
           content: Column(
             mainAxisSize: MainAxisSize.min,
