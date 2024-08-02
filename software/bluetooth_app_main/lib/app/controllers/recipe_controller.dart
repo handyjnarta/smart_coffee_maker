@@ -268,17 +268,11 @@ class RecipeController extends GetxController {
     if (CommandController.commandIndexToEdit != -1) {
       var commandToEdit =
           currentRecipe!.commandList[CommandController.commandIndexToEdit];
-
-      // Update the text controllers with the command data
       commandToEdit.numStep = selectedNumSteps;
-      commandToEdit.volume = CommandController.commandvolumeCtrl.text;
-      commandToEdit.timePouring = CommandController.commandTimePouring.text;
-      commandToEdit.timeInterval = CommandController.commandTimeInterval.text;
-      debugPrint('Command to Edit:');
-      debugPrint('Num Step: ${commandToEdit.numStep}');
-      debugPrint('Volume: ${commandToEdit.volume}');
-      debugPrint('Time Pouring: ${commandToEdit.timePouring}');
-      debugPrint('Time Interval: ${commandToEdit.timeInterval}');
+      // selectedNumSteps = commandToEdit.numStep;
+      CommandController.commandvolumeCtrl.text = commandToEdit.volume;
+      CommandController.commandTimePouring.text = commandToEdit.timePouring;
+      CommandController.commandTimeInterval.text = commandToEdit.timeInterval;
 
       debugPrint(
           'Currentrecipe command list: ${currentRecipe!.commandList.map((command) => command.toJson()).toList()}');
@@ -292,17 +286,38 @@ class RecipeController extends GetxController {
   }
 
   VoidCallback? deleteSelectedCommand() {
-    debugPrint(
-        '[recipe_controller] selected title to delete: $selectedNumSteps from recipe ${currentRecipe!.recipeName}');
-    int commandIndexToDelete = currentRecipe!.id;
+    int commandIndexToDelete = 0;
 
-    if (currentRecipe!.commandList.isNotEmpty) {
+    // Convert selectedNumSteps to int for comparison
+    int selectedStep = int.parse(selectedNumSteps);
+
+    // Find the index of the command to delete
+    commandIndexToDelete = RecipeController.currentRecipe!.commandList
+        .indexWhere((element) => int.parse(element.numStep) == selectedStep);
+
+    debugPrint('Attempting to delete command at index: $commandIndexToDelete');
+    debugPrint(
+        'Current command list: ${RecipeController.currentRecipe!.commandList.map((e) => e.numStep).toList()}');
+    debugPrint(
+        'Current command menu list: ${CommandController.commandMenuList.map((e) => e.numStep).toList()}');
+
+    if (commandIndexToDelete != -1 && currentRecipe!.commandList.isNotEmpty) {
       currentRecipe?.commandList.removeAt(commandIndexToDelete);
       CommandController.commandMenuList.removeAt(commandIndexToDelete);
+
+      // Log the updated lists after deletion
+      debugPrint('Deleted command at index: $commandIndexToDelete');
+      debugPrint(
+          'Updated command list: ${RecipeController.currentRecipe!.commandList.map((e) => e.numStep).toList()}');
+      debugPrint(
+          'Updated command menu list: ${CommandController.commandMenuList.map((e) => e.numStep).toList()}');
+    } else {
+      // Log an error if the command is not found
+      debugPrint('Error: Command not found or list is empty');
     }
 
     refreshNewCommandButtonState();
-    refreshSaveRecipeButtonState();
+    //refreshSaveRecipeButtonState();
 
     return null;
   }

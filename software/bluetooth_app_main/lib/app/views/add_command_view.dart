@@ -154,7 +154,16 @@ class CommandView extends StatelessWidget {
               child: const Text('Cancel'),
             ),
             TextButton(
-              onPressed: () => PouringDialogController.onNextPressed(context),
+              onPressed: () {
+                if (CommandController.isEditCommand.isTrue) {
+                  CommandController.saveNewCommand();
+                  Navigator.pop(context);
+
+                  CommandController.isEditCommand.value = false;
+                } else {
+                  PouringDialogController.onNextPressed(context);
+                }
+              },
               child: Obx(() => Text(
                   CommandController.isEditCommand.isTrue ? 'Save' : 'Next')),
             ),

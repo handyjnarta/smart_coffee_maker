@@ -47,25 +47,26 @@ class CommandController extends GetxController {
           growable: false);
 
   static void saveNewCommand() {
+    RecipeController recipeController = Get.find<RecipeController>();
     validateCommandInput();
 
     if (!isInputCommandValid.value) return;
 
     if (isEditCommand.isTrue) {
-      commandIndexToEdit = currentStep.value;
-      debugPrint('Editing command at  glia step: ${commandIndexToEdit}');
+      commandIndexToEdit = int.parse(recipeController.selectedNumSteps) - 1;
+      debugPrint('Editing command at step: ${commandIndexToEdit + 1}');
     } else {
       currentStep.value = commandMenuList.length + 1;
     }
 
     var newCommand = Commands(
-      numStep: currentStep.value.toString(),
+      numStep: isEditCommand.isTrue
+          ? (commandIndexToEdit + 1).toString()
+          : currentStep.value.toString(),
       volume: commandvolumeCtrl.text,
       timePouring: commandTimePouring.text,
       timeInterval: commandTimeInterval.text,
     );
-
-    RecipeController recipeController = Get.find<RecipeController>();
 
     if (RecipeController.currentRecipe == null) {
       RecipeController.currentRecipe = Recipes(
@@ -82,9 +83,7 @@ class CommandController extends GetxController {
         RecipeController.currentRecipe!.commandList.add(newCommand);
       }
     }
-    // Find the command index by numStep
 
-    // Update the command menu list based on the command state
     if (isEditCommand.isFalse) {
       commandMenuList.add(CommandMenu(
         numStep: currentStep.value.toString(),
@@ -94,33 +93,34 @@ class CommandController extends GetxController {
         readOnly: true,
         onDeleteButtonPressed: recipeController.deleteSelectedCommand,
         onEditButtonPressed: () {
-          debugPrint('ADD: ${commandIndexToEdit}');
+          debugPrint('Editing command at step: ${commandIndexToEdit + 1}');
           recipeController.editSelectedCommand();
         },
       ));
     } else {
       commandMenuList[commandIndexToEdit] = CommandMenu(
-        numStep: currentStep.value.toString(),
+        numStep: (commandIndexToEdit + 1).toString(),
         volume: commandvolumeCtrl.text,
         timePouring: commandTimePouring.text,
         timeInterval: commandTimeInterval.text,
         readOnly: true,
         onDeleteButtonPressed: recipeController.deleteSelectedCommand,
         onEditButtonPressed: () {
-          debugPrint('Editing command at current step: ${commandIndexToEdit}');
+          debugPrint('Editing command at step: ${commandIndexToEdit + 1}');
           recipeController.editSelectedCommand();
         },
       );
+      debugPrint('Command menu list:');
+      debugPrint('numStep: ${commandMenuList[commandIndexToEdit].numStep}');
+      debugPrint('volume: ${commandMenuList[commandIndexToEdit].volume}');
+      debugPrint(
+          'timePouring: ${commandMenuList[commandIndexToEdit].timePouring}');
+      debugPrint(
+          'timeInterval: ${commandMenuList[commandIndexToEdit].timeInterval}');
     }
 
     debugPrint(
-        'Currentrecipe command list: ${RecipeController.currentRecipe!.commandList.map((command) => command.toJson()).toList()}');
-    // Debug print the new command details
-    debugPrint('New Command:');
-    debugPrint('numStep: ${newCommand.numStep}');
-    debugPrint('volume: ${newCommand.volume}');
-    debugPrint('timePouring: ${newCommand.timePouring}');
-    debugPrint('timeInterval: ${newCommand.timeInterval}');
+        'Current recipe command list: ${RecipeController.currentRecipe!.commandList.map((command) => command.toJson()).toList()}');
   }
 
   static void validateCommandInput() {

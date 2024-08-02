@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bluetooth/app/controllers/command_controller.dart';
 import 'package:flutter_bluetooth/app/controllers/recipe_controller.dart';
 import '../custom_widget/custom_button.dart';
 
@@ -63,7 +64,8 @@ class CommandMenu extends StatelessWidget {
                     width: 220,
                     height: 100,
                     child: Text(
-                      'Command ke ${RecipeController.currentRecipe!.commandList[int.parse(numStep) - 1].numStep}',
+                      //'Command ke ${RecipeController.currentRecipe!.commandList[int.parse(numStep) - 1].numStep}',
+                      'Command ke ${CommandController.commandMenuList[int.parse(numStep) - 1].numStep}',
                       style: TextStyle(fontSize: 16),
                     ),
                   ),
