@@ -139,12 +139,22 @@ class RecipeController extends GetxController {
     CommandController.commandMenuList.clear();
   }
 
-  void editRecipe() {
+  void editRecipe(String namaresep) {
+    //debugPrint('hey syang index : ${recipeIndex.value}');
+    int index = -1;
+    String targetName = namaresep;
+    for (int i = 0; i < RecipeController.recipeList.length; i++) {
+      if (RecipeController.recipeList[i].recipeName == targetName) {
+        index = i;
+        break;
+      } 
+      }
+    recipeIndex.value = index;
     isSaveRecipeBtnClicked.value = false;
     isInsertNewRecipe.value = false;
     isEditRecipe.value = true;
     errorText.value = '';
-
+    //CommandController.commandIndexToEdit = currentRecipe!.commandList.indexWhere((element) => element.numStep == RecipeController.currentRecipe!.commandList[int.parse(numStep) - 1].numStep);
     currentRecipe = recipeList[recipeIndex.value];
     oldRecipeData['oldRecipe'] = {
       'recipeName': currentRecipe!.recipeName,
@@ -176,7 +186,7 @@ class RecipeController extends GetxController {
         readOnly: true,
         onDeleteButtonPressed: () => deleteSelectedCommand(),
         onEditButtonPressed: () =>
-            editSelectedCommand(CommandController.currentStep.value),
+            editSelectedCommand(int.parse(RecipeController.currentRecipe!.commandList[int.parse(CommandController.commandnumStepCtrl.text) - 1].numStep)),
       ));
     }
   }

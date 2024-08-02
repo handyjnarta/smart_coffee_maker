@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth/app/controllers/command_controller.dart';
+import 'package:flutter_bluetooth/app/controllers/recipe_controller.dart';
+//import 'package:flutter_bluetooth/app/controllers/command_controller.dart';
 import 'package:flutter_bluetooth/app/helper/widget_helper.dart';
-import 'package:get/get.dart';
+//import 'package:get/get.dart';
 import '../custom_widget/custom_button.dart';
 
 class CommandMenu extends StatelessWidget {
@@ -64,11 +66,8 @@ class CommandMenu extends StatelessWidget {
                   child: SizedBox(
                     width: 220,
                     height: 100,
-                    child: buildTextField(
-                      title: 'Pouring Steps :',
-                      commandText: CommandController.commandCtrl.text,
-                      errorText: CommandController.commandErrorText.value,
-                      commandTextController: CommandController.commandCtrl,
+                    child: untukCommand(
+                      title: 'Command ke ${RecipeController.currentRecipe!.commandList[int.parse(numStep) - 1].numStep}'
                     ),
                   ),
                 ),
@@ -76,7 +75,7 @@ class CommandMenu extends StatelessWidget {
               MyCustomButton(
                 commandTitle: 'Edit',
                 customWidget: const Icon(Icons.edit),
-                onPressedAction: onEditButtonPressed,
+                onPressedAction: () {onEditButtonPressed;}
               ),
               MyCustomButton(
                 commandTitle: 'Delete',
