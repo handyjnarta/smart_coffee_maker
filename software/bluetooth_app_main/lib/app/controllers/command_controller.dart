@@ -37,8 +37,9 @@ class CommandController extends GetxController {
     super.onInit();
   }
 
-  static void resetSteps() {
-    currentStep.value = 1;
+  static void resetSteps() { //ini edit
+    currentStep.value = 0;
+    commandnumStepCtrl.clear();
   }
 
   static List<TextEditingController> commandTextEditCtrlList =

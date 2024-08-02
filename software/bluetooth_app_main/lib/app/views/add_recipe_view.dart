@@ -187,6 +187,7 @@ class AddRecipeView extends StatelessWidget {
       height: 50,
       child: OutlinedButton(
         onPressed: () {
+          CommandController.resetSteps();
             Navigator.pop(context);
         },
         style: buildButtonStyle(),

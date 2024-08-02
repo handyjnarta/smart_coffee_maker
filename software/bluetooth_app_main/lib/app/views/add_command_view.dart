@@ -79,7 +79,6 @@ class CommandView extends StatelessWidget {
                   if (CommandController.isEditCommand.isTrue) {
                     CommandController.isEditCommand.value = false;
                   }
-                  //CommandController.resetSteps();
                   Navigator.pop(context);
                 }
               },
