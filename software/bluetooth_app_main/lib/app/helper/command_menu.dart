@@ -25,7 +25,9 @@ class CommandMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    int index = int.parse(numStep) - 1;
+    int selectedNumSteps = int.parse(numStep);
+    int index = RecipeController.currentRecipe!.commandList.indexWhere(
+        (element) => element.numStep == selectedNumSteps.toString());
     String commandText;
 
     if (index >= 0 &&
