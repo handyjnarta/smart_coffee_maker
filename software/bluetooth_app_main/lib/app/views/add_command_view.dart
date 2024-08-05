@@ -122,7 +122,7 @@ class CommandView extends StatelessWidget {
               return Text('Pouring Step ${recipeController.selectedNumSteps}');
             } else {
               return Text(
-                  'Pouring Step ${(CommandController.currentStep.value)}');
+                  'Pouring Step ${(CommandController.currentStep.value) + 1}');
             }
           }),
           content: Column(
@@ -156,7 +156,7 @@ class CommandView extends StatelessWidget {
             TextButton(
               onPressed: () {
                 debugPrint(
-          'Command currennt step command view: ${CommandController.currentStep.value}');
+                    'Command currennt step command view: ${CommandController.currentStep.value}');
                 if (CommandController.isEditCommand.isTrue) {
                   CommandController.saveNewCommand();
                   Navigator.pop(context);

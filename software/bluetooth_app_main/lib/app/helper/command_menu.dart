@@ -25,7 +25,19 @@ class CommandMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    int index = int.parse(numStep) - 1;
+    String commandText;
+
+    if (index >= 0 &&
+        index < RecipeController.currentRecipe!.commandList.length) {
+      commandText =
+          'Command ke ${RecipeController.currentRecipe!.commandList[index].numStep}';
+    } else {
+      commandText = 'Invalid command';
+    }
+
     return buildDeviceCommandMenu(
+      commandText: commandText,
       numStep: numStep,
       volume: volume,
       timeInterval: timeInterval,
@@ -37,6 +49,7 @@ class CommandMenu extends StatelessWidget {
   }
 
   Widget buildDeviceCommandMenu({
+    required String commandText,
     required String numStep,
     required String volume,
     required String timeInterval,
@@ -64,17 +77,17 @@ class CommandMenu extends StatelessWidget {
                     width: 220,
                     height: 100,
                     child: Text(
-                      'Command ke ${RecipeController.currentRecipe!.commandList[int.parse(numStep) - 1].numStep}',//kemungkinan salahnya disini
-                      //'Command ke ${CommandController.commandMenuList[int.parse(numStep) - 1].numStep}',
+                      commandText,
                       style: const TextStyle(fontSize: 16),
                     ),
                   ),
                 ),
               ),
               MyCustomButton(
-                  commandNumStep: numStep,
-                  customWidget: const Icon(Icons.edit),
-                  onPressedAction: onEditButtonPressed), // Invoke directly
+                commandNumStep: numStep,
+                customWidget: const Icon(Icons.edit),
+                onPressedAction: onEditButtonPressed,
+              ),
               MyCustomButton(
                 commandNumStep: numStep,
                 customWidget: const Icon(Icons.delete),

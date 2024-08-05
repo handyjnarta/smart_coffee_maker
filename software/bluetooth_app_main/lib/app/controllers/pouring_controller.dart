@@ -15,7 +15,6 @@ class PouringDialogController extends GetxController {
       CommandController.isEditCommand.value = false;
     } else {
       CommandController.validateCommandInput();
-      debugPrint('[pouring cont], sebelum dialog, ${CommandController.currentStep.value}');
       CommandController.saveNewCommand();
       debugPrint(
           'Command currennt step: ${CommandController.currentStep.value}');

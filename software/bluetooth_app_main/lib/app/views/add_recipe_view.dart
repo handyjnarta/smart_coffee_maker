@@ -106,7 +106,8 @@ class AddRecipeView extends StatelessWidget {
                       const Divider(thickness: 2),
                       const SizedBox(height: 10),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly, // Atur jarak antar tombol
+                        mainAxisAlignment: MainAxisAlignment
+                            .spaceEvenly, // Atur jarak antar tombol
                         children: [
                           saveButton(context, recipeController),
                           cancelButtonRecipe(context, recipeController),
@@ -181,13 +182,14 @@ class AddRecipeView extends StatelessWidget {
     );
   }
 
-  Widget cancelButtonRecipe(BuildContext context, RecipeController recipeController) {
+  Widget cancelButtonRecipe(
+      BuildContext context, RecipeController recipeController) {
     return SizedBox(
       width: 100,
       height: 50,
       child: OutlinedButton(
         onPressed: () {
-            Navigator.pop(context);
+          Navigator.pop(context);
         },
         style: buildButtonStyle(),
         child: const Row(
