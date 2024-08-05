@@ -260,7 +260,7 @@ class RecipeController extends GetxController {
   }
 
   void onNewCommandButtonPressed() {
-    CommandController.resetSteps();
+    //CommandController.resetSteps();
     //CommandController.commandnumStepCtrl.clear();
     CommandController.commandvolumeCtrl.text = '';
     CommandController.commandTimePouring.text = '';
@@ -316,7 +316,6 @@ class RecipeController extends GetxController {
     debugPrint('Valid index range: $validRangeStart to $validRangeEnd');
 
     if (commandIndexToDelete > -1 && commandIndexToDelete >= validRangeStart && commandIndexToDelete <= validRangeEnd) {
-      
       //surrend sih gue:"
       //Solusinya paksa user untuk hapus command harus berurutan (dari max ke min, itu bisa), karena menurut gue jg lebih bagus gitu sih
       //ada satu solusi yang dia nyoba buat list pasti untuk command menu nya. 
