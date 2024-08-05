@@ -31,16 +31,18 @@ class RecipeController extends GetxController {
   static TextEditingController recipeSetpointController =
       TextEditingController();
 
-  /*
-  final recipeNameController = TextEditingController();
-  final turnOnTextController = TextEditingController();
-  final turnOffTextController = TextEditingController();
-  final recipeSetpointController = TextEditingController(); */
-
   String selectedNumSteps = '';
   var errorText = ''.obs;
 
   final FirestoreService firestoreService = FirestoreService();
+
+  @override
+  void onInit() {
+    super.onInit();
+    ever(isEditRecipe, (value) {
+      debugPrint('[recipe controller] isEditRecipe updated: $value');
+    });
+  }
 
   void refreshNewCommandButtonState() {
     enableNewCommandBtn.value = false;
@@ -53,13 +55,15 @@ class RecipeController extends GetxController {
       errorText.value = '';
 
       // Debug print the current recipe name
-      debugPrint('Recipe name entered: ${recipeNameController.text}');
+      debugPrint(
+          ' recipe controller] Recipe name entered: ${recipeNameController.text}');
 
       // Check if the recipe name already exists
       int newDevIndex = recipeList.indexWhere(
           (element) => element.recipeName == recipeNameController.text);
 
-      debugPrint('Index of existing recipe with the same name: $newDevIndex');
+      debugPrint(
+          '[recipe controller] Index of existing recipe with the same name: $newDevIndex');
 
       if ((isInsertNewRecipe.value && newDevIndex > -1) ||
           (isEditRecipe.value &&
@@ -71,11 +75,12 @@ class RecipeController extends GetxController {
         if (currentRecipe != null) {
           if (currentRecipe!.commandList.length < maxCommandCount) {
             enableNewCommandBtn.value = true;
-            debugPrint('New command button enabled');
+            debugPrint(' [recipe controller] New command button enabled');
           }
         } else {
           enableNewCommandBtn.value = true;
-          debugPrint('New command button enabled in different way');
+          debugPrint(
+              '[recipe controller] New command button enabled in different way');
         }
       }
     }
@@ -157,13 +162,13 @@ class RecipeController extends GetxController {
 
     // Check if the recipe was found
     if (index == -1) {
-      debugPrint('Recipe not found: $namaresep');
+      debugPrint('[recipe controller] Recipe not found: $namaresep');
       errorText.value = 'Recipe not found';
       return;
     }
 
     recipeIndex.value = index;
-    debugPrint('hey syang index : ${recipeIndex.value}');
+    debugPrint('[recipe controller] index : ${recipeIndex.value}');
     debugPrint('[recipe_con]nama resep di recipe View: $namaresep');
 
     // Set the current recipe and backup the old data
@@ -247,6 +252,7 @@ class RecipeController extends GetxController {
       showGetxSnackbar('Edit success',
           'Recipe "${currentRecipe!.recipeName}" edited successfully');
       refreshLogs('Recipe "${currentRecipe!.recipeName}" edited successfully');
+      isEditRecipe.value = false;
     } else {
       recipeList.add(currentRecipe!); //buat void untuk menambahkan
       showGetxSnackbar(
@@ -276,7 +282,8 @@ class RecipeController extends GetxController {
     CommandController.commandIndexToEdit = RecipeController
         .currentRecipe!.commandList
         .indexWhere((element) => (element.numStep) == selectedNumSteps);
-    debugPrint('Commandindextoedit: ${CommandController.commandIndexToEdit}');
+    debugPrint(
+        '[recipe controller] Commandindextoedit: ${CommandController.commandIndexToEdit}');
 
     if (CommandController.commandIndexToEdit != -1) {
       var commandToEdit =
@@ -288,11 +295,11 @@ class RecipeController extends GetxController {
       CommandController.commandTimeInterval.text = commandToEdit.timeInterval;
 
       debugPrint(
-          'Currentrecipe command list: ${currentRecipe!.commandList.map((command) => command.toJson()).toList()}');
+          '[recipe controller] Currentrecipe command list: ${currentRecipe!.commandList.map((command) => command.toJson()).toList()}');
       // Debug print the new command details
     } else {
       debugPrint(
-          'Command with numStep ${CommandController.commandIndexToEdit} not found');
+          '[recipe controller] Command with numStep ${CommandController.commandIndexToEdit} not found');
     }
 
     return null;
@@ -308,17 +315,18 @@ class RecipeController extends GetxController {
           .indexWhere((element) => int.parse(element.numStep) == selectedStep);
 
       debugPrint(
-          'Attempting to delete command at index: $commandIndexToDelete');
+          '[recipe controller] Attempting to delete command at index: $commandIndexToDelete');
       debugPrint(
-          'Current command list: ${RecipeController.currentRecipe!.commandList.map((e) => e.numStep).toList()}');
+          '[recipe controller] Current command list: ${RecipeController.currentRecipe!.commandList.map((e) => e.numStep).toList()}');
       debugPrint(
-          'Current command menu list: ${CommandController.commandMenuList.map((e) => e.numStep).toList()}');
+          '[recipe controller] Current command menu list: ${CommandController.commandMenuList.map((e) => e.numStep).toList()}');
 
       int validRangeStart = 0;
       int validRangeEnd =
           RecipeController.currentRecipe!.commandList.length - 1;
 
-      debugPrint('Valid index range: $validRangeStart to $validRangeEnd');
+      debugPrint(
+          '[recipe controller] Valid index range: $validRangeStart to $validRangeEnd');
 
       if (commandIndexToDelete > -1 &&
           commandIndexToDelete >= validRangeStart &&
@@ -327,21 +335,24 @@ class RecipeController extends GetxController {
         CommandController.commandMenuList.removeAt(commandIndexToDelete);
 
         // Remove from currentRecipe.commandList
-        RecipeController.currentRecipe!.commandList
+
+        RecipeController.recipeList[commandIndexToDelete].commandList
             .removeAt(commandIndexToDelete);
 
         // Log the updated lists after deletion
-        debugPrint('Deleted command at index: $commandIndexToDelete');
         debugPrint(
-            'Updated command menu list: ${CommandController.commandMenuList.map((e) => e.numStep).toList()}');
+            '[recipe controller] Deleted command at index: $commandIndexToDelete');
         debugPrint(
-            'Updated command list: ${RecipeController.currentRecipe!.commandList.map((e) => e.numStep).toList()}');
+            '[recipe controller] Updated command menu list: ${CommandController.commandMenuList.map((e) => e.numStep).toList()}');
+        debugPrint(
+            '[recipe controller] Updated command list: ${RecipeController.currentRecipe!.commandList.map((e) => e.numStep).toList()}');
       } else {
         // Log an error if the command is not found or list is empty
-        debugPrint('Error: Command not found or index is out of valid range');
+        debugPrint(
+            '[recipe controller] Error: Command not found or index is out of valid range');
       }
     } catch (e) {
-      debugPrint('Exception occurred: $e');
+      debugPrint('[recipe controller] Exception occurred: $e');
     }
 
     refreshNewCommandButtonState();
