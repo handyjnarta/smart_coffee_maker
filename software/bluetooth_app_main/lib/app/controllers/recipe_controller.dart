@@ -337,7 +337,7 @@ class RecipeController extends GetxController {
         debugPrint(
             'Updated command list: ${RecipeController.currentRecipe!.commandList.map((e) => e.numStep).toList()}');
       } else {
-        // Log an error if the command is not found or index is out of valid range
+        // Log an error if the command is not found or list is empty
         debugPrint('Error: Command not found or index is out of valid range');
       }
     } catch (e) {
@@ -350,16 +350,5 @@ class RecipeController extends GetxController {
 
   void refreshLogs(String text) {
     ctrl.refreshLogs(text: text, sourceId: SourceId.statusId);
-  }
-
-  void someMethodAccessingList() {
-    if (RecipeController.currentRecipe!.commandList.length > 1) {
-      // Safely access the second element
-      var secondCommand = RecipeController.currentRecipe!.commandList[1];
-      // Perform operations on the second command
-    } else {
-      // Handle cases where the list has less than 2 elements
-      debugPrint('List does not have a second element');
-    }
   }
 }

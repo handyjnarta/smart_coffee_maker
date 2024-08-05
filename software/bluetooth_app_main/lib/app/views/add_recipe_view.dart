@@ -190,6 +190,9 @@ class AddRecipeView extends StatelessWidget {
       child: OutlinedButton(
         onPressed: () {
           Navigator.pop(context);
+          CommandController.currentStep.value = 0;
+          RecipeController().refreshNewCommandButtonState();
+          RecipeController().refreshSaveRecipeButtonState();
         },
         style: buildButtonStyle(),
         child: const Row(
