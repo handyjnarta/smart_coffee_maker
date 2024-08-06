@@ -1,50 +1,57 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../controllers/recipe_controller.dart';
 import '../helper/widget_helper.dart';
 
 class MyCustomButton extends StatelessWidget {
   final VoidCallback? onPressedAction;
-  // final void Function()? onPressedAction;
-  final String? commandTitle;
+  final String? commandNumStep;
   final Widget customWidget;
   final Color? borderColor;
   final bool? isCircleButton;
   final double? radiusSize;
   final double? buttonWidth;
-  const MyCustomButton(
-      {Key? key,
-      required this.customWidget,
-      required this.onPressedAction,
-      this.borderColor,
-      this.commandTitle,
-      this.isCircleButton,
-      this.radiusSize,
-      this.buttonWidth})
-      : super(key: key);
+
+  const MyCustomButton({
+    Key? key,
+    required this.customWidget,
+    required this.onPressedAction,
+    this.borderColor,
+    this.commandNumStep,
+    this.isCircleButton,
+    this.radiusSize,
+    this.buttonWidth,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    // Access the RecipeController instance
+    final RecipeController recipeController = Get.find<RecipeController>();
+
     return OutlinedButton(
-        onPressed: () {
-          if (commandTitle != null) {
-            debugPrint('');
-            debugPrint('[widget_helper]commandTitle: $commandTitle');
-            DeviceController.selectedTitle = commandTitle!;
-          }
+      onPressed: () {
+        if (commandNumStep != null) {
+          debugPrint('');
+          debugPrint('[widget_helper]commandnumsteps: $commandNumStep');
+          RecipeController.selectedNumSteps = commandNumStep!;
+          debugPrint(
+              '[widget_helper]selectednumsteps: ${RecipeController.selectedNumSteps} OLAGA');
+        }
 
-          onPressedAction?.call();
+        onPressedAction?.call();
 
-          if (DeviceController.isEditDevice ||
-              DeviceController.isInsertNewDevice) {
-            DeviceController.refreshSaveDeviceButtonState();
-          }
-          // onPressedAction;
-        },
-        style: buildButtonStyle(
-            borderColor: borderColor ?? Colors.grey,
-            isCircleButton: isCircleButton ?? true,
-            radiusSize: radiusSize,
-            buttonWidth: buttonWidth),
-        child: customWidget);
+        if (recipeController.isEditRecipe.value ||
+            recipeController.isInsertNewRecipe.value) {
+          recipeController.refreshSaveRecipeButtonState();
+        }
+      },
+      style: buildButtonStyle(
+        borderColor: borderColor ?? Colors.grey,
+        isCircleButton: isCircleButton ?? true,
+        radiusSize: radiusSize,
+        buttonWidth: buttonWidth,
+      ),
+      child: customWidget,
+    );
   }
 }
