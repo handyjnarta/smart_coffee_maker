@@ -1,9 +1,11 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth/app/controllers/recipe_controller.dart';
 //import 'package:flutter_bluetooth/app/controllers/global_controller.dart';
 import 'package:flutter_bluetooth/app/helper/popup_dialogs.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/get_core.dart';
+
 import '../../bluetooth_data.dart';
 import '../../main.dart';
 import '../../utils.dart';
@@ -68,6 +70,7 @@ class RecipesView extends StatelessWidget {
     RecipeController.recipeList.removeAt(index);
     ctrl.refreshLogs(text: 'Recipe "$recipeName" deleted');
     showGetxSnackbar('Recipe deleted', 'Recipe "$recipeName" deleted');
+
   }
 
   @override
@@ -87,10 +90,12 @@ class RecipesView extends StatelessWidget {
           : const Center(
               child: Text(
               'No recipe found',
+
               style: TextStyle(fontSize: 22),
             ));
     });
   }
+
 
   void editSelectedRecipe(BuildContext context) {
    
@@ -101,6 +106,7 @@ class RecipesView extends StatelessWidget {
         .editRecipe(RecipeController.recipeList[index].recipeName);
     debugPrint(
         '[recipe view]nama resep di recipe View: ${RecipeController.recipeList[index].recipeName}');
+
     showModalBottomSheet(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
@@ -108,6 +114,7 @@ class RecipesView extends StatelessWidget {
         isScrollControlled: true,
         context: context,
         builder: (BuildContext context) {
+
           return const AddRecipeView(title: 'Edit recipe');
         }).whenComplete(() {
       debugPrint('');
@@ -132,10 +139,12 @@ class RecipesView extends StatelessWidget {
   void createNewRecipe(BuildContext context) {
     RecipeController().createNewRecipe();
     //AddRecipeView.editCommand(context);
+
     showModalBottomSheet(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
         ),
+
         isScrollControlled: true,
         context: context,
         builder: (BuildContext context) {
@@ -157,6 +166,7 @@ class RecipesView extends StatelessWidget {
       padding: const EdgeInsets.all(6.0),
       child: Card(
         shape: const RoundedRectangleBorder(),
+
         elevation: 4,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -166,6 +176,7 @@ class RecipesView extends StatelessWidget {
                 children: <Widget>[
                   Expanded(
                     child: Text(
+
                       recipeName,
                       style: TextStyle(
                           fontSize: 20, color: colors['neutralTextColor']!),
@@ -267,6 +278,7 @@ class RecipesView extends StatelessWidget {
                   ),
                 ],
               ),
+
             ],
           ),
         ),

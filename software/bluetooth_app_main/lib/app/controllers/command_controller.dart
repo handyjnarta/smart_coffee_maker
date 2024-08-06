@@ -136,12 +136,14 @@ class CommandController extends GetxController {
     if (commandvolumeCtrl.text.isEmpty ||
         int.parse(commandvolumeCtrl.text) < 100) {
           debugPrint('commandvolumeCtrl : ${commandvolumeCtrl.text}');
+
       commandvolumeErrorText.value = 'Please input the right volume';
       return;
     }
     if (commandTimeInterval.text.isEmpty ||
         int.parse(commandTimeInterval.text) < 5) {
-          debugPrint('commandTimeInterval.text : ${commandTimeInterval.text}');
+
+      debugPrint('commandTimeInterval.text : ${commandTimeInterval.text}');
       commandTimeIntervalErrorText.value =
           'Please input the right Time Interval';
       return;

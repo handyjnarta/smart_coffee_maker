@@ -9,7 +9,9 @@ import 'recipes_view.dart';
 
 final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
+
 enum RecipePopupMenuItem { newRecipe, saveRecipe, loadRecipe }
+
 
 class MainView extends StatelessWidget {
   const MainView({Key? key}) : super(key: key);
@@ -65,6 +67,7 @@ class MainView extends StatelessWidget {
                       :
                       // OutlinedButton(
                       //     onPressed: () {
+
                       //       const RecipesView().createNewRecipe(context);
                       //     },
                       //     style: buildButtonStyle(borderColor: Colors.grey, splashColor: Colors.yellow),
@@ -77,12 +80,14 @@ class MainView extends StatelessWidget {
                           } else if (item == RecipePopupMenuItem.saveRecipe) {
                             if (RecipeController.recipeList.isNotEmpty) {
                               RecipeController().saveRecipeListIntoStorage();
+
                             } else {
                               null;
                             }
                           } else {
+
                             RecipeController().loadRecipeListFromStorage(
-                                isLoadFromInitApp: false);
+                  isLoadFromInitApp: false);
                           }
                         }, itemBuilder: (BuildContext context) {
                           return [
@@ -107,9 +112,10 @@ class MainView extends StatelessWidget {
                                   Text(
                                     'Save to Cloud',
                                     style: TextStyle(
+
                                         color: RecipeController
                                                 .recipeList.isNotEmpty
-                                            ? Colors.black
+                             ? Colors.black
                                             : Colors.grey),
                                   ),
                                   const Expanded(
@@ -119,7 +125,9 @@ class MainView extends StatelessWidget {
                                   Icon(Icons.save_alt_outlined,
                                       size: 20.0,
                                       color:
+
                                           RecipeController.recipeList.isNotEmpty
+
                                               ? Colors.black
                                               : Colors.grey)
                                 ],
@@ -150,7 +158,9 @@ class MainView extends StatelessWidget {
         bottom: TabBar(
           controller: ctrl.tabController,
           indicatorColor: Colors.white,
+
           tabs: const [
+
             Tab(
                 icon: Row(
               mainAxisAlignment: MainAxisAlignment.center,

@@ -248,9 +248,11 @@ class RecipeController extends GetxController {
       int currID = currentRecipe!.id;
       currentRecipe!.setNewRecipeId = (currID + 1);
     }
+
     
     if (isEditRecipe.isTrue) {
       showGetxSnackbar('FUngsi ini sudah pindah tempat', 'ada yang salah');
+
 
     } else {
       recipeList.add(currentRecipe!); //buat void untuk menambahkan
@@ -317,7 +319,9 @@ class RecipeController extends GetxController {
 
     return null;
   }
+
 VoidCallback? deleteSelectedCommand() {
+
     debugPrint(
         '[recipe_con]nama resep di recipe delete: ${currentRecipe?.recipeName}');
     debugPrint(

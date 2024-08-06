@@ -37,7 +37,9 @@ class Recipes {
       );
 
   set setNewRecipe(String newRecipeName) => recipeName = newRecipeName;
+
   set setNewRecipeSetpoint(String setRecipeSetpoint) => setpoint = setRecipeSetpoint;
+
   set setNewRecipeId(int setRecipeId) => id = setRecipeId;
 }
 
