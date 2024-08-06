@@ -5,233 +5,382 @@ import 'package:flutter_bluetooth/app/controllers/command_controller.dart';
 import 'package:flutter_bluetooth/app/helper/command_menu.dart';
 import 'package:flutter_bluetooth/app/helper/popup_dialogs.dart';
 import 'package:flutter_bluetooth/app/models/recipes.dart';
-import 'package:flutter_bluetooth/app/views/add_recipe_view.dart';
+import 'package:flutter_bluetooth/app/views/add_command_view.dart';
 import 'package:flutter_bluetooth/main.dart';
 import 'package:get/get.dart';
 import '../../utils.dart';
 import '/services/firestore_service.dart';
 
-class DeviceController extends GetxController {
-  static var isInsertNewDevice = false;
-  static var isEditDevice = false;
-  static bool isSaveDeviceBtnClicked = false;
-  static var enableNewCommandBtn = false.obs;
-  static var enableSaveDeviceBtn = false.obs;
-  static RxList<Devices> deviceList = <Devices>[].obs;
-  static Devices? currentDevice;
-  static int deviceIndex = -1;
-  static int deviceCount = 0;
-  static Map<String, dynamic> oldDeviceData = {};
+class RecipeController extends GetxController {
+  // Observable variables
+  var isInsertNewRecipe = false.obs;
+  var isEditRecipe = false.obs;
+  var isSaveRecipeBtnClicked = false.obs;
+  var enableNewCommandBtn = false.obs;
+  var enableSaveRecipeBtn = false.obs;
+  static RxList<Recipes> recipeList = <Recipes>[].obs;
+  //var currentRecipe = Rxn<Recipes>();
+  var recipeIndex = 0.obs;
+  static Recipes? currentRecipe;
+  var recipeCount = 0.obs;
+  var oldRecipeData = {}.obs;
 
-  static TextEditingController deviceNameController = TextEditingController();
-  static TextEditingController turnOnTextController = TextEditingController();
+  static TextEditingController recipeNameController = TextEditingController();
   static TextEditingController turnOffTextController = TextEditingController();
+  static TextEditingController turnOnTextController = TextEditingController();
+  static TextEditingController recipeSetpointController =
+      TextEditingController();
 
-  static String selectedTitle = '';
-  static RxString errorText = ''.obs;
+  static String selectedNumSteps = '';
+  var errorText = ''.obs;
 
-  static FirestoreService firestoreService = FirestoreService();
+  final FirestoreService firestoreService = FirestoreService();
 
-  static void refreshNewCommandButtonState() {
+  @override
+  void onInit() {
+    super.onInit();
+    ever(isEditRecipe, (value) {
+      debugPrint('[recipe controller] isEditRecipe updated: $value');
+    });
+  }
+
+  void refreshNewCommandButtonState() {
     enableNewCommandBtn.value = false;
 
-    if (deviceNameController.text.length < 3) {
-      errorText.value = 'Device name minimal 3 characters';
+    // Check if the recipe name length is less than 3 characters
+    if (recipeNameController.text.isEmpty) {
+      errorText.value = 'Recipe name required';
     } else {
+      // Clear the error message if input is valid
       errorText.value = '';
-      int newDevIndex = deviceList.indexWhere(
-          (element) => element.deviceName == deviceNameController.text);
 
-      if ((isInsertNewDevice && newDevIndex > -1) ||
-          (isEditDevice &&
+      // Debug print the current recipe name
+      debugPrint(
+          ' recipe controller] Recipe name entered: ${recipeNameController.text}');
+
+      // Check if the recipe name already exists
+      int newDevIndex = recipeList.indexWhere(
+          (element) => element.recipeName == recipeNameController.text);
+
+      debugPrint(
+          '[recipe controller] Index of existing recipe with the same name: $newDevIndex');
+
+      if ((isInsertNewRecipe.value && newDevIndex > -1) ||
+          (isEditRecipe.value &&
               newDevIndex > -1 &&
-              deviceNameController.text !=
-                  oldDeviceData['oldDevice']['deviceName'])) {
-        errorText.value = 'Device name already used';
+              recipeNameController.text !=
+                  oldRecipeData['oldRecipe']['recipeName'])) {
+        errorText.value = 'Recipe name already used';
       } else {
-        if (currentDevice != null) {
-          if (currentDevice!.commandList.length < maxCommandCount) {
+        if (currentRecipe != null) {
+          if (currentRecipe!.commandList.length < maxCommandCount) {
             enableNewCommandBtn.value = true;
+            debugPrint(' [recipe controller] New command button enabled');
           }
         } else {
           enableNewCommandBtn.value = true;
+          debugPrint(
+              '[recipe controller] New command button enabled in different way');
         }
       }
     }
   }
 
-  static void loadDeviceListFromStorage({bool isLoadFromInitApp = true}) async {
+  Future<void> loadRecipeListFromStorage(
+      {bool isLoadFromInitApp = true}) async {
     if (isLoadFromInitApp) {
-      deviceList.clear();
-      deviceList
-          .addAll(await DeviceManager.instance.loadDeviceListFromFirestore());
-      ctrl.refreshLogs(
-          text: 'Devices loaded from Firestore on app start',
-          sourceId: SourceId.statusId);
+      recipeList.clear();
+      recipeList
+          .addAll(await RecipesManager.instance.loadRecipesListFromFirestore());
+      refreshLogs('Recipes loaded from Firestore on app start');
     } else {
       showConfirmDialog(
-          context: Get.context!,
-          title: 'Reload devices confirm',
-          text: 'Reload all devices from Firestore?'
-              '\nDevice count in Firestore: ${DeviceManager.instance.getDeviceCount}',
-          onOkPressed: () async {
-            Navigator.pop(Get.context!);
-            deviceList.clear();
-            deviceList.addAll(
-                await DeviceManager.instance.loadDeviceListFromFirestore());
-            ctrl.refreshLogs(
-                text: 'Devices loaded from Firestore',
-                sourceId: SourceId.statusId);
-            showGetxSnackbar('Device loaded', 'Device loaded from Firestore');
-          });
-    }
-  }
-
-  static void saveDeviceListIntoStorage() {
-    showConfirmDialog(
         context: Get.context!,
-        title: 'Save devices confirm',
-        text: 'Save all devices into Firestore?',
+        title: 'Reload recipes confirm',
+        text:
+            'Reload all recipes from Firestore?\nRecipe count in Firestore: ${RecipesManager.instance.getRecipesCount}',
         onOkPressed: () async {
           Navigator.pop(Get.context!);
-          await DeviceManager.instance.saveDeviceListIntoFirestore(deviceList);
-          ctrl.refreshLogs(
-              text: 'Devices saved into Firestore',
-              sourceId: SourceId.statusId);
-          showGetxSnackbar('Device saved', 'Devices saved into Firestore OK');
-          debugPrint('Device list has been successfully stored into Firebase.');
-        });
+          recipeList.clear();
+          recipeList.addAll(
+              await RecipesManager.instance.loadRecipesListFromFirestore());
+          refreshLogs('Recipes loaded from Firestore');
+          showGetxSnackbar('Recipe loaded', 'Recipe loaded from Firestore');
+        },
+      );
+    }
   }
 
-  static void createNewDevice() {
-    isInsertNewDevice = true;
-    isEditDevice = false;
-    enableSaveDeviceBtn.value = false;
+  Future<void> saveRecipeListIntoStorage() async {
+    showConfirmDialog(
+      context: Get.context!,
+      title: 'Save recipes confirm',
+      text: 'Save all recipes into Firestore?',
+      onOkPressed: () async {
+        Navigator.pop(Get.context!);
+        await RecipesManager.instance.saveRecipesListIntoFirestore(recipeList);
+        refreshLogs('Recipes saved into Firestore');
+        showGetxSnackbar('Recipe saved', 'Recipes saved into Firestore OK');
+      },
+    );
+  }
+
+  void createNewRecipe() {
+    isInsertNewRecipe.value = true;
+    isEditRecipe.value = false;
+    enableSaveRecipeBtn.value = false;
     enableNewCommandBtn.value = false;
-    currentDevice = null;
-    isSaveDeviceBtnClicked = false;
-    deviceCount = deviceList.length;
-    deviceNameController.clear();
+    currentRecipe = Recipes(
+      recipeName: '',
+      id: recipeCount.value,
+      //status: false,
+      setpoint: '',
+      commandList: [],
+    );
+    isSaveRecipeBtnClicked.value = false;
+    recipeCount.value = recipeList.length;
+    recipeNameController.clear();
+    recipeSetpointController.clear();
     CommandController.commandMenuList.clear();
   }
 
-  static void editDevice() {
-    isSaveDeviceBtnClicked = false;
-    isInsertNewDevice = false;
-    isEditDevice = true;
+  void editRecipe(String namaresep) {
+    isSaveRecipeBtnClicked.value = false;
+    isInsertNewRecipe.value = false;
+    isEditRecipe.value = true;
+    debugPrint('edit true ga: ${isEditRecipe.value}');
     errorText.value = '';
+    int index = -1;
+    String targetName = namaresep;
 
-    currentDevice = deviceList[deviceIndex];
-    oldDeviceData['oldDevice'] = {
-      'deviceName': currentDevice!.deviceName,
-      'commandList': [...currentDevice!.commandList],
+    // Find the index of the recipe with the given name
+    for (int i = 0; i < RecipeController.recipeList.length; i++) {
+      if (RecipeController.recipeList[i].recipeName == targetName) {
+        index = i;
+        break;
+      }
+    }
+
+    // Check if the recipe was found
+    if (index == -1) {
+      debugPrint('[recipe controller] Recipe not found: $namaresep');
+      errorText.value = 'Recipe not found';
+      return;
+    }
+
+    recipeIndex.value = index;
+    debugPrint('[recipe controller] index : ${recipeIndex.value}');
+    debugPrint('[recipe_con]nama resep di recipe View: $namaresep');
+
+    // Set the current recipe and backup the old data
+    currentRecipe = RecipeController.recipeList[recipeIndex.value];
+    oldRecipeData['oldRecipe'] = {
+      'recipeName': currentRecipe!.recipeName,
+      'recipeSetpoint': currentRecipe!.setpoint,
+      'commandList': [...currentRecipe!.commandList],
     };
 
-    deviceNameController.text = currentDevice!.deviceName;
+    recipeNameController.text = currentRecipe!.recipeName;
+    recipeSetpointController.text = currentRecipe!.setpoint.toString();
 
-    if (currentDevice!.commandList.length < maxCommandCount) {
-      enableNewCommandBtn.value = true;
-    } else {
-      enableNewCommandBtn.value = false;
-    }
+    // Enable or disable the new command button
+    enableNewCommandBtn.value =
+        currentRecipe!.commandList.length < maxCommandCount;
 
+    // Clear and populate the command menu list
     CommandController.commandMenuList.clear();
-
-    int index = 0;
-    for (final cmd in currentDevice!.commandList) {
-      CommandController.commandTextEditCtrlList[index].text = cmd.command;
+    for (final cmd in currentRecipe!.commandList) {
+      CommandController
+          .commandTextEditCtrlList[CommandController.currentStep.value]
+          .text = cmd.numStep.toString();
       CommandController.commandMenuList.add(CommandMenu(
-        titleText: cmd.title,
-        commandText: cmd.command,
+        numStep: cmd.numStep.toString(),
+        volume: cmd.volume.toString(),
+        timeInterval: cmd.timeInterval.toString(),
+        timePouring: cmd.timePouring.toString(),
         readOnly: true,
-        commandController: CommandController.commandTextEditCtrlList[index],
-        onDeleteButtonPressed: DeviceController.deleteSelectedCommand,
-        onEditButtonPressed: DeviceController.editSelectedCommand,
+        onDeleteButtonPressed: () => deleteSelectedCommand(),
+        onEditButtonPressed: () => editSelectedCommand(),
       ));
-      index++;
+
+      // Increment the current step after adding each command
+      CommandController.currentStep.value++;
     }
   }
 
-  static void refreshSaveDeviceButtonState() {
-    if (currentDevice != null) {
-      if (currentDevice!.commandList.length < minCommandCount ||
+  void refreshSaveRecipeButtonState() {
+    if (currentRecipe != null) {
+      if (currentRecipe!.commandList.length < minCommandCount ||
           errorText.isNotEmpty) {
-        enableSaveDeviceBtn.value = false;
+        enableSaveRecipeBtn.value = false;
 
         if (errorText.isNotEmpty && enableNewCommandBtn.isFalse) {
-          enableSaveDeviceBtn.value = true;
+          enableSaveRecipeBtn.value = true;
         }
       } else {
-        enableSaveDeviceBtn.value = true;
+        enableSaveRecipeBtn.value = true;
       }
     }
   }
 
-  static void saveDeviceData() {
-    isSaveDeviceBtnClicked = true;
+  void saveRecipeData() {
+    isSaveRecipeBtnClicked.value = true;
+    debugPrint('edit true ga- save nih: ${isEditRecipe.value}');
 
-    if (currentDevice?.deviceName != deviceNameController.text) {
-      ctrl.refreshLogs(
-          text:
-              'Device "${currentDevice?.deviceName}" changed to "${deviceNameController.text}"');
-      currentDevice?.setNewDeviceName = deviceNameController.text;
+    if (currentRecipe?.recipeName != recipeNameController.text) {
+      refreshLogs(
+          'Recipe "${currentRecipe?.recipeName}" changed to "${recipeNameController.text}"');
+      currentRecipe?.setNewRecipe = recipeNameController.text;
     }
 
-    if (isEditDevice) {
-      deviceList[deviceIndex] = currentDevice!;
-      showGetxSnackbar('Edit success',
-          'Device "${currentDevice?.deviceName}" edited successfully');
-      ctrl.refreshLogs(
-          text: 'Device "${currentDevice?.deviceName}" edited successfully');
+    if (currentRecipe?.setpoint != recipeSetpointController.text) {
+      refreshLogs(
+          'Setpoint "${currentRecipe?.setpoint}" changed to "${recipeSetpointController.text}"');
+      currentRecipe?.setNewRecipeSetpoint = recipeSetpointController.text;
+    }
+
+    int newDevIndex =
+        recipeList.indexWhere((element) => element.id == currentRecipe!.id);
+
+    if (isInsertNewRecipe.value && newDevIndex > -1) {
+      errorText.value = 'Recipe ID already used';
+      // Mengubah ID hanya jika ID sudah digunakan dan ini adalah resep baru
+      int currID = currentRecipe!.id;
+      currentRecipe!.setNewRecipeId = (currID + 1);
+    }
+
+    if (isEditRecipe.isTrue) {
+      showGetxSnackbar('FUngsi ini sudah pindah tempat', 'ada yang salah');
     } else {
-      deviceList.add(currentDevice!);
+      recipeList.add(currentRecipe!); //buat void untuk menambahkan
       showGetxSnackbar(
-          'Save device OK', 'Device: "${currentDevice?.deviceName}" saved');
-      ctrl.refreshLogs(text: 'Device "${currentDevice?.deviceName}" saved');
+          'Recipe saved', 'Recipe count: "${recipeList.length}" saved');
+      refreshLogs('Recipe "${currentRecipe!.recipeName}" saved');
     }
-    for (final data in deviceList) {
-      debugPrint('[device_controller] device name: ${data.deviceName}');
+
+    for (final data in recipeList) {
+      debugPrint('[recipe_controller] recipe name: ${data.recipeName}');
+      //debugPrint('[recipe_controller] bool: ${data.status}');
+      debugPrint('[recipe_controller] id: ${data.id}');
+      debugPrint('[recipe_controller] Setpoint: ${data.setpoint}');
     }
   }
 
-  static void onNewCommandButtonPressed() {
-    CommandController.commandCtrl.clear();
-    CommandController.commandTitleCtrl.clear();
-    CommandController.commandLogText.clear();
+  void onNewCommandButtonPressed() {
+    //CommandController.resetSteps();
+    //CommandController.commandnumStepCtrl.clear();
+    CommandController.commandvolumeCtrl.text = '';
+    CommandController.commandTimePouring.text = '';
+    CommandController.commandTimeInterval.text = '';
   }
 
-  static VoidCallback? editSelectedCommand() {
-    debugPrint('');
-    debugPrint('[device_controller] selected title to edit: $selectedTitle');
-    CommandController.commandIndexToEdit = currentDevice!.commandList
-        .indexWhere((element) => element.title == selectedTitle);
-    CommandController.oldCommand = currentDevice!
-        .commandList[CommandController.commandIndexToEdit].command;
-    CommandController.isEditCommand.value = true;
-    CommandController.commandTitleCtrl.text =
-        currentDevice!.commandList[CommandController.commandIndexToEdit].title;
-    CommandController.commandCtrl.text = currentDevice!
-        .commandList[CommandController.commandIndexToEdit].command;
-    CommandController.commandLogText.text = currentDevice!
-        .commandList[CommandController.commandIndexToEdit].logText;
-    AddDeviceView.editCommand(Get.context!);
-    return null;
+  void saveEditedRecipeData() {
+    isSaveRecipeBtnClicked.value = true;
+    recipeList[recipeIndex.value] = currentRecipe!;
+    debugPrint('nama resep: ${recipeNameController.text} ');
+    currentRecipe!.recipeName = recipeNameController.text;
+    debugPrint('nama resep: ${currentRecipe?.recipeName} ');
+    showGetxSnackbar('Edit success',
+        'Recipe "${currentRecipe!.recipeName}" edited successfully');
+    refreshLogs('Recipe "${currentRecipe!.recipeName}" edited successfully');
+    isEditRecipe.value = false;
   }
 
-  static VoidCallback? deleteSelectedCommand() {
+  VoidCallback? editSelectedCommand() {
     debugPrint(
-        '[device_controller] selected title to delete: $selectedTitle from device ${currentDevice!.deviceName}');
-    int commandIndexToDelete = -1;
-    commandIndexToDelete = currentDevice!.commandList
-        .indexWhere((element) => element.title == selectedTitle);
+        '[recipe_con]nama resep di recipe View dr edit: ${currentRecipe?.recipeName}');
+    CommandController.isEditCommand.value = true;
+    CommandView.showPouringDialog(Get.context!);
+    CommandController.commandIndexToEdit = RecipeController
+        .currentRecipe!.commandList
+        .indexWhere((element) => (element.numStep) == selectedNumSteps);
+    debugPrint(
+        '[recipe controller] Commandindextoedit: ${CommandController.commandIndexToEdit}');
 
-    if (currentDevice!.commandList.isNotEmpty) {
-      currentDevice?.commandList.removeAt(commandIndexToDelete);
-      CommandController.commandMenuList.removeAt(commandIndexToDelete);
+    if (CommandController.commandIndexToEdit != -1) {
+      var commandToEdit =
+          currentRecipe!.commandList[CommandController.commandIndexToEdit];
+      commandToEdit.numStep = selectedNumSteps;
+      // selectedNumSteps = commandToEdit.numStep;
+      CommandController.commandvolumeCtrl.text = commandToEdit.volume;
+      CommandController.commandTimePouring.text = commandToEdit.timePouring;
+      CommandController.commandTimeInterval.text = commandToEdit.timeInterval;
+
+      debugPrint(
+          '[recipe controller] Currentrecipe command list: ${currentRecipe!.commandList.map((command) => command.toJson()).toList()}');
+      // Debug print the new command details
+    } else {
+      debugPrint(
+          '[recipe controller] Command with numStep ${CommandController.commandIndexToEdit} not found');
     }
 
-    refreshNewCommandButtonState();
-
     return null;
+  }
+
+  VoidCallback? deleteSelectedCommand() {
+    debugPrint(
+        '[recipe_con]nama resep di recipe delete: ${currentRecipe?.recipeName}');
+    debugPrint(
+        '[recipe_con]selected numstep: ${RecipeController.selectedNumSteps}');
+
+    // Convert selectedNumSteps to int for comparison
+    int selectedStep = int.parse(selectedNumSteps);
+
+    // Find the index of the command to delete
+    int commandIndexToDelete = RecipeController.currentRecipe!.commandList
+        .indexWhere((element) => int.parse(element.numStep) == selectedStep);
+    debugPrint('[recipe_con] commandIndexToDelete: $commandIndexToDelete');
+
+    int validRangeStart = 0;
+    int validRangeEnd = RecipeController.currentRecipe!.commandList.length - 1;
+    debugPrint(
+        '[recipe controller] Valid index range: $validRangeStart to $validRangeEnd');
+
+    if (commandIndexToDelete > -1 &&
+        commandIndexToDelete >= validRangeStart &&
+        commandIndexToDelete <= validRangeEnd) {
+      // Remove from both lists
+      CommandController.commandMenuList.removeAt(commandIndexToDelete);
+      RecipeController.currentRecipe!.commandList
+          .removeAt(commandIndexToDelete);
+
+      // Update the numStep of commands that come after the deleted one
+      for (int i = commandIndexToDelete;
+          i < RecipeController.currentRecipe!.commandList.length;
+          i++) {
+        RecipeController.currentRecipe!.commandList[i].numStep =
+            (i + 1).toString();
+        CommandController.commandMenuList[i].numStep = (i + 1).toString();
+      }
+
+      // Notify listeners or update state if necessary
+      // For example, if using a state management solution, call setState() or notifyListeners()
+
+      // Log the updated lists after deletion
+      debugPrint(
+          '[recipe controller] Deleted command at index: $commandIndexToDelete');
+      debugPrint(
+          '[recipe controller] Updated command menu list: ${CommandController.commandMenuList.map((e) => e.numStep).toList()}');
+      debugPrint(
+          '[recipe controller] Updated command list: ${RecipeController.currentRecipe!.commandList.map((e) => e.numStep).toList()}');
+      debugPrint(
+          '[recipe controller] woi: ${currentRecipe!.commandList.map((command) => command.toJson()).toList()}');
+    } else {
+      // Log an error if the command is not found or list is empty
+      debugPrint('Error: Command not found or index is out of valid range');
+    }
+    refreshNewCommandButtonState();
+    refreshSaveRecipeButtonState();
+    return null;
+  }
+
+  void refreshLogs(String text) {
+    ctrl.refreshLogs(text: text, sourceId: SourceId.statusId);
+  }
+
+  static void updateSelectedNumSteps(String newNumSteps) {
+    selectedNumSteps = newNumSteps;
+    debugPrint(
+        '[recipe controller] Updated selectedNumSteps: $selectedNumSteps');
   }
 }
