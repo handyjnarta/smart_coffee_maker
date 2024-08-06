@@ -161,63 +161,46 @@ void askForInputs() {
       currentState = POURING;
     }
     else if (incoming == 'r') {
-      ESP_BT.println("Are you sure want to run this recipe?");
-      char incomingdua ;
-      incomingdua = readSingleCharFromSerial();
-      while (incomingdua != 'y') {
-          //ESP_BT.println("Input is wrong");
-          incomingdua = readSingleCharFromSerial();
-          //ESP_BT.println("belum bener inputnya, kalau gamau running resep ini refresh aja ya");
-          //delay(1000);
-        }
-
-      if (incomingdua == 'y') {
-      //delay(1000);
-      //ESP_BT.println("Masuk");
         Setpoint = readDoubleFromSerial();
         while (Setpoint < 30.00 || Setpoint > 94.00) {
           //ESP_BT.println("Input is wrong");
-          ESP_BT.println("Enter desired temperature setpoint: ");
+          ESP_BT.println("Desired temperature setpoint from recipe: ");
           Setpoint = readDoubleFromSerial();
+          Serial.printf("Setpoint accepted: %.2f \n", Setpoint);
           //delay(1000);
         }
-        ESP_BT.printf("Setpoint accepted: %.2f", Setpoint);
-        ESP_BT.println('\n');
-        ESP_BT.println("Enter number of pouring steps: ");
+        //ESP_BT.printf("Setpoint accepted: %.2f", Setpoint);
+        //ESP_BT.println('\n');
+        //ESP_BT.println("Number of pouring steps from recipe: ");
         numSteps = readIntFromSerial();
-        while (numSteps < 1) {
-          ESP_BT.println("Input is wrong");
-          ESP_BT.println("Enter again number of pouring steps: ");
-          numSteps = readIntFromSerial();
-        }
+        Serial.printf("Number of pouring steps from recipe: %d \n", numSteps);
         for (int step = 1; step <= numSteps; ++step) {
-          ESP_BT.print("Enter desired water volume for step ");
-          ESP_BT.print(step);
-          ESP_BT.println(": ");
+          //ESP_BT.print("Desired water volume for step from recipe: ");
+          //ESP_BT.print(step);
+          //ESP_BT.println(": ");
           int volwater = readIntFromSerial();
+          Serial.printf("Desired water volume for step from recipe: %d \n", volwater);
           pouringVolumes[step - 1] = volwater;
           totalVolume += volwater;
-          ESP_BT.print("Enter duration (in seconds) for pouring step ");
-          ESP_BT.print(step);
-          ESP_BT.println(": ");
+          //ESP_BT.print("Duration (in seconds) from recipe for pouring step  ");
+          //ESP_BT.print(step);
+          //ESP_BT.println(": ");
           pouringDurations[step - 1] = readIntFromSerial();
-          ESP_BT.print("Enter interval time (in seconds) between pouring step ");
-          ESP_BT.print(step);
-          ESP_BT.println(": ");
+          Serial.printf("Duration (in seconds) from recipe for pouring step: %d \n", pouringDurations[step - 1]);
+          // ESP_BT.print("Interval time (in seconds) from recipe between pouring step ");
+          // ESP_BT.print(step);
+          // ESP_BT.println(": ");
           pouringIntervals[step - 1] = readIntFromSerial();
+          Serial.printf("Interval time (in seconds) from recipe between pouring step: %d \n", pouringIntervals[step - 1]);
         }
-
-        //ESP_BT.print("Total water volume: ");
-        //ESP_BT.println(totalVolume);
 
         currentState = POURING;
     } else {
-      ESP_BT.print("kalau gamau running resep ini refresh aja ya ");
+      ESP_BT.print("kalau gamau running skip aja ya ");
     }
     }
+    dimmer.setPower(0);
   }
-  dimmer.setPower(0);
-}
 
 void updateLoadCell() {
   static boolean newDataReady = 0;
@@ -275,7 +258,7 @@ void loop() {
             int pourDuration = pouringDurations[step];
             int pourInterval = pouringIntervals[step];
             updateLoadCell();
-              controlMotor(100);
+              controlMotor(110);
               ESP_BT.println("mengalir bang");
               stepStartTime = millis();
               pouring = true;
@@ -295,12 +278,15 @@ void loop() {
                 //ESP_BT.println();
               }
               if (millis() - stepStartTime >= pourDuration * 1000 && (volumeLoadCells+20) >= volwater )  {
-                //ESP_BT.print("udah berhenti");
-                ESP_BT.println('\n');
-                ESP_BT.printf("total water weight: %.2f", (volumeLoadCells+10));
-                ESP_BT.printf("total water weight: %.2f", (volumeLoadCells+10));
-                //ESP_BT.printf("total water weight: %d", (volumeLoadCells+10));
                 controlMotor(0);
+                ESP_BT.print("udah berhenti");
+                ESP_BT.println('\n');
+                volumeLoadCells +=10;
+                ESP_BT.printf("total water weight: %.2f", (volumeLoadCells));
+                volumeLoadCells +=10;
+                ESP_BT.printf("total water weight: %.2f", (volumeLoadCells));
+                //ESP_BT.printf("total water weight: %d", (volumeLoadCells+10));
+                
                 volumeLoadCells = 0;
                 pouring = false;
                 if (step < numSteps - 1) {
@@ -313,6 +299,7 @@ void loop() {
             }
 
           }
+
 
           ESP_BT.println("All pouring steps completed.");
           newVal = 0;

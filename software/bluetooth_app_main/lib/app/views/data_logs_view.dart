@@ -217,6 +217,12 @@ class DataLogs extends StatelessWidget {
     }
   }
 
+  void pressSendButtonAutomatically() {
+    if (ctrl.logTextEditingController.text.isNotEmpty) {
+      sendMessage();
+    }
+  }
+
   buildHistoryCommandContainer(String teks) {
     return TextButton(
         onPressed: () {

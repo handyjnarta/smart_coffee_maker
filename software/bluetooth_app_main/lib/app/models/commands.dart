@@ -1,26 +1,33 @@
 class Commands {
-  final int id;
-  final String command;
-  final String title;
-  final String logText;
+  // Properties
+  String numStep;
+  String volume;
+  String timePouring;
+  String timeInterval;
 
+  // Constructor
   Commands({
-    required this.id,
-    required this.command,
-    required this.title,
-    required this.logText,
+    required this.numStep,
+    required this.volume,
+    required this.timePouring,
+    required this.timeInterval,
   });
 
+  //String get command => null;
+
+  // Convert a Commands object to a JSON map
   Map<String, dynamic> toJson() => {
-        "id": id.toString(),
-        "command": command,
-        "title": title,
-        "logText": logText
+        "numStep": numStep,
+        "volume": volume,
+        "timePouring": timePouring,
+        "timeInterval": timeInterval,
       };
 
+  // Create a Commands object from a JSON map
   static Commands fromJson(Map<String, dynamic> json) => Commands(
-      id: int.parse(json["id"]),
-      command: json["command"],
-      title: json["title"],
-      logText: json["logText"]);
+        numStep: json["numStep"],
+        volume: json["volume"],
+        timePouring: json["timePouring"],
+        timeInterval: json["timeInterval"],
+      );
 }

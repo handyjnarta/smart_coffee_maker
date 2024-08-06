@@ -38,13 +38,10 @@ void showConfirmDialog({
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          MyCustomButton(
-              customWidget: const Text('Cancel'),
+          const MyCustomButton(
+              customWidget: Text('Cancel'),
               isCircleButton: false, buttonWidth: 100,
-              onPressedAction: () {
-                // Navigator.pop(context);
-                Get.back();
-              }
+              onPressedAction: getback,
           ),
           const SizedBox(width: 20),
           MyCustomButton(
@@ -65,6 +62,48 @@ void showConfirmDialog({
     ],
   );
   showCustomDialog(context: context, title: title, actionList: [items]);
+}
+
+void showConfirmDialogEditDeleteRun({
+  required BuildContext context,
+  required String title,
+  required String text,
+  required Function(int) onOkPressed,
+  required int index, // Tambahkan parameter untuk diteruskan ke onOkPressed
+}) {
+  Column items = Column(
+    children: [
+      const SizedBox(height: 20,),
+      Text(text, style: const TextStyle(fontSize: 18),),
+      const SizedBox(height: 20,),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          MyCustomButton(
+              customWidget: const Text('Cancel'),
+              isCircleButton: false, buttonWidth: 100,
+              onPressedAction: () {
+                Get.back();
+              }
+          ),
+          const SizedBox(width: 20),
+          MyCustomButton(
+              customWidget: const Text('OK'),
+              isCircleButton: false, buttonWidth: 100,
+              onPressedAction: () {
+                onOkPressed(index); // Teruskan parameter index
+                Get.back(); // Pastikan dialog ditutup setelah aksi OK
+              }
+          ),
+        ],
+      )
+    ],
+  );
+  showCustomDialog(context: context, title: title, actionList: [items]);
+}
+
+void getback() {
+  Get.back();
 }
 
 void showCustomDialog({required BuildContext context, required String title, required List<Widget> actionList}) {

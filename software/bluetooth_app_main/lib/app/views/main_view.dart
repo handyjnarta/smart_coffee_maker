@@ -9,7 +9,9 @@ import 'recipes_view.dart';
 
 final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
-enum DevicePopupMenuItem { newDevice, saveDevice, loadDevice }
+
+enum RecipePopupMenuItem { newRecipe, saveRecipe, loadRecipe }
+
 
 class MainView extends StatelessWidget {
   const MainView({Key? key}) : super(key: key);
@@ -65,31 +67,34 @@ class MainView extends StatelessWidget {
                       :
                       // OutlinedButton(
                       //     onPressed: () {
-                      //       const DevicesView().createNewDevice(context);
+
+                      //       const RecipesView().createNewRecipe(context);
                       //     },
                       //     style: buildButtonStyle(borderColor: Colors.grey, splashColor: Colors.yellow),
-                      //     child: const Text('New Device', style: TextStyle(color: Colors.white),)
+                      //     child: const Text('New Recipe', style: TextStyle(color: Colors.white),)
                       // ),
-                      PopupMenuButton<DevicePopupMenuItem>(
-                          onSelected: (DevicePopupMenuItem item) {
-                          if (item == DevicePopupMenuItem.newDevice) {
-                            const DevicesView().createNewDevice(context);
-                          } else if (item == DevicePopupMenuItem.saveDevice) {
-                            if (DeviceController.deviceList.isNotEmpty) {
-                              DeviceController.saveDeviceListIntoStorage();
+                      PopupMenuButton<RecipePopupMenuItem>(
+                          onSelected: (RecipePopupMenuItem item) {
+                          if (item == RecipePopupMenuItem.newRecipe) {
+                            RecipesView().createNewRecipe(context);
+                          } else if (item == RecipePopupMenuItem.saveRecipe) {
+                            if (RecipeController.recipeList.isNotEmpty) {
+                              RecipeController().saveRecipeListIntoStorage();
+
                             } else {
                               null;
                             }
                           } else {
-                            DeviceController.loadDeviceListFromStorage(
-                                isLoadFromInitApp: false);
+
+                            RecipeController().loadRecipeListFromStorage(
+                  isLoadFromInitApp: false);
                           }
                         }, itemBuilder: (BuildContext context) {
                           return [
-                            PopupMenuItem<DevicePopupMenuItem>(
-                              value: DevicePopupMenuItem.newDevice,
+                            const PopupMenuItem<RecipePopupMenuItem>(
+                              value: RecipePopupMenuItem.newRecipe,
                               child: Row(
-                                children: const [
+                                children: [
                                   Text('New Recipe'),
                                   Expanded(
                                       child: SizedBox(
@@ -100,16 +105,17 @@ class MainView extends StatelessWidget {
                                 ],
                               ),
                             ),
-                            PopupMenuItem<DevicePopupMenuItem>(
-                              value: DevicePopupMenuItem.saveDevice,
+                            PopupMenuItem<RecipePopupMenuItem>(
+                              value: RecipePopupMenuItem.saveRecipe,
                               child: Row(
                                 children: [
                                   Text(
                                     'Save to Cloud',
                                     style: TextStyle(
-                                        color: DeviceController
-                                                .deviceList.isNotEmpty
-                                            ? Colors.black
+
+                                        color: RecipeController
+                                                .recipeList.isNotEmpty
+                             ? Colors.black
                                             : Colors.grey),
                                   ),
                                   const Expanded(
@@ -119,16 +125,18 @@ class MainView extends StatelessWidget {
                                   Icon(Icons.save_alt_outlined,
                                       size: 20.0,
                                       color:
-                                          DeviceController.deviceList.isNotEmpty
+
+                                          RecipeController.recipeList.isNotEmpty
+
                                               ? Colors.black
                                               : Colors.grey)
                                 ],
                               ),
                             ),
-                            PopupMenuItem<DevicePopupMenuItem>(
-                              value: DevicePopupMenuItem.loadDevice,
+                            const PopupMenuItem<RecipePopupMenuItem>(
+                              value: RecipePopupMenuItem.loadRecipe,
                               child: Row(
-                                children: const [
+                                children: [
                                   Text('Load Recipe'),
                                   Expanded(
                                       child: SizedBox(
@@ -150,11 +158,13 @@ class MainView extends StatelessWidget {
         bottom: TabBar(
           controller: ctrl.tabController,
           indicatorColor: Colors.white,
-          tabs: [
+
+          tabs: const [
+
             Tab(
                 icon: Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
+              children: [
                 Icon(Icons.bluetooth),
                 SizedBox(
                   width: 2,
@@ -165,7 +175,7 @@ class MainView extends StatelessWidget {
             Tab(
                 icon: Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
+              children: [
                 Icon(Icons.terminal),
                 SizedBox(
                   width: 2,
@@ -176,7 +186,7 @@ class MainView extends StatelessWidget {
             Tab(
                 icon: Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
+              children: [
                 Icon(Icons.list_alt_outlined),
                 SizedBox(
                   width: 2,
@@ -201,8 +211,8 @@ class MainView extends StatelessWidget {
               // Data logs tab
               DataLogs(),
 
-              // device list tab
-              DevicesView(),
+              // recipe list tab
+              RecipesView(),
             ],
           ),
         ),

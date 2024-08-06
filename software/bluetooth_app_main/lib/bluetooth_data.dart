@@ -25,6 +25,7 @@ class BluetoothData {
   bool _isConnectionLost = false;
   int _reconnectCounter = 0;
   Timer? _timer;
+  static String message ='';
 
   BluetoothData._privateConst();
 
@@ -221,7 +222,7 @@ class BluetoothData {
   }
 }
 
-void send_Rst() {
+void sendRst() {
   // Teks yang akan dikirimkan
   String reset = 'r';
   

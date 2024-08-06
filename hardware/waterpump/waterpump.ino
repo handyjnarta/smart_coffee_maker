@@ -29,5 +29,5 @@ analogWrite(motorPin, mSpeed);// send mSpeed value to motor
     Serial.println(mSpeed);// print mSpeed value on Serial monitor (click on Tools->Serial Monitor)
   
   
-delay(200);
+delay(20);
 }

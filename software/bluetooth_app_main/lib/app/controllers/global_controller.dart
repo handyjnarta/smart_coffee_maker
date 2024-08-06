@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth/utils.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
@@ -129,4 +128,12 @@ class Controller extends GetxController {
     super.onClose();
   }
 
+  // Fungsi untuk mengubah tab yang dipilih
+  void changeTab(int index) {
+    if (index >= 0 && index < _totalTab) {
+      selectedTabIndex.value = index;
+      tabController.animateTo(index);
+      debugPrint('[global_controller] Tab changed to: $index');
+    }
+  }
 }

@@ -17,6 +17,7 @@ late ScrollController listScrollController;
 late SharedPreferences prefs;
 
 void main() async {
+  Get.lazyPut(() => RecipeController());
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -35,7 +36,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     debugPrint('[main] building UI');
     ctrl = Get.put(Controller());
-
     // Listen to BluetoothData messages
     BluetoothData.instance.messageStream.listen((message) {
       debugPrint('Received message: $message');
@@ -111,7 +111,7 @@ class BluetoothAppState extends State<BluetoothApp>
 
   Future init() async {
     prefs = await SharedPreferences.getInstance();
-    DeviceController.loadDeviceListFromStorage();
+    RecipeController().loadRecipeListFromStorage();
     await BluetoothData.instance.initBluetooth();
   }
 

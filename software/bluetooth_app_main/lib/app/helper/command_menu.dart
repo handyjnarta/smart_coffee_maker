@@ -1,98 +1,111 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bluetooth/app/helper/widget_helper.dart';
+import 'package:flutter_bluetooth/app/controllers/command_controller.dart';
+import 'package:flutter_bluetooth/app/controllers/recipe_controller.dart';
 import '../custom_widget/custom_button.dart';
 
 class CommandMenu extends StatelessWidget {
-  String titleText;
-  final String commandText;
-  final TextEditingController? commandController;
+  String numStep;
+  final String volume;
+  final String timePouring;
+  final String timeInterval;
   final bool readOnly;
-  // final int index;
   final VoidCallback? onDeleteButtonPressed;
   final VoidCallback? onEditButtonPressed;
-  CommandMenu({Key? key,
-    required this.titleText,
-    required this.commandText,
-    // required this.titleController,
-    // this.index=-1,
-    this.readOnly=false,
-    // this.commandController,
-    required this.commandController,
+
+  CommandMenu({
+    Key? key,
+    this.readOnly = false,
     this.onEditButtonPressed,
     this.onDeleteButtonPressed,
+    required this.numStep,
+    required this.volume,
+    required this.timeInterval,
+    required this.timePouring,
   }) : super(key: key);
 
-  @override
+@override
   Widget build(BuildContext context) {
+    // Assuming numStep is a string you receive or fetch from somewhere
+    RecipeController.updateSelectedNumSteps(numStep);
+
+    int selectedNumSteps = int.parse(RecipeController.selectedNumSteps);
+    int index = RecipeController.currentRecipe!.commandList.indexWhere(
+        (element) => element.numStep == (selectedNumSteps).toString());
+    String commandText;
+
+    debugPrint('[widget] SelectedNumSteps: $selectedNumSteps');
+    debugPrint('[widget] Index: $index');
+    debugPrint(
+        '[widget] CommandList: ${RecipeController.currentRecipe!.commandList.map((e) => e.numStep).toList()}');
+
+    if (index >= 0 &&
+        index < RecipeController.currentRecipe!.commandList.length) {
+      commandText =
+          'Command ke ${RecipeController.currentRecipe!.commandList[index].numStep}';
+    } else {
+      commandText = 'Invalid command';
+    }
     return buildDeviceCommandMenu(
-        title: titleText,
-        commandText: commandText,
-        isTextEditingReadOnly: readOnly,
-        onEditButtonPressed: onEditButtonPressed,
-        onDeleteButtonPressed: onDeleteButtonPressed,
-        cmdController: commandController!
+      commandText: commandText,
+      numStep: numStep,
+      volume: volume,
+      timeInterval: timeInterval,
+      timePouring: timePouring,
+      isTextEditingReadOnly: readOnly,
+      onEditButtonPressed: onEditButtonPressed,
+      onDeleteButtonPressed: onDeleteButtonPressed,
     );
   }
-
-  // set setNewCommandMenuTitle(String newTitle) => titleText = newTitle;
-
-  buildDeviceCommandMenu({required String title, required String commandText,
-    // required TextEditingController titleController,
-    required TextEditingController cmdController,
-    bool isTextEditingReadOnly=false,
-
+  Widget buildDeviceCommandMenu({
+    required String commandText,
+    required String numStep,
+    required String volume,
+    required String timeInterval,
+    required String timePouring,
+    bool isTextEditingReadOnly = false,
     void Function()? onEditButtonPressed,
     void Function()? onDeleteButtonPressed,
-    // VoidCallback? onEditButtonPressed,
-    // VoidCallback? onDeleteButtonPressed,
   }) {
-    return
-      Column(
-        children: [
-          Container(
-            height: 60,
-            padding: const EdgeInsets.only(left: 10),
-            decoration: BoxDecoration(
-                borderRadius: const BorderRadius.all(Radius.circular(4)),
-                // color: Colors.deepPurple,
-                border: Border.all(color: Colors.deepPurple)
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                // Text(text),
-                Flexible(
+    return Column(
+      children: [
+        Container(
+          height: 60,
+          padding: const EdgeInsets.only(left: 10),
+          decoration: BoxDecoration(
+            borderRadius: const BorderRadius.all(Radius.circular(4)),
+            border: Border.all(color: Colors.deepPurple),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Flexible(
+                child: Align(
+                  alignment: Alignment.centerLeft,
                   child: SizedBox(
                     width: 220,
-                    height: 40,
-                    child: buildTextField(
-                        title: title,
-                        // titleTextController: titleController,
-                        commandTextController: cmdController,
-                        commandText: commandText,
-                        isReadOnly: isTextEditingReadOnly,
+                    height: 100,
+                    child: Text(
+                      commandText,
+                      style: const TextStyle(fontSize: 16),
                     ),
                   ),
                 ),
-                MyCustomButton(
-                  commandTitle: title,
-                  customWidget: const Icon(Icons.edit), onPressedAction: onEditButtonPressed
-                ),
-                MyCustomButton(
-                  commandTitle: title,
-                  customWidget: const Icon(Icons.delete), onPressedAction: onDeleteButtonPressed
-                ),
-                // Switch(
-                //     value: true,
-                //     onChanged: (newValue) {
-                //
-                //     }
-                // )
-              ],
-            ),
+              ),
+              MyCustomButton(
+                commandNumStep: numStep,
+                customWidget: const Icon(Icons.edit),
+                onPressedAction: onEditButtonPressed,
+              ),
+              MyCustomButton(
+                commandNumStep: numStep,
+                customWidget: const Icon(Icons.delete),
+                onPressedAction: onDeleteButtonPressed,
+              ),
+            ],
           ),
-          const SizedBox(height: 10,),
-        ],
-      );
+        ),
+        const SizedBox(height: 10),
+      ],
+    );
   }
 }
