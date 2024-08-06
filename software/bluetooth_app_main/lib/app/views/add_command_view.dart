@@ -119,7 +119,7 @@ class CommandView extends StatelessWidget {
         return AlertDialog(
           title: Obx(() {
             if (CommandController.isEditCommand.isTrue) {
-              return Text('Pouring Step ${recipeController.selectedNumSteps}');
+              return Text('Pouring Step ${RecipeController.selectedNumSteps}');
             } else {
               return Text(
                   'Pouring Step ${(CommandController.currentStep.value) + 1}');

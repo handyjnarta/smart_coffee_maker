@@ -53,7 +53,7 @@ class CommandController extends GetxController {
     if (!isInputCommandValid.value) return;
 
     if (isEditCommand.isTrue) {
-      commandIndexToEdit = int.parse(recipeController.selectedNumSteps) - 1;
+      commandIndexToEdit = int.parse(RecipeController.selectedNumSteps) - 1;
       debugPrint('Editing command at step: ${commandIndexToEdit + 1}');
     } else {
       currentStep.value = commandMenuList.length + 1;
@@ -134,18 +134,18 @@ class CommandController extends GetxController {
 
     // Validation checks
     if (commandvolumeCtrl.text.isEmpty ||
-        int.parse(commandvolumeCtrl.text) <= 0) {
+        int.parse(commandvolumeCtrl.text) <= 100) {
       commandvolumeErrorText.value = 'Please input the right volume';
       return;
     }
     if (commandTimeInterval.text.isEmpty ||
-        int.parse(commandTimeInterval.text) <= 0) {
+        int.parse(commandTimeInterval.text) <= 10) {
       commandTimeIntervalErrorText.value =
           'Please input the right Time Interval';
       return;
     }
     if (commandTimePouring.text.isEmpty ||
-        int.parse(commandTimePouring.text) <= 0) {
+        int.parse(commandTimePouring.text) <= 5) {
       commandTimePouringErrorText.value = 'Please input the right Time Pouring';
       return;
     }
@@ -158,12 +158,12 @@ class CommandController extends GetxController {
 
     if (commandnumStepCtrl.text.isEmpty ||
         int.parse(commandnumStepCtrl.text) <= 0) {
-      commandnumStepErrorText.value = 'Numstep minimal 1 kak';
+      commandnumStepErrorText.value = 'Please Input the right Number of Step';
       return;
     }
     if (RecipeController.recipeSetpointController.text.isEmpty ||
-        int.parse(RecipeController.recipeSetpointController.text) <= 0) {
-      commandvolumeErrorText.value = 'Please input the right volume';
+        int.parse(RecipeController.recipeSetpointController.text) <= 30 || int.parse(RecipeController.recipeSetpointController.text) >= 95) {
+      commandvolumeErrorText.value = 'Setpoint';
       return;
     }
     isInputCommandValid.value = true;
