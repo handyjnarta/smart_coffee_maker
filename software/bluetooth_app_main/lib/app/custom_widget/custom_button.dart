@@ -33,9 +33,9 @@ class MyCustomButton extends StatelessWidget {
         if (commandNumStep != null) {
           debugPrint('');
           debugPrint('[widget_helper]commandnumsteps: $commandNumStep');
-          RecipeController().selectedNumSteps = commandNumStep!;
+          RecipeController.selectedNumSteps = commandNumStep!;
           debugPrint(
-              '[widget_helper]selectednumsteps: ${RecipeController().selectedNumSteps} OLAGA');
+              '[widget_helper]selectednumsteps: ${RecipeController.selectedNumSteps} OLAGA');
         }
 
         onPressedAction?.call();

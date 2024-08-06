@@ -53,7 +53,7 @@ class CommandController extends GetxController {
     if (!isInputCommandValid.value) return;
 
     if (isEditCommand.isTrue) {
-      commandIndexToEdit = int.parse(RecipeController().selectedNumSteps) - 1;
+      commandIndexToEdit = int.parse(RecipeController.selectedNumSteps) - 1;
       debugPrint('Editing command at step: ${commandIndexToEdit + 1}');
     } else {
       currentStep.value = commandMenuList.length + 1;

@@ -31,7 +31,7 @@ class RecipeController extends GetxController {
   static TextEditingController recipeSetpointController =
       TextEditingController();
 
-  String selectedNumSteps = '';
+  static String selectedNumSteps = '';
   var errorText = ''.obs;
 
   final FirestoreService firestoreService = FirestoreService();
@@ -317,7 +317,7 @@ VoidCallback? deleteSelectedCommand() {
       debugPrint(
         'Current recipe command list: ${RecipeController.currentRecipe!.commandList.map((command) => command.toJson()).toList()}');
       //
-      debugPrint('[recipe_con]selected numstep: ${RecipeController().selectedNumSteps}');
+      debugPrint('[recipe_con]selected numstep: ${RecipeController.selectedNumSteps}');
       // Convert selectedNumSteps to int for comparison
       int selectedStep = int.parse(selectedNumSteps);
       debugPrint('[recipe_con]selected step: $selectedStep');
@@ -398,7 +398,7 @@ VoidCallback? deleteSelectedCommandfromEdit() {
       debugPrint(
         'Current recipe command list: ${RecipeController.currentRecipe!.commandList.map((command) => command.toJson()).toList()}');
       //
-      debugPrint('[recipe_con]selected numstep: ${RecipeController().selectedNumSteps}');
+      debugPrint('[recipe_con]selected numstep: ${RecipeController.selectedNumSteps}');
       // Convert selectedNumSteps to int for comparison
       int selectedStep = int.parse(selectedNumSteps);
       //debugPrint('[recipe_con]selected step: $selectedStep');
