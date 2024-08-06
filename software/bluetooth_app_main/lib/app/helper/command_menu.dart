@@ -23,7 +23,7 @@ class CommandMenu extends StatelessWidget {
     required this.timePouring,
   }) : super(key: key);
 
-  @override
+@override
   Widget build(BuildContext context) {
     // Assuming numStep is a string you receive or fetch from somewhere
     RecipeController.updateSelectedNumSteps(numStep);
@@ -56,7 +56,6 @@ class CommandMenu extends StatelessWidget {
       onDeleteButtonPressed: onDeleteButtonPressed,
     );
   }
-
   Widget buildDeviceCommandMenu({
     required String commandText,
     required String numStep,

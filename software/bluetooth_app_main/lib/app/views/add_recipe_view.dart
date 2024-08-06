@@ -162,6 +162,7 @@ class AddRecipeView extends StatelessWidget {
       height: 50,
       child: OutlinedButton(
         onPressed: () {
+          debugPrint('[addrecipeview edit true ga: ${recipeController.isEditRecipe.value}');
           if (RecipeController.currentRecipe == null ||
               RecipeController.currentRecipe!.commandList.length <
                   minCommandCount) {
@@ -172,12 +173,17 @@ class AddRecipeView extends StatelessWidget {
                       'Please add at least $minCommandCount command(s)'),
               title: 'Command < $minCommandCount',
             );
-          } else {
+          } else if (recipeController.isEditRecipe.value){
+            debugPrint('[addrecipeview edit true ga: ${recipeController.isEditRecipe.value}');
+            recipeController.saveEditedRecipeData();
+            Navigator.pop(context); }
+            else{
             recipeController.saveRecipeData();
-            Navigator.pop(context);
-            //Navigator.pop(context);
-          }
-        },
+                        Navigator.pop(context);
+                        //Navigator.pop(context);
+            }
+            
+          },
         style: buildButtonStyle(),
         child: const Row(
           mainAxisAlignment: MainAxisAlignment.center,

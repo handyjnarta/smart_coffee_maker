@@ -93,7 +93,9 @@ class RecipesView extends StatelessWidget {
   }
 
   void editSelectedRecipe(BuildContext context) {
+   
     final RecipeController recipeController = Get.find<RecipeController>();
+    recipeController.isEditRecipe.value = true;
     int index = recipeController.recipeIndex.value;
     RecipeController()
         .editRecipe(RecipeController.recipeList[index].recipeName);
@@ -113,17 +115,17 @@ class RecipesView extends StatelessWidget {
       debugPrint(
           '[recipe_view] RecipeController.isSaveRecipeBtnClicked: ${RecipeController().isSaveRecipeBtnClicked}');
 
-      if (RecipeController().isSaveRecipeBtnClicked() == false) {
-        debugPrint('[recipe_view] old recipe rolled back');
-        RecipeController
-                .recipeList[RecipeController().recipeIndex.value].commandList =
-            RecipeController().oldRecipeData['oldRecipe']['commandList'];
-        ctrl.refreshLogs(
-            text:
-                'Recipe "${RecipeController.recipeList[RecipeController().recipeIndex.value].recipeName}" editing canceled');
-        showGetxSnackbar('Cancel to edit',
-            'Recipe "${RecipeController.recipeList[RecipeController().recipeIndex.value].recipeName}" editing canceled');
-      }
+      // if (RecipeController().isSaveRecipeBtnClicked() == false) {
+      //   debugPrint('[recipe_view] old recipe rolled back');
+      //   RecipeController
+      //           .recipeList[RecipeController().recipeIndex.value].commandList =
+      //       RecipeController().oldRecipeData['oldRecipe']['commandList'];
+      //   ctrl.refreshLogs(
+      //       text:
+      //           'Recipe "${RecipeController.recipeList[RecipeController().recipeIndex.value].recipeName}" editing canceled');
+      //   showGetxSnackbar('Cancel to edit',
+      //       'Recipe "${RecipeController.recipeList[RecipeController().recipeIndex.value].recipeName}" editing canceled');
+      // }
     });
   }
 
