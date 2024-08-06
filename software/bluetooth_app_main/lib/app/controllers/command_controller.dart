@@ -1,10 +1,3 @@
-// Cari command new command dan ganti jadi new recipe, (udah)
-// Ganti semua tampilan jadi resep (udah)
-// cari cara agar command bisa jadi resep dengan for input yang benar (udah)
-// dan cari cara agar resep bisa ditampilkan ke dalam tampilan chat  (udah)
-// kondisional utk meyakinkan user thdp resep yang ingin dijalankan (udah)
-// app akan kirim perintah 'r' secaara otomatis ke esp tiap kali resep mau dijalankan, jika user kirim perintah 'y'(liat dari send bluetooth message) maka akan dijalankan resepnya
-// commandToTurnOff dan commandToTurnOn itu di rombak total
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth/app/constant/constant.dart';
 import 'package:get/get.dart';
@@ -14,156 +7,172 @@ import '../models/recipes.dart';
 import 'recipe_controller.dart';
 
 class CommandController extends GetxController {
-  static List<CommandMenu> commandMenuList = <CommandMenu>[].obs;
+  final RecipeController recipeController = Get.find<RecipeController>();
+
+  static var commandMenuList = <CommandMenu>[].obs;
   static var isEditCommand = false.obs;
+  static var isInsertNewRecipe = false.obs;
   static var isInputCommandValid = false.obs;
-  static int commandIndexToEdit = -1;
-  static var commandTitleErrorText = ''.obs;
+  static var commandIndexToEdit = 0;
+  static var commandnumStepErrorText = ''.obs;
+  static var commandvolumeErrorText = ''.obs;
+  static var commandTimePouringErrorText = ''.obs;
+  static var commandTimeIntervalErrorText = ''.obs;
   static var commandErrorText = ''.obs;
   static String oldCommand = '';
+  static var currentStep = 0.obs;
 
-  static TextEditingController commandTitleCtrl = TextEditingController();
-  static TextEditingController commandCtrl = TextEditingController();
-  static TextEditingController commandLogText = TextEditingController();
+  static var commandTitleCtrl = TextEditingController();
+  static var commandCtrl = TextEditingController();
+  static var commandnumStepCtrl = TextEditingController();
+  static var commandvolumeCtrl = TextEditingController();
+  static var commandTimePouring = TextEditingController();
+  static var commandTimeInterval = TextEditingController();
+  static var commandSetpointCtrl = TextEditingController();
+  static var commandSetpointError = TextEditingController();
+  static int numstepA = 0;
+
+  @override
+  void onInit() {
+    super.onInit();
+  }
+
+  static void resetSteps() {
+    currentStep.value = 1;
+  }
 
   static List<TextEditingController> commandTextEditCtrlList =
       List<TextEditingController>.generate(
           maxCommandCount, (index) => TextEditingController(),
           growable: false);
 
-  static void validateCommmandInput() {
-    // input resep
-    isInputCommandValid.value = false;
-    commandTitleErrorText.value = '';
-    commandErrorText.value = '';
-
-    if (commandTitleCtrl.text.length < 3) {
-      debugPrint('[command_controller] input title command not valid');
-      commandTitleErrorText.value = 'Title length min 3 characters';
-      return;
-      // return false;
-    } else if (commandCtrl.text.isEmpty) {
-      debugPrint('[command_controller] input command not valid');
-      commandErrorText.value = 'Please input command';
-      return;
-    }
-
-    // if (DeviceController.currentDevice != null) {
-    //   bool isTitleExists = DeviceController.currentDevice!.commandList.indexWhere((cmd) => cmd.title == commandTitleCtrl.text) > - 1;
-    //   bool isCommandExists = DeviceController.currentDevice!.commandList.indexWhere((cmd) => cmd.command == commandCtrl.text) > - 1;
-
-    //   // jika sedang menginput command baru, cek apakah title & command yang diinput, apakah sudah ada di device yang sekarang
-    //   // jika sedang mengedit command, cek apakah title yang baru berbeda dengan title sebelumnya, jika berbeda
-    //   // cek apakah title dan command baru tersebut sudah ada digunakan di device sekarang
-
-    //   // if (isEditCommand.isFalse) { // input new command
-    //   //   if (isTitleExists) {
-    //   //     commandTitleErrorText.value = 'Title already exists';
-    //   //     // isInputCommandValid.value = false;
-    //   //   } else if (isCommandExists) {
-    //   //     commandErrorText.value = 'Command already used';
-    //   //     // isInputCommandValid.value = false;
-    //   //   } else {
-    //   //     isInputCommandValid.value = true;
-    //   //   }
-    //   // } else {
-    //   //   if (DeviceController.selectedTitle != commandTitleCtrl.text && isTitleExists) {
-    //   //     commandTitleErrorText.value = 'Title already exists';
-    //   //   }
-    //   //   // if old command != new command and new command already used
-    //   //   else if (oldCommand != commandCtrl.text && isCommandExists) {
-    //   //     commandErrorText.value = 'Command already used';
-    //   //   } else {
-    //   //     isInputCommandValid.value = true;
-    //   //   }
-    //   // }
-    // } else {
-    //   isInputCommandValid.value = true;
-    // }
-  }
-
   static void saveNewCommand() {
-    // jika commandMenuList = empty, berarti belum ada command custom yang dibuat
-    debugPrint(
-        '[command_controller] commandMenuList.length: ${commandMenuList.length}');
-    // int commandId = commandMenuList.isEmpty ? 0 : commandMenuList.length;
+    RecipeController recipeController = Get.find<RecipeController>();
+    validateCommandInput();
 
-    int commandId = -1;
+    if (!isInputCommandValid.value) return;
+
     if (isEditCommand.isTrue) {
-      commandId = commandIndexToEdit;
+      commandIndexToEdit = int.parse(RecipeController.selectedNumSteps) - 1;
+      debugPrint('Editing command at step: ${commandIndexToEdit + 1}');
     } else {
-      commandId = commandMenuList.length;
+      currentStep.value = commandMenuList.length + 1;
     }
 
-    commandTextEditCtrlList[commandId].text = commandCtrl.text;
-    // add new command to the current device
-    if (DeviceController.currentDevice == null) {
-      debugPrint('DeviceController.deviceList.isEmpty');
+    var newCommand = Commands(
+      numStep: isEditCommand.isTrue
+          ? (commandIndexToEdit + 1).toString()
+          : currentStep.value.toString(),
+      volume: commandvolumeCtrl.text,
+      timePouring: commandTimePouring.text,
+      timeInterval: commandTimeInterval.text,
+    );
 
-      DeviceController.currentDevice = Devices(
-          deviceName: DeviceController.deviceNameController.text,
-          // deviceLogText: DeviceController.deviceLogTextCtrl.text,
-          status: false,
-          commandList: [
-            Commands(
-              id: commandId,
-              title: commandTitleCtrl.text,
-              command: commandCtrl.text,
-              logText: commandLogText.text,
-              // commandTextCtrl: commandTextEditCtrlList[commandId]
-            )
-          ]);
+    if (RecipeController.currentRecipe == null) {
+      RecipeController.currentRecipe = Recipes(
+        id: recipeController.recipeCount.value,
+        setpoint: RecipeController.recipeSetpointController.text,
+        recipeName: RecipeController.recipeNameController.text,
+        commandList: [newCommand],
+      );
     } else {
       if (isEditCommand.isTrue) {
-        // edit the selected command in the current device
-        DeviceController.currentDevice?.commandList[commandIndexToEdit] =
-            Commands(
-          id: commandIndexToEdit,
-          title: commandTitleCtrl.text,
-          command: commandCtrl.text,
-          logText: commandLogText.text,
-          // commandTextCtrl: commandTextEditCtrlList[commandIndexToEdit]
-        );
+        RecipeController.currentRecipe!.commandList[commandIndexToEdit] =
+            newCommand;
       } else {
-        // add new command to the current device
-        DeviceController.currentDevice?.commandList.add(Commands(
-          id: commandId,
-          title: commandTitleCtrl.text,
-          command: commandCtrl.text,
-          logText: commandLogText.text,
-          // commandTextCtrl: commandTextEditCtrlList[commandId]
-        ));
+        RecipeController.currentRecipe!.commandList.add(newCommand);
       }
     }
 
-    // add new command menu to the list if not in editing mode (isEditCommand == false)
-    if (CommandController.isEditCommand.isFalse) {
+    if (isEditCommand.isFalse) {
       commandMenuList.add(CommandMenu(
-        // index: commandId,
-        titleText: commandTitleCtrl.text,
-        commandText: commandCtrl.text,
+        numStep: currentStep.value.toString(),
+        volume: commandvolumeCtrl.text,
+        timePouring: commandTimePouring.text,
+        timeInterval: commandTimeInterval.text,
         readOnly: true,
-        commandController: commandTextEditCtrlList[commandId],
-        onDeleteButtonPressed: DeviceController.deleteSelectedCommand,
-        onEditButtonPressed: DeviceController.editSelectedCommand,
+        onDeleteButtonPressed: () {
+          recipeController.deleteSelectedCommand();
+        },
+        onEditButtonPressed: () {
+          debugPrint('Editing command at step: ${commandIndexToEdit + 1}');
+          recipeController.editSelectedCommand();
+        },
       ));
-
-      // DeviceController.commandMenuTextCtrlList.add(commandTextEditCtrlList[commandId]);
     } else {
-      // edit the command menu from commandMenuList by commandIndexToEdit
       commandMenuList[commandIndexToEdit] = CommandMenu(
-        // index: commandId,
-        titleText: commandTitleCtrl.text,
+        numStep: (commandIndexToEdit + 1).toString(),
+        volume: commandvolumeCtrl.text,
+        timePouring: commandTimePouring.text,
+        timeInterval: commandTimeInterval.text,
         readOnly: true,
-        commandController: commandTextEditCtrlList[commandId],
-        commandText: commandTextEditCtrlList[commandId].text,
-        onDeleteButtonPressed: DeviceController.deleteSelectedCommand,
-        onEditButtonPressed: DeviceController.editSelectedCommand,
+        onDeleteButtonPressed: recipeController.deleteSelectedCommand,
+        onEditButtonPressed: () {
+          debugPrint('Editing command at step: ${commandIndexToEdit + 1}');
+          recipeController.editSelectedCommand();
+        },
       );
-
-      // DeviceController.commandMenuTextCtrlList[commandIndexToEdit] = commandTextEditCtrlList[commandId];
+      debugPrint('Command menu list:');
+      debugPrint('numStep: ${commandMenuList[commandIndexToEdit].numStep}');
+      debugPrint('volume: ${commandMenuList[commandIndexToEdit].volume}');
+      debugPrint(
+          'timePouring: ${commandMenuList[commandIndexToEdit].timePouring}');
+      debugPrint(
+          'timeInterval: ${commandMenuList[commandIndexToEdit].timeInterval}');
     }
 
-    DeviceController.refreshSaveDeviceButtonState();
+    debugPrint(
+        'Current recipe command list: ${RecipeController.currentRecipe!.commandList.map((command) => command.toJson()).toList()}');
   }
+
+  static void validateCommandInput() {
+    // Reset validation state
+    isInputCommandValid.value = false;
+    commandvolumeErrorText.value = '';
+    commandTimePouringErrorText.value = '';
+    commandTimeIntervalErrorText.value = '';
+
+    // Validation checks
+    if (commandvolumeCtrl.text.isEmpty ||
+        int.parse(commandvolumeCtrl.text) < 100) {
+      debugPrint('commandvolumeCtrl : ${commandvolumeCtrl.text}');
+      commandvolumeErrorText.value = 'Please input the right volume';
+      return;
+    }
+    if (commandTimeInterval.text.isEmpty ||
+        int.parse(commandTimeInterval.text) < 5) {
+      debugPrint('commandTimeInterval.text : ${commandTimeInterval.text}');
+      commandTimeIntervalErrorText.value =
+          'Please input the right Time Interval';
+      return;
+    }
+    if (commandTimePouring.text.isEmpty ||
+        int.parse(commandTimePouring.text) < 10) {
+      commandTimePouringErrorText.value = 'Please input the right Time Pouring';
+      debugPrint('commandTimePouring.text : ${commandTimePouring.text}');
+      return;
+    }
+    isInputCommandValid.value = true;
+    debugPrint('bener kok nang validate command');
+  }
+
+  static void validateNewCommandInput() {
+    isInputCommandValid.value = false;
+    commandnumStepErrorText.value = '';
+
+    if (commandnumStepCtrl.text.isEmpty ||
+        int.parse(commandnumStepCtrl.text) <= 0) {
+      commandnumStepErrorText.value = 'Numstep minimal 1 kak';
+      return;
+    }
+    if (RecipeController.recipeSetpointController.text.isEmpty ||
+        int.parse(RecipeController.recipeSetpointController.text) <= 0) {
+      commandvolumeErrorText.value = 'Please input the right volume';
+      return;
+    }
+    isInputCommandValid.value = true;
+    debugPrint('bener kok nang validateNewCommandInput');
+  }
+
+  //Method to add an index to the list
 }
