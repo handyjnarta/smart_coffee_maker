@@ -317,8 +317,7 @@ class RecipeController extends GetxController {
 
     return null;
   }
-
-  VoidCallback? deleteSelectedCommand() {
+VoidCallback? deleteSelectedCommand() {
     debugPrint(
         '[recipe_con]nama resep di recipe delete: ${currentRecipe?.recipeName}');
     debugPrint(
