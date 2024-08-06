@@ -158,12 +158,12 @@ class CommandController extends GetxController {
 
     if (commandnumStepCtrl.text.isEmpty ||
         int.parse(commandnumStepCtrl.text) <= 0) {
-      commandnumStepErrorText.value = 'Please Input the right Number of Step';
+      commandnumStepErrorText.value = 'Numstep minimal 1 kak';
       return;
     }
     if (RecipeController.recipeSetpointController.text.isEmpty ||
-        int.parse(RecipeController.recipeSetpointController.text) <= 30 || int.parse(RecipeController.recipeSetpointController.text) >= 95) {
-      commandvolumeErrorText.value = 'Setpoint';
+        int.parse(RecipeController.recipeSetpointController.text) <= 0) {
+      commandvolumeErrorText.value = 'Please input the right volume';
       return;
     }
     isInputCommandValid.value = true;
