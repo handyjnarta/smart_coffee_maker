@@ -148,6 +148,7 @@ class RecipeController extends GetxController {
     isSaveRecipeBtnClicked.value = false;
     isInsertNewRecipe.value = false;
     isEditRecipe.value = true;
+    debugPrint('edit true ga: ${isEditRecipe.value}');
     errorText.value = '';
     int index = -1;
     String targetName = namaresep;
@@ -224,6 +225,7 @@ class RecipeController extends GetxController {
 
   void saveRecipeData() {
     isSaveRecipeBtnClicked.value = true;
+    debugPrint('edit true ga- save nih: ${isEditRecipe.value}');
 
     if (currentRecipe?.recipeName != recipeNameController.text) {
       refreshLogs(
@@ -246,13 +248,10 @@ class RecipeController extends GetxController {
       int currID = currentRecipe!.id;
       currentRecipe!.setNewRecipeId = (currID + 1);
     }
+    
+    if (isEditRecipe.isTrue) {
+      showGetxSnackbar('FUngsi ini sudah pindah tempat', 'ada yang salah');
 
-    if (isEditRecipe.value) {
-      recipeList[recipeIndex.value] = currentRecipe!;
-      showGetxSnackbar('Edit success',
-          'Recipe "${currentRecipe!.recipeName}" edited successfully');
-      refreshLogs('Recipe "${currentRecipe!.recipeName}" edited successfully');
-      isEditRecipe.value = false;
     } else {
       recipeList.add(currentRecipe!); //buat void untuk menambahkan
       showGetxSnackbar(
@@ -274,6 +273,18 @@ class RecipeController extends GetxController {
     CommandController.commandvolumeCtrl.text = '';
     CommandController.commandTimePouring.text = '';
     CommandController.commandTimeInterval.text = '';
+  }
+
+  void saveEditedRecipeData() {
+    isSaveRecipeBtnClicked.value = true;
+          recipeList[recipeIndex.value] = currentRecipe!;
+          debugPrint('nama resep: ${recipeNameController.text} ');
+          currentRecipe!.recipeName = recipeNameController.text;
+          debugPrint('nama resep: ${currentRecipe?.recipeName} ');
+      showGetxSnackbar('Edit success',
+          'Recipe "${currentRecipe!.recipeName}" edited successfully');
+      refreshLogs('Recipe "${currentRecipe!.recipeName}" edited successfully');
+      isEditRecipe.value = false;
   }
 
   VoidCallback? editSelectedCommand() {

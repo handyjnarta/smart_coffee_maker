@@ -134,22 +134,26 @@ class CommandController extends GetxController {
 
     // Validation checks
     if (commandvolumeCtrl.text.isEmpty ||
-        int.parse(commandvolumeCtrl.text) <= 100) {
+        int.parse(commandvolumeCtrl.text) < 100) {
+          debugPrint('commandvolumeCtrl : ${commandvolumeCtrl.text}');
       commandvolumeErrorText.value = 'Please input the right volume';
       return;
     }
     if (commandTimeInterval.text.isEmpty ||
-        int.parse(commandTimeInterval.text) <= 10) {
+        int.parse(commandTimeInterval.text) < 5) {
+          debugPrint('commandTimeInterval.text : ${commandTimeInterval.text}');
       commandTimeIntervalErrorText.value =
           'Please input the right Time Interval';
       return;
     }
     if (commandTimePouring.text.isEmpty ||
-        int.parse(commandTimePouring.text) <= 5) {
+        int.parse(commandTimePouring.text) < 10) {
       commandTimePouringErrorText.value = 'Please input the right Time Pouring';
+      debugPrint('commandTimePouring.text : ${commandTimePouring.text}');
       return;
     }
     isInputCommandValid.value = true;
+    debugPrint('bener kok nang validate command');
   }
 
   static void validateNewCommandInput() {
@@ -157,16 +161,17 @@ class CommandController extends GetxController {
     commandnumStepErrorText.value = '';
 
     if (commandnumStepCtrl.text.isEmpty ||
-        int.parse(commandnumStepCtrl.text) <= 0) {
+        int.parse(commandnumStepCtrl.text) < 1) {
       commandnumStepErrorText.value = 'Please Input the right Number of Step';
       return;
     }
     if (RecipeController.recipeSetpointController.text.isEmpty ||
-        int.parse(RecipeController.recipeSetpointController.text) <= 30 || int.parse(RecipeController.recipeSetpointController.text) >= 95) {
+        int.parse(RecipeController.recipeSetpointController.text) < 30 || int.parse(RecipeController.recipeSetpointController.text) >= 95) {
       commandvolumeErrorText.value = 'Setpoint';
       return;
     }
     isInputCommandValid.value = true;
+    debugPrint('bener kok nang validateNewCommandInput');
   }
 
   //Method to add an index to the list
