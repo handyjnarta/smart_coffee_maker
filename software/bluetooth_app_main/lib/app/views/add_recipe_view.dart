@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth/app/constant/constant.dart';
-
 import 'package:flutter_bluetooth/app/controllers/command_controller.dart';
 import 'package:flutter_bluetooth/app/controllers/recipe_controller.dart';
 import 'package:flutter_bluetooth/app/views/add_command_view.dart';
@@ -52,14 +51,12 @@ class AddRecipeView extends StatelessWidget {
                     children: [
                       buildTextField(
                         title: 'Recipe Name',
-
                         commandText: RecipeController.recipeNameController.text,
                         errorText: recipeController.errorText.value,
                         commandTextController:
                             RecipeController.recipeNameController,
                         onChanged:
                             recipeController.refreshNewCommandButtonState,
-
                       ),
                       Row(
                         children: [
@@ -74,7 +71,6 @@ class AddRecipeView extends StatelessWidget {
                           const Expanded(child: SizedBox(width: 20)),
                           OutlinedButton(
                             onPressed: () {
-
                               // Get the current RecipeController instance
                               //final recipeController =
                               RecipesView().editSelectedRecipe;
@@ -104,7 +100,6 @@ class AddRecipeView extends StatelessWidget {
                                     RecipeController.recipeNameController.text;
                                 debugPrint(
                                     '[addrecipeview] createNewCommand not called. Recipe name: $recipeName');
-
                               }
                             },
                             style: buildButtonStyle(
@@ -114,7 +109,6 @@ class AddRecipeView extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 4),
-
                       ...CommandController.commandMenuList
                           .map((commandMenu) => commandMenu)
                           .toList(),
@@ -139,7 +133,7 @@ class AddRecipeView extends StatelessWidget {
     );
   }
 
-
+/*
   Widget buildTextField({
     required String title,
     required String commandText,
@@ -161,19 +155,17 @@ class AddRecipeView extends StatelessWidget {
       ],
     );
   }
-
+*/
   Widget saveButton(BuildContext context, RecipeController recipeController) {
-
     return SizedBox(
       width: 200,
       height: 50,
       child: OutlinedButton(
         onPressed: () {
-
-          debugPrint('[addrecipeview edit true ga: ${recipeController.isEditRecipe.value}');
+          debugPrint(
+              '[addrecipeview edit true ga: ${recipeController.isEditRecipe.value}');
           if (RecipeController.currentRecipe == null ||
               RecipeController.currentRecipe!.commandList.length <
-
                   minCommandCount) {
             showCustomDialog(
               context: context,
@@ -182,19 +174,17 @@ class AddRecipeView extends StatelessWidget {
                       'Please add at least $minCommandCount command(s)'),
               title: 'Command < $minCommandCount',
             );
-
-          } else if (recipeController.isEditRecipe.value){
-            debugPrint('[addrecipeview edit true ga: ${recipeController.isEditRecipe.value}');
+          } else if (recipeController.isEditRecipe.value) {
+            debugPrint(
+                '[addrecipeview edit true ga: ${recipeController.isEditRecipe.value}');
             recipeController.saveEditedRecipeData();
-            Navigator.pop(context); }
-            else{
+            Navigator.pop(context);
+          } else {
             recipeController.saveRecipeData();
-                        Navigator.pop(context);
-                        //Navigator.pop(context);
-            }
-            
-          },
-
+            Navigator.pop(context);
+            //Navigator.pop(context);
+          }
+        },
         style: buildButtonStyle(),
         child: const Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -207,7 +197,6 @@ class AddRecipeView extends StatelessWidget {
       ),
     );
   }
-
 
   Widget cancelButtonRecipe(
       BuildContext context, RecipeController recipeController) {
@@ -238,7 +227,6 @@ class AddRecipeView extends StatelessWidget {
       BuildContext context, RecipeController recipeController) {
     recipeController.onNewCommandButtonPressed();
 
-
     showCustomDialog(
       context: context,
       actionList: [const CommandView()],
@@ -246,7 +234,5 @@ class AddRecipeView extends StatelessWidget {
     );
   }
 
-
   //static void editCommand(BuildContext buildContext) {}
-
 }
