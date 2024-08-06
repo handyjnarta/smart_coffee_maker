@@ -1,58 +1,67 @@
+// import 'dart:nativewrappers/_internal/vm/lib/core_patch.dart';
+
 import '/services/firestore_service.dart';
 import 'commands.dart';
 
-class Devices {
-  String deviceName;
-  bool status;
+class Recipes {
+  String recipeName;
+  int id;
+  String setpoint;
+  //bool status;
   List<Commands> commandList;
 
-  Devices({
-    required this.deviceName,
-    required this.status,
+  Recipes({
+    required this.recipeName,
+    required this.id,
+    //required this.status,
+    required this.setpoint,
     required this.commandList,
   });
 
   Map<String, dynamic> toJson() => {
-        "deviceName": deviceName,
-        "status": status,
+        "recipeName": recipeName,
+        "id": id,
+        //"status": status,
+        "setpoint": setpoint,
         "commandList": commandList.map((cmd) => cmd.toJson()).toList(),
       };
 
-  static Devices fromJson(Map<String, dynamic> json) => Devices(
-        deviceName: json["deviceName"],
-        status: json["status"],
+  static Recipes fromJson(Map<String, dynamic> json) => Recipes(
+        recipeName: json["recipeName"],
+        id: json["id"],
+        //status: json["status"],
+        setpoint: json["setpoint"],
         commandList: (json["commandList"] as List)
             .map((cmd) => Commands.fromJson(cmd))
             .toList(),
       );
 
-  set setNewDeviceName(String newDeviceName) => deviceName = newDeviceName;
-  // set setNewCommandList(List<Commands> newCommandList) => commandList = newCommandList;
+  set setNewRecipe(String newRecipeName) => recipeName = newRecipeName;
+  set setNewRecipeSetpoint(String setRecipeSetpoint) =>
+      setpoint = setRecipeSetpoint;
+  set setNewRecipeId(int setRecipeId) => id = setRecipeId;
 }
 
-class DeviceManager {
+class RecipesManager {
   // Singleton
-  DeviceManager._privateConst();
-  static final DeviceManager instance = DeviceManager._privateConst();
-  factory DeviceManager() => instance;
+  RecipesManager._privateConst();
+  static final RecipesManager instance = RecipesManager._privateConst();
+  factory RecipesManager() => instance;
 
   final FirestoreService _firestoreService = FirestoreService();
   final List<bool> _statusList = [];
 
-  List<bool> get getStatusDeviceList => _statusList;
+  List<bool> get getStatusRecipesList => _statusList;
 
-  int get getDeviceCount => _statusList.length;
+  int get getRecipesCount => _statusList.length;
 
-  Future<void> saveDeviceListIntoFirestore(List<Devices> deviceList) async {
-    await _firestoreService.saveDeviceListIntoFirestore(deviceList);
+  Future<void> saveRecipesListIntoFirestore(List<Recipes> recipesList) async {
+    await _firestoreService.saveRecipesListIntoFirestore(recipesList);
   }
 
-  Future<List<Devices>> loadDeviceListFromFirestore() async {
-    final allDevices = await _firestoreService.loadDeviceListFromFirestore();
+  Future<List<Recipes>> loadRecipesListFromFirestore() async {
+    final allRecipes = await _firestoreService.loadRecipesListFromFirestore();
     _statusList.clear();
-    for (final device in allDevices) {
-      _statusList.add(device.status);
-    }
-    return allDevices;
+    return allRecipes;
   }
 }
