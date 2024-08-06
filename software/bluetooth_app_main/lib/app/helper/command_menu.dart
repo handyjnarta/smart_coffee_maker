@@ -4,7 +4,7 @@ import 'package:flutter_bluetooth/app/controllers/recipe_controller.dart';
 import '../custom_widget/custom_button.dart';
 
 class CommandMenu extends StatelessWidget {
-  final String numStep;
+  String numStep;
   final String volume;
   final String timePouring;
   final String timeInterval;
@@ -12,7 +12,7 @@ class CommandMenu extends StatelessWidget {
   final VoidCallback? onDeleteButtonPressed;
   final VoidCallback? onEditButtonPressed;
 
-  const CommandMenu({
+  CommandMenu({
     Key? key,
     this.readOnly = false,
     this.onEditButtonPressed,
@@ -25,10 +25,18 @@ class CommandMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    int selectedNumSteps = int.parse(numStep);
+    // Assuming numStep is a string you receive or fetch from somewhere
+    RecipeController.updateSelectedNumSteps(numStep);
+
+    int selectedNumSteps = int.parse(RecipeController.selectedNumSteps);
     int index = RecipeController.currentRecipe!.commandList.indexWhere(
-        (element) => element.numStep == selectedNumSteps.toString());
+        (element) => element.numStep == (selectedNumSteps).toString());
     String commandText;
+
+    debugPrint('[widget] SelectedNumSteps: $selectedNumSteps');
+    debugPrint('[widget] Index: $index');
+    debugPrint(
+        '[widget] CommandList: ${RecipeController.currentRecipe!.commandList.map((e) => e.numStep).toList()}');
 
     if (index >= 0 &&
         index < RecipeController.currentRecipe!.commandList.length) {
@@ -37,7 +45,6 @@ class CommandMenu extends StatelessWidget {
     } else {
       commandText = 'Invalid command';
     }
-
     return buildDeviceCommandMenu(
       commandText: commandText,
       numStep: numStep,
