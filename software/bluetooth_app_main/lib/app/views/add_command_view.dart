@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bluetooth/app/controllers/device_controller.dart';
+import 'package:flutter_bluetooth/app/controllers/recipe_controller.dart';
 import 'package:flutter_bluetooth/app/helper/popup_dialogs.dart';
 import 'package:flutter_bluetooth/app/views/add_pouring_view.dart';
 import 'package:get/get.dart';
@@ -32,7 +32,6 @@ class CommandController extends GetxController {
     currentStep.value = 0;
   }
 }
-
 
 class CommandView extends StatelessWidget {
   const CommandView({Key? key}) : super(key: key);
@@ -109,7 +108,8 @@ class CommandView extends StatelessWidget {
               isCircleButton: false,
               buttonWidth: 100,
               onPressedAction: () {
-                CommandController.validateCommandInput(CommandController.commandCtrl.text);
+                CommandController.validateCommandInput(
+                    CommandController.commandCtrl.text);
 
                 if (CommandController.isInputCommandValid.isTrue) {
                   CommandController.saveNewCommand();
@@ -176,10 +176,12 @@ void showPouringDialog(BuildContext context) {
           ),
           TextButton(
             onPressed: () {
-              if (CommandController.currentStep.value < CommandController.stepsCount.value) {
+              if (CommandController.currentStep.value <
+                  CommandController.stepsCount.value) {
                 CommandController.currentStep.value++;
                 Navigator.pop(context);
-                showPouringDialog(context); // Menampilkan dialog untuk langkah berikutnya
+                showPouringDialog(
+                    context); // Menampilkan dialog untuk langkah berikutnya
               } else {
                 Navigator.pop(context);
                 CommandController.resetSteps();

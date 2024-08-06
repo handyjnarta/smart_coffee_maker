@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bluetooth/app/controllers/device_controller.dart';
+import 'package:flutter_bluetooth/app/controllers/recipe_controller.dart';
 import 'package:flutter_bluetooth/app/helper/popup_dialogs.dart';
 import 'package:flutter_bluetooth/app/views/connection_view.dart';
 import 'package:get/get.dart';
 import '../../main.dart';
 import 'data_logs_view.dart';
-import 'devices_view.dart';
+import 'recipes_view.dart';
 
 final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-enum DevicePopupMenuItem {newDevice, saveDevice, loadDevice}
+
+enum DevicePopupMenuItem { newDevice, saveDevice, loadDevice }
 
 class MainView extends StatelessWidget {
   const MainView({Key? key}) : super(key: key);
@@ -20,72 +21,82 @@ class MainView extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Marcoff Chat"),
         backgroundColor: const Color.fromARGB(199, 170, 84, 3),
-        actions:
-        [
+        actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 10.0, top: 10, bottom: 10), //padding: const EdgeInsets.only(right: 14.0, top: 10, bottom: 6),
-              child: Obx(() {
-                return
-                  Visibility(
-                    visible: (ctrl.selectedTabIndex.value == 1 && ctrl.logs.value.isNotEmpty) || ctrl.selectedTabIndex.value == 2,
-                    child: ctrl.selectedTabIndex.value == 1
-                        ? Row(
+            padding: const EdgeInsets.only(
+                right: 10.0,
+                top: 10,
+                bottom:
+                    10), //padding: const EdgeInsets.only(right: 14.0, top: 10, bottom: 6),
+            child: Obx(() {
+              return Visibility(
+                  visible: (ctrl.selectedTabIndex.value == 1 &&
+                          ctrl.logs.value.isNotEmpty) ||
+                      ctrl.selectedTabIndex.value == 2,
+                  child: ctrl.selectedTabIndex.value == 1
+                      ? Row(
                           children: [
                             // switch logs view as chat view or standard view
                             IconButton(
                                 onPressed: () {
-                                  ctrl.isLogAsChatView.value = !ctrl.isLogAsChatView.value;
+                                  ctrl.isLogAsChatView.value =
+                                      !ctrl.isLogAsChatView.value;
                                 },
-                                icon: Icon(ctrl.isLogAsChatView.isTrue ? Icons.table_rows_rounded : Icons.chat)
+                                icon: Icon(ctrl.isLogAsChatView.isTrue
+                                    ? Icons.table_rows_rounded
+                                    : Icons.chat)),
+
+                            const SizedBox(
+                              width: 40,
                             ),
 
-                            const SizedBox(width: 40,),
-
                             InkWell(
-                                onTap: () {
-                                  showConfirmDialog(
-                                      context: context,
-                                      title: 'Delete logs confirm',
-                                      text: 'Delete all log?',
-                                      onOkPressed: deleteLogs
-                                  );
-                                },
-                                child: const Icon(Icons.delete),
+                              onTap: () {
+                                showConfirmDialog(
+                                    context: context,
+                                    title: 'Delete logs confirm',
+                                    text: 'Delete all log?',
+                                    onOkPressed: deleteLogs);
+                              },
+                              child: const Icon(Icons.delete),
                             ),
                           ],
                         )
-                        :
-                          // OutlinedButton(
-                          //     onPressed: () {
-                          //       const DevicesView().createNewDevice(context);
-                          //     },
-                          //     style: buildButtonStyle(borderColor: Colors.grey, splashColor: Colors.yellow),
-                          //     child: const Text('New Device', style: TextStyle(color: Colors.white),)
-                          // ),
-                    PopupMenuButton<DevicePopupMenuItem>(
-                        onSelected: (DevicePopupMenuItem item) {
-
+                      :
+                      // OutlinedButton(
+                      //     onPressed: () {
+                      //       const DevicesView().createNewDevice(context);
+                      //     },
+                      //     style: buildButtonStyle(borderColor: Colors.grey, splashColor: Colors.yellow),
+                      //     child: const Text('New Device', style: TextStyle(color: Colors.white),)
+                      // ),
+                      PopupMenuButton<DevicePopupMenuItem>(
+                          onSelected: (DevicePopupMenuItem item) {
                           if (item == DevicePopupMenuItem.newDevice) {
                             const DevicesView().createNewDevice(context);
-                          } else if (item == DevicePopupMenuItem.saveDevice){
+                          } else if (item == DevicePopupMenuItem.saveDevice) {
                             if (DeviceController.deviceList.isNotEmpty) {
                               DeviceController.saveDeviceListIntoStorage();
                             } else {
                               null;
                             }
                           } else {
-                            DeviceController.loadDeviceListFromStorage(isLoadFromInitApp: false);
+                            DeviceController.loadDeviceListFromStorage(
+                                isLoadFromInitApp: false);
                           }
-                        },
-                        itemBuilder: (BuildContext context) {
+                        }, itemBuilder: (BuildContext context) {
                           return [
                             PopupMenuItem<DevicePopupMenuItem>(
                               value: DevicePopupMenuItem.newDevice,
                               child: Row(
                                 children: const [
                                   Text('New Recipe'),
-                                  Expanded(child: SizedBox(width: 10,)),
-                                  Icon(Icons.add_rounded, size: 20.0, color: Colors.black)
+                                  Expanded(
+                                      child: SizedBox(
+                                    width: 10,
+                                  )),
+                                  Icon(Icons.add_rounded,
+                                      size: 20.0, color: Colors.black)
                                 ],
                               ),
                             ),
@@ -95,14 +106,22 @@ class MainView extends StatelessWidget {
                                 children: [
                                   Text(
                                     'Save to Cloud',
-                                    style: TextStyle(color: DeviceController.deviceList.isNotEmpty ? Colors.black : Colors.grey),
+                                    style: TextStyle(
+                                        color: DeviceController
+                                                .deviceList.isNotEmpty
+                                            ? Colors.black
+                                            : Colors.grey),
                                   ),
-                                  const Expanded(child: SizedBox(width: 10,)),
-                                  Icon(
-                                      Icons.save_alt_outlined,
+                                  const Expanded(
+                                      child: SizedBox(
+                                    width: 10,
+                                  )),
+                                  Icon(Icons.save_alt_outlined,
                                       size: 20.0,
-                                      color: DeviceController.deviceList.isNotEmpty ? Colors.black : Colors.grey
-                                  )
+                                      color:
+                                          DeviceController.deviceList.isNotEmpty
+                                              ? Colors.black
+                                              : Colors.grey)
                                 ],
                               ),
                             ),
@@ -111,55 +130,68 @@ class MainView extends StatelessWidget {
                               child: Row(
                                 children: const [
                                   Text('Load Recipe'),
-                                  Expanded(child: SizedBox(width: 10,)),
-                                  Icon(Icons.upload_outlined, size: 20.0, color: Colors.black,)
+                                  Expanded(
+                                      child: SizedBox(
+                                    width: 10,
+                                  )),
+                                  Icon(
+                                    Icons.upload_outlined,
+                                    size: 20.0,
+                                    color: Colors.black,
+                                  )
                                 ],
                               ),
                             ),
                           ];
-                        }
-                    )
-                  );
-              }),
+                        }));
+            }),
           )
         ],
-
         bottom: TabBar(
           controller: ctrl.tabController,
           indicatorColor: Colors.white,
           tabs: [
-            Tab(icon: Row(
+            Tab(
+                icon: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: const [
                 Icon(Icons.bluetooth),
-                SizedBox(width: 2,),
+                SizedBox(
+                  width: 2,
+                ),
                 Text('Link')
-              ],)
-            ),
-
-            Tab(icon: Row(
+              ],
+            )),
+            Tab(
+                icon: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: const [
                 Icon(Icons.terminal),
-                SizedBox(width: 2,),
+                SizedBox(
+                  width: 2,
+                ),
                 Text('Chat')
-              ],)
-            ),
-
-            Tab(icon: Row(
+              ],
+            )),
+            Tab(
+                icon: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: const [
                 Icon(Icons.list_alt_outlined),
-                SizedBox(width: 2,),
+                SizedBox(
+                  width: 2,
+                ),
                 Text('Resep')
-              ],)
-            ),
+              ],
+            )),
           ],
         ),
       ),
       body: SingleChildScrollView(
         child: SizedBox(
-          height: MediaQuery.of(context).size.height - AppBar().preferredSize.height - kToolbarHeight * 1.2,
+          height: MediaQuery.of(context).size.height -
+              AppBar().preferredSize.height -
+              kToolbarHeight * 1.2,
           child: TabBarView(
             controller: ctrl.tabController,
             children: const [
@@ -184,6 +216,4 @@ class MainView extends StatelessWidget {
     ctrl.logs.refresh();
     debugPrint('[main_view] Logs deleted');
   }
-
-
 }

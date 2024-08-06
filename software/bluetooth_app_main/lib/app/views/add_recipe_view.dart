@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth/app/constant/constant.dart';
-import 'package:flutter_bluetooth/app/controllers/device_controller.dart';
+import 'package:flutter_bluetooth/app/controllers/recipe_controller.dart';
 import 'package:flutter_bluetooth/app/views/add_command_view.dart';
 import 'package:get/get.dart';
 import '../controllers/command_controller.dart';
@@ -48,7 +48,8 @@ class AddDeviceView extends StatelessWidget {
                         title: 'Recipe Name',
                         commandText: DeviceController.deviceNameController.text,
                         errorText: DeviceController.errorText.value,
-                        commandTextController: DeviceController.deviceNameController,
+                        commandTextController:
+                            DeviceController.deviceNameController,
                         onChanged: (value) {
                           DeviceController.refreshNewCommandButtonState();
                         },
@@ -59,7 +60,8 @@ class AddDeviceView extends StatelessWidget {
                             padding: EdgeInsets.only(top: 14.0),
                             child: Text(
                               'Commands:',
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 16),
                             ),
                           ),
                           const Expanded(child: SizedBox(width: 20)),
@@ -68,15 +70,21 @@ class AddDeviceView extends StatelessWidget {
                               if (DeviceController.enableNewCommandBtn.isTrue) {
                                 createNewCommand(context);
                               } else {
-                                final deviceName = int.tryParse(DeviceController.deviceNameController.text);
-                                if (deviceName == null || deviceName < 30 || deviceName > 95) {
-                                  DeviceController.errorText.value = 'Suhu harus diantara 30 dan 95';
+                                final deviceName = int.tryParse(
+                                    DeviceController.deviceNameController.text);
+                                if (deviceName == null ||
+                                    deviceName < 30 ||
+                                    deviceName > 95) {
+                                  DeviceController.errorText.value =
+                                      'Suhu harus diantara 30 dan 95';
                                 } else {
-                                  DeviceController.errorText.value = 'Max command is $maxCommandCount';
+                                  DeviceController.errorText.value =
+                                      'Max command is $maxCommandCount';
                                 }
                               }
                             },
-                            style: buildButtonStyle(borderColor: Colors.grey, buttonWidth: 80),
+                            style: buildButtonStyle(
+                                borderColor: Colors.grey, buttonWidth: 80),
                             child: const Text('New Command'),
                           ),
                         ],
@@ -124,10 +132,14 @@ class AddDeviceView extends StatelessWidget {
       height: 50,
       child: OutlinedButton(
         onPressed: () {
-          if (DeviceController.currentDevice == null || DeviceController.currentDevice!.commandList.length < minCommandCount) {
+          if (DeviceController.currentDevice == null ||
+              DeviceController.currentDevice!.commandList.length <
+                  minCommandCount) {
             showCustomDialog(
               context: context,
-              actionList: standardPopupItems(contentText: 'Please add at least $minCommandCount command(s)'),
+              actionList: standardPopupItems(
+                  contentText:
+                      'Please add at least $minCommandCount command(s)'),
               title: 'Command < $minCommandCount',
             );
           } else {

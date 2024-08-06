@@ -10,8 +10,8 @@ import 'package:flutter_bluetooth/app/constant/constant.dart';
 import 'package:get/get.dart';
 import '../helper/command_menu.dart';
 import '../models/commands.dart';
-import '../models/devices.dart';
-import 'device_controller.dart';
+import '../models/recipes.dart';
+import 'recipe_controller.dart';
 
 class CommandController extends GetxController {
   static List<CommandMenu> commandMenuList = <CommandMenu>[].obs;
@@ -26,9 +26,13 @@ class CommandController extends GetxController {
   static TextEditingController commandCtrl = TextEditingController();
   static TextEditingController commandLogText = TextEditingController();
 
-  static List<TextEditingController> commandTextEditCtrlList = List<TextEditingController>.generate(maxCommandCount, (index) => TextEditingController(), growable: false);
+  static List<TextEditingController> commandTextEditCtrlList =
+      List<TextEditingController>.generate(
+          maxCommandCount, (index) => TextEditingController(),
+          growable: false);
 
-  static void validateCommmandInput() { // input resep
+  static void validateCommmandInput() {
+    // input resep
     isInputCommandValid.value = false;
     commandTitleErrorText.value = '';
     commandErrorText.value = '';
@@ -38,8 +42,7 @@ class CommandController extends GetxController {
       commandTitleErrorText.value = 'Title length min 3 characters';
       return;
       // return false;
-    }
-    else if (commandCtrl.text.isEmpty) {
+    } else if (commandCtrl.text.isEmpty) {
       debugPrint('[command_controller] input command not valid');
       commandErrorText.value = 'Please input command';
       return;
@@ -81,7 +84,8 @@ class CommandController extends GetxController {
 
   static void saveNewCommand() {
     // jika commandMenuList = empty, berarti belum ada command custom yang dibuat
-    debugPrint('[command_controller] commandMenuList.length: ${commandMenuList.length}');
+    debugPrint(
+        '[command_controller] commandMenuList.length: ${commandMenuList.length}');
     // int commandId = commandMenuList.isEmpty ? 0 : commandMenuList.length;
 
     int commandId = -1;
@@ -92,78 +96,74 @@ class CommandController extends GetxController {
     }
 
     commandTextEditCtrlList[commandId].text = commandCtrl.text;
-      // add new command to the current device
-      if (DeviceController.currentDevice == null) {
-        debugPrint('DeviceController.deviceList.isEmpty');
+    // add new command to the current device
+    if (DeviceController.currentDevice == null) {
+      debugPrint('DeviceController.deviceList.isEmpty');
 
-        DeviceController.currentDevice = Devices(
-            deviceName: DeviceController.deviceNameController.text,
-            // deviceLogText: DeviceController.deviceLogTextCtrl.text,
-            status: false,
-            commandList: [
-              Commands(
-                  id: commandId,
-                  title: commandTitleCtrl.text,
-                  command: commandCtrl.text,
-                  logText: commandLogText.text,
-                  // commandTextCtrl: commandTextEditCtrlList[commandId]
-              )
-            ]
-        );
-      }
-      else {
-        if (isEditCommand.isTrue) { // edit the selected command in the current device
-          DeviceController.currentDevice?.commandList[commandIndexToEdit] = Commands(
-              id: commandIndexToEdit,
+      DeviceController.currentDevice = Devices(
+          deviceName: DeviceController.deviceNameController.text,
+          // deviceLogText: DeviceController.deviceLogTextCtrl.text,
+          status: false,
+          commandList: [
+            Commands(
+              id: commandId,
               title: commandTitleCtrl.text,
               command: commandCtrl.text,
               logText: commandLogText.text,
-              // commandTextCtrl: commandTextEditCtrlList[commandIndexToEdit]
-          );
-
-        } else {  // add new command to the current device
-          DeviceController.currentDevice?.commandList.add(
-              Commands(
-                  id: commandId,
-                  title: commandTitleCtrl.text,
-                  command: commandCtrl.text,
-                  logText: commandLogText.text,
-                  // commandTextCtrl: commandTextEditCtrlList[commandId]
-              )
-          );
-        }
-      }
-
-      // add new command menu to the list if not in editing mode (isEditCommand == false)
-      if (CommandController.isEditCommand.isFalse) {
-        commandMenuList.add(
-            CommandMenu(
-              // index: commandId,
-              titleText: commandTitleCtrl.text,
-              commandText: commandCtrl.text,
-              readOnly: true,
-              commandController: commandTextEditCtrlList[commandId],
-              onDeleteButtonPressed: DeviceController.deleteSelectedCommand,
-              onEditButtonPressed: DeviceController.editSelectedCommand,
+              // commandTextCtrl: commandTextEditCtrlList[commandId]
             )
+          ]);
+    } else {
+      if (isEditCommand.isTrue) {
+        // edit the selected command in the current device
+        DeviceController.currentDevice?.commandList[commandIndexToEdit] =
+            Commands(
+          id: commandIndexToEdit,
+          title: commandTitleCtrl.text,
+          command: commandCtrl.text,
+          logText: commandLogText.text,
+          // commandTextCtrl: commandTextEditCtrlList[commandIndexToEdit]
         );
-
-        // DeviceController.commandMenuTextCtrlList.add(commandTextEditCtrlList[commandId]);
       } else {
-        // edit the command menu from commandMenuList by commandIndexToEdit
-        commandMenuList[commandIndexToEdit] = CommandMenu(
-          // index: commandId,
-          titleText: commandTitleCtrl.text,
-          readOnly: true,
-          commandController: commandTextEditCtrlList[commandId],
-          commandText: commandTextEditCtrlList[commandId].text,
-          onDeleteButtonPressed: DeviceController.deleteSelectedCommand,
-          onEditButtonPressed: DeviceController.editSelectedCommand,
-        );
-
-        // DeviceController.commandMenuTextCtrlList[commandIndexToEdit] = commandTextEditCtrlList[commandId];
+        // add new command to the current device
+        DeviceController.currentDevice?.commandList.add(Commands(
+          id: commandId,
+          title: commandTitleCtrl.text,
+          command: commandCtrl.text,
+          logText: commandLogText.text,
+          // commandTextCtrl: commandTextEditCtrlList[commandId]
+        ));
       }
-
-      DeviceController.refreshSaveDeviceButtonState();
     }
+
+    // add new command menu to the list if not in editing mode (isEditCommand == false)
+    if (CommandController.isEditCommand.isFalse) {
+      commandMenuList.add(CommandMenu(
+        // index: commandId,
+        titleText: commandTitleCtrl.text,
+        commandText: commandCtrl.text,
+        readOnly: true,
+        commandController: commandTextEditCtrlList[commandId],
+        onDeleteButtonPressed: DeviceController.deleteSelectedCommand,
+        onEditButtonPressed: DeviceController.editSelectedCommand,
+      ));
+
+      // DeviceController.commandMenuTextCtrlList.add(commandTextEditCtrlList[commandId]);
+    } else {
+      // edit the command menu from commandMenuList by commandIndexToEdit
+      commandMenuList[commandIndexToEdit] = CommandMenu(
+        // index: commandId,
+        titleText: commandTitleCtrl.text,
+        readOnly: true,
+        commandController: commandTextEditCtrlList[commandId],
+        commandText: commandTextEditCtrlList[commandId].text,
+        onDeleteButtonPressed: DeviceController.deleteSelectedCommand,
+        onEditButtonPressed: DeviceController.editSelectedCommand,
+      );
+
+      // DeviceController.commandMenuTextCtrlList[commandIndexToEdit] = commandTextEditCtrlList[commandId];
+    }
+
+    DeviceController.refreshSaveDeviceButtonState();
+  }
 }

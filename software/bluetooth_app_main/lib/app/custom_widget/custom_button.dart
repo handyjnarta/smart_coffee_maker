@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../controllers/device_controller.dart';
+import '../controllers/recipe_controller.dart';
 import '../helper/widget_helper.dart';
 
 class MyCustomButton extends StatelessWidget {
@@ -12,9 +12,14 @@ class MyCustomButton extends StatelessWidget {
   final double? radiusSize;
   final double? buttonWidth;
   const MyCustomButton(
-      {Key? key, required this.customWidget, required this.onPressedAction, this.borderColor,
-        this.commandTitle,
-        this.isCircleButton, this.radiusSize, this.buttonWidth})
+      {Key? key,
+      required this.customWidget,
+      required this.onPressedAction,
+      this.borderColor,
+      this.commandTitle,
+      this.isCircleButton,
+      this.radiusSize,
+      this.buttonWidth})
       : super(key: key);
 
   @override
@@ -29,7 +34,8 @@ class MyCustomButton extends StatelessWidget {
 
           onPressedAction?.call();
 
-          if (DeviceController.isEditDevice || DeviceController.isInsertNewDevice) {
+          if (DeviceController.isEditDevice ||
+              DeviceController.isInsertNewDevice) {
             DeviceController.refreshSaveDeviceButtonState();
           }
           // onPressedAction;
@@ -38,9 +44,7 @@ class MyCustomButton extends StatelessWidget {
             borderColor: borderColor ?? Colors.grey,
             isCircleButton: isCircleButton ?? true,
             radiusSize: radiusSize,
-            buttonWidth: buttonWidth
-        ),
-        child: customWidget
-    );
+            buttonWidth: buttonWidth),
+        child: customWidget);
   }
 }
