@@ -3,6 +3,7 @@ import 'package:flutter_bluetooth/app/constant/constant.dart';
 import 'package:flutter_bluetooth/app/controllers/command_controller.dart';
 import 'package:flutter_bluetooth/app/controllers/recipe_controller.dart';
 import 'package:flutter_bluetooth/app/views/add_command_view.dart';
+import 'package:flutter_bluetooth/app/views/recipes_view.dart';
 import 'package:flutter_bluetooth/utils.dart';
 import 'package:get/get.dart';
 import '../helper/widget_helper.dart';
@@ -72,7 +73,12 @@ class AddRecipeView extends StatelessWidget {
                             onPressed: () {
                               // Get the current RecipeController instance
                               //final recipeController =
+                              RecipesView().editSelectedRecipe;
                               //Get.find<RecipeController>();
+                              recipeController.enableNewCommandBtn.value =
+                                  RecipeController
+                                          .currentRecipe!.commandList.length <
+                                      maxCommandCount;
 
                               // Check if the recipe name is empty
                               if (RecipeController
@@ -85,12 +91,15 @@ class AddRecipeView extends StatelessWidget {
                                   .enableNewCommandBtn.isTrue) {
                                 // Proceed to create a new command if the button is enabled
                                 createNewCommand(context, recipeController);
-                                debugPrint('createNewCommand called');
+                                debugPrint(
+                                    '[addrecipeview] createNewCommand called');
                               } else {
+                                debugPrint(
+                                    '[addrecipeview] nilai newcommandbutton ${recipeController.enableNewCommandBtn.value}');
                                 final recipeName =
                                     RecipeController.recipeNameController.text;
                                 debugPrint(
-                                    'createNewCommand not called. Recipe name: $recipeName');
+                                    '[addrecipeview] createNewCommand not called. Recipe name: $recipeName');
                               }
                             },
                             style: buildButtonStyle(

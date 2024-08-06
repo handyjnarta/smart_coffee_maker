@@ -60,7 +60,6 @@ class RecipesView extends StatelessWidget {
     }
   }
 
-//////////////////////////////////////////////////////////LOVEYU//////////////////////////////////////////
   void deleteRecipe() {
     final RecipeController recipeController = Get.find<RecipeController>();
     int index = recipeController.recipeIndex.value;
@@ -99,7 +98,7 @@ class RecipesView extends StatelessWidget {
     RecipeController()
         .editRecipe(RecipeController.recipeList[index].recipeName);
     debugPrint(
-        'nama resep di recipe View: ${RecipeController.recipeList[index].recipeName}');
+        '[recipe view]nama resep di recipe View: ${RecipeController.recipeList[index].recipeName}');
     showModalBottomSheet(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
