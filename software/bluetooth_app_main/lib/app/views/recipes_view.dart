@@ -21,6 +21,10 @@ class RecipesView extends StatelessWidget {
 
   void runrecipe() {
     Navigator.pop(Get.context!);
+    if (BluetoothData.isConnectedvalue) {
+      showGetxSnackbar('Cant run the recipe', 'Please connect the device first');
+      return;
+    }
     final RecipeController recipeController = Get.find<RecipeController>();
     int index = recipeController.recipeIndex.value;
     String recipeName = RecipeController.recipeList[index].recipeName;

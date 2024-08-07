@@ -20,6 +20,7 @@ class BluetoothData {
 
   // To track whether the device is still connected to Bluetooth
   bool? get isConnected => connection != null && connection!.isConnected;
+  static bool isConnectedvalue = false;
 
   bool isDisconnecting = false;
   bool _isConnectionLost = false;
@@ -76,6 +77,7 @@ class BluetoothData {
 
   void dispose() {
     if (isConnected!) {
+      isConnectedvalue = false;
       isDisconnecting = true;
       connection?.dispose();
       connection = null;
@@ -95,6 +97,7 @@ class BluetoothData {
       startTimeoutConnectionTimer();
 
       if (!isConnected!) {
+        isConnectedvalue = true;
         await BluetoothConnection.toAddress(device?.address).then((conn) {
           debugPrint('Connected to the device');
           showGetxSnackbar('Connected', 'Connected to the device');
