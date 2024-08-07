@@ -24,7 +24,7 @@ void main() async {
   );
 
   // Force sign out the user on startup
-  //await FirebaseAuth.instance.signOut();
+  await FirebaseAuth.instance.signOut();
 
   runApp(const MyApp());
 }
