@@ -17,7 +17,7 @@ class PouringDialogController extends GetxController {
       CommandController.validateCommandInput();
       CommandController.saveNewCommand();
       debugPrint(
-          'Command currennt step: ${CommandController.currentStep.value}');
+          'Command current step: ${CommandController.currentStep.value}');
       debugPrint(
           'Command num step: ${CommandController.commandnumStepCtrl.text}');
 
@@ -29,6 +29,8 @@ class PouringDialogController extends GetxController {
 
       if (CommandController.currentStep.value < commandNumStep) {
         RecipeController().onNewCommandButtonPressed();
+        debugPrint(
+            '[onnextpressed] current recipe length: ${RecipeController.currentRecipe!.commandList.length}');
         CommandView.showPouringDialog(context);
         Navigator.pop(context);
       } else if (CommandController.currentStep.value == commandNumStep) {

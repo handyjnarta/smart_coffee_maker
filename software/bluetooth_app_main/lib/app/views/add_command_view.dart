@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-//import 'package:flutter_bluetooth/app/controllers/device_controller.dart';
 import 'package:flutter_bluetooth/app/controllers/recipe_controller.dart';
 
 import 'package:get/get.dart';
@@ -35,10 +34,9 @@ class CommandView extends StatelessWidget {
           children: [
             buildTextField(
               title: 'Pouring Steps',
-              commandText: '0-10',
+              commandText: '1-10',
               errorText: CommandController.commandErrorText.value,
               commandTextController: CommandController.commandnumStepCtrl,
-              //onChanged: CommandController.validateCommandInput,
             ),
             const SizedBox(height: 10),
           ],
@@ -121,6 +119,8 @@ class CommandView extends StatelessWidget {
             if (CommandController.isEditCommand.isTrue) {
               return Text('Pouring Step ${RecipeController.selectedNumSteps}');
             } else {
+              // return Text(
+              //     'Pouring Step ${(RecipeController.currentRecipe!.commandList.length) + 1}');
               return Text(
                   'Pouring Step ${(CommandController.currentStep.value) + 1}');
             }
@@ -130,19 +130,19 @@ class CommandView extends StatelessWidget {
             children: [
               buildTextField(
                 title: 'Total Water',
-                commandText: '0-600',
+                commandText: '1-600',
                 errorText: CommandController.commandvolumeErrorText(),
                 commandTextController: CommandController.commandvolumeCtrl,
               ),
               buildTextField(
                 title: 'Pouring Time',
-                commandText: '0-30',
+                commandText: '1-30',
                 errorText: CommandController.commandTimePouringErrorText(),
                 commandTextController: CommandController.commandTimePouring,
               ),
               buildTextField(
                 title: 'Delay Time',
-                commandText: '0-30',
+                commandText: '1-30',
                 errorText: CommandController.commandTimeIntervalErrorText(),
                 commandTextController: CommandController.commandTimeInterval,
               ),

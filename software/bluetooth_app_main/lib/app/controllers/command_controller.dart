@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth/app/constant/constant.dart';
+import 'package:flutter_bluetooth/utils.dart';
 import 'package:get/get.dart';
 import '../helper/command_menu.dart';
 import '../models/commands.dart';
@@ -48,7 +49,6 @@ class CommandController extends GetxController {
 
   static void saveNewCommand() {
     RecipeController recipeController = Get.find<RecipeController>();
-    validateCommandInput();
 
     if (!isInputCommandValid.value) return;
 
@@ -134,28 +134,25 @@ class CommandController extends GetxController {
 
     // Validation checks
     if (commandvolumeCtrl.text.isEmpty ||
-        int.parse(commandvolumeCtrl.text) < 100) {
-          debugPrint('commandvolumeCtrl : ${commandvolumeCtrl.text}');
-
-      commandvolumeErrorText.value = 'Please input the right volume';
+        int.parse(commandvolumeCtrl.text) < 1 ||
+        int.parse(commandvolumeCtrl.text) > 600) {
+      showGetxSnackbar('Error', 'Value of total water must between 1-600 ml');
       return;
     }
     if (commandTimeInterval.text.isEmpty ||
-        int.parse(commandTimeInterval.text) < 5) {
-
-      debugPrint('commandTimeInterval.text : ${commandTimeInterval.text}');
-      commandTimeIntervalErrorText.value =
-          'Please input the right Time Interval';
+        int.parse(commandTimeInterval.text) < 1 ||
+        int.parse(commandTimeInterval.text) > 30) {
+      showGetxSnackbar('Error', 'Value of time delay must between 1-30 second');
       return;
     }
     if (commandTimePouring.text.isEmpty ||
-        int.parse(commandTimePouring.text) < 10) {
-      commandTimePouringErrorText.value = 'Please input the right Time Pouring';
-      debugPrint('commandTimePouring.text : ${commandTimePouring.text}');
+        int.parse(commandTimePouring.text) < 1 ||
+        int.parse(commandTimePouring.text) > 30) {
+      showGetxSnackbar(
+          'Error', 'Value of time pouring must between 1-30 second');
       return;
     }
     isInputCommandValid.value = true;
-    debugPrint('bener kok nang validate command');
   }
 
   static void validateNewCommandInput() {
@@ -163,18 +160,18 @@ class CommandController extends GetxController {
     commandnumStepErrorText.value = '';
 
     if (commandnumStepCtrl.text.isEmpty ||
-        int.parse(commandnumStepCtrl.text) <= 0) {
-      commandnumStepErrorText.value = 'Numstep minimal 1 kak';
+        int.parse(commandnumStepCtrl.text) < 1 ||
+        int.parse(commandnumStepCtrl.text) > 10) {
+      showGetxSnackbar('Error', 'Value of numStep must between 1-10');
       return;
     }
     if (RecipeController.recipeSetpointController.text.isEmpty ||
-        int.parse(RecipeController.recipeSetpointController.text) <= 0) {
-      commandvolumeErrorText.value = 'Please input the right volume';
+        int.parse(RecipeController.recipeSetpointController.text) < 30 ||
+        int.parse(RecipeController.recipeSetpointController.text) > 90) {
+      showGetxSnackbar(
+          'Error', 'Value of setpoint must between 30-90 degree celcius');
       return;
     }
     isInputCommandValid.value = true;
-    debugPrint('bener kok nang validateNewCommandInput');
   }
-
-  //Method to add an index to the list
 }
