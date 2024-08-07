@@ -249,11 +249,8 @@ class RecipeController extends GetxController {
       currentRecipe!.setNewRecipeId = (currID + 1);
     }
 
-    
     if (isEditRecipe.isTrue) {
       showGetxSnackbar('FUngsi ini sudah pindah tempat', 'ada yang salah');
-
-
     } else {
       recipeList.add(currentRecipe!); //buat void untuk menambahkan
       showGetxSnackbar(
@@ -270,23 +267,21 @@ class RecipeController extends GetxController {
   }
 
   void onNewCommandButtonPressed() {
-    //CommandController.resetSteps();
-    //CommandController.commandnumStepCtrl.clear();
-    CommandController.commandvolumeCtrl.text = '';
-    CommandController.commandTimePouring.text = '';
-    CommandController.commandTimeInterval.text = '';
+    CommandController.commandvolumeCtrl.clear();
+    CommandController.commandTimePouring.clear();
+    CommandController.commandTimeInterval.clear();
   }
 
   void saveEditedRecipeData() {
     isSaveRecipeBtnClicked.value = true;
-          recipeList[recipeIndex.value] = currentRecipe!;
-          debugPrint('nama resep: ${recipeNameController.text} ');
-          currentRecipe!.recipeName = recipeNameController.text;
-          debugPrint('nama resep: ${currentRecipe?.recipeName} ');
-      showGetxSnackbar('Edit success',
-          'Recipe "${currentRecipe!.recipeName}" edited successfully');
-      refreshLogs('Recipe "${currentRecipe!.recipeName}" edited successfully');
-      isEditRecipe.value = false;
+    recipeList[recipeIndex.value] = currentRecipe!;
+    debugPrint('nama resep: ${recipeNameController.text} ');
+    currentRecipe!.recipeName = recipeNameController.text;
+    debugPrint('nama resep: ${currentRecipe?.recipeName} ');
+    showGetxSnackbar('Edit success',
+        'Recipe "${currentRecipe!.recipeName}" edited successfully');
+    refreshLogs('Recipe "${currentRecipe!.recipeName}" edited successfully');
+    isEditRecipe.value = false;
   }
 
   VoidCallback? editSelectedCommand() {
@@ -320,8 +315,7 @@ class RecipeController extends GetxController {
     return null;
   }
 
-VoidCallback? deleteSelectedCommand() {
-
+  VoidCallback? deleteSelectedCommand() {
     debugPrint(
         '[recipe_con]nama resep di recipe delete: ${currentRecipe?.recipeName}');
     debugPrint(

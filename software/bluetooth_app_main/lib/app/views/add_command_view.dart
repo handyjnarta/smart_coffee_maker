@@ -119,10 +119,10 @@ class CommandView extends StatelessWidget {
             if (CommandController.isEditCommand.isTrue) {
               return Text('Pouring Step ${RecipeController.selectedNumSteps}');
             } else {
-              // return Text(
-              //     'Pouring Step ${(RecipeController.currentRecipe!.commandList.length) + 1}');
               return Text(
-                  'Pouring Step ${(CommandController.currentStep.value) + 1}');
+                  'Pouring Step ${(RecipeController.currentRecipe!.commandList.length) + 1}');
+              // return Text(
+              //     'Pouring Step ${(CommandController.currentStep.value) + 1}');
             }
           }),
           content: Column(
