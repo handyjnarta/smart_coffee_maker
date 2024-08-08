@@ -21,7 +21,7 @@ class RecipesView extends StatelessWidget {
 
   void runrecipe() {
     Navigator.pop(Get.context!);
-    if (BluetoothData.isConnectedvalue) {
+    if (BluetoothData.isConnectedvalue == false) {
       showGetxSnackbar('Cant run the recipe', 'Please connect the device first');
       return;
     }
