@@ -9,7 +9,7 @@
  * This code is "AS IS" without warranty or liability. Free to be used as long as you keep this note intact.
  */
 int motorPin =14;// pin to connect to motor module
-int mSpeed = 200;// variable to hold speed value 0 - 255
+int mSpeed = 100;// variable to hold speed value 0 - 255
 int mStep = 15;// increment/decrement step for PWM motor speed
   
 void setup() {

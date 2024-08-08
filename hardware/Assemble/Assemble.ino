@@ -19,6 +19,7 @@ MAX6675 thermocouple(thermoCLK, thermoCS, thermoSO);
 double Setpoint, NilaiSuhu, Output;
 double Kp = 1.0, Ki = 0.5, Kd = 0.1;
 PID myPID(&NilaiSuhu, &Output, &Setpoint, Kp, Ki, Kd, DIRECT);
+int TotalLoadCell = 0;
 
 
 unsigned long previousMillis = 0;
@@ -94,7 +95,7 @@ void setup() {
   myPID.SetMode(AUTOMATIC);
   myPID.SetOutputLimits(0, 80);
   LoadCell.begin();
-  float calibrationValue = -802.12;
+  float calibrationValue = 747.73;
   unsigned long stabilizingtime = 2000;
   boolean _tare = true;
   LoadCell.start(stabilizingtime, _tare);
@@ -164,7 +165,7 @@ void askForInputs() {
         Setpoint = readDoubleFromSerial();
         while (Setpoint < 30.00 || Setpoint > 94.00) {
           //ESP_BT.println("Input is wrong");
-          ESP_BT.println("Desired temperature setpoint from recipe: ");
+          //ESP_BT.println("Desired temperature setpoint from recipe: ");
           Setpoint = readDoubleFromSerial();
           Serial.printf("Setpoint accepted: %.2f \n", Setpoint);
           //delay(1000);
@@ -258,7 +259,7 @@ void loop() {
             int pourDuration = pouringDurations[step];
             int pourInterval = pouringIntervals[step];
             updateLoadCell();
-              controlMotor(110);
+              controlMotor(120);
               ESP_BT.println("mengalir bang");
               stepStartTime = millis();
               pouring = true;
@@ -286,7 +287,7 @@ void loop() {
                 volumeLoadCells +=10;
                 ESP_BT.printf("total water weight: %.2f", (volumeLoadCells));
                 //ESP_BT.printf("total water weight: %d", (volumeLoadCells+10));
-                
+                TotalLoadCell += volumeLoadCells;
                 volumeLoadCells = 0;
                 pouring = false;
                 if (step < numSteps - 1) {
@@ -302,6 +303,7 @@ void loop() {
 
 
           ESP_BT.println("All pouring steps completed.");
+          ESP_BT.printf("Total water = %d", TotalLoadCell);
           newVal = 0;
           controlMotor(0);
           step = 0;
