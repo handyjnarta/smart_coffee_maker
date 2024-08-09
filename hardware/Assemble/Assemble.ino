@@ -259,7 +259,7 @@ void loop() {
             int pourDuration = pouringDurations[step];
             int pourInterval = pouringIntervals[step];
             updateLoadCell();
-              controlMotor(120);
+              controlMotor();
               ESP_BT.println("mengalir bang");
               stepStartTime = millis();
               pouring = true;
@@ -278,7 +278,7 @@ void loop() {
                 ESP_BT.printf("total water weight: %.2f", volumeLoadCells);
                 //ESP_BT.println();
               }
-              if (millis() - stepStartTime >= pourDuration * 1000 && (volumeLoadCells+20) >= volwater )  {
+              if ((volumeLoadCells+20) >= volwater )  {
                 controlMotor(0);
                 ESP_BT.print("udah berhenti");
                 ESP_BT.println('\n');
