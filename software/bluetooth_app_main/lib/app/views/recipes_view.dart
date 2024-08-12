@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth/app/controllers/recipe_controller.dart';
 //import 'package:flutter_bluetooth/app/controllers/global_controller.dart';
@@ -12,7 +11,7 @@ import '../../utils.dart';
 import '../constant/constant.dart';
 import 'add_recipe_view.dart';
 
-enum PopupItems { edit, delete, run }
+enum PopupItems { edit, delete, run, editSP }
 
 // ignore: must_be_immutable
 class RecipesView extends StatelessWidget {
@@ -22,7 +21,8 @@ class RecipesView extends StatelessWidget {
   void runrecipe() {
     Navigator.pop(Get.context!);
     if (BluetoothData.isConnectedvalue == false) {
-      showGetxSnackbar('Cant run the recipe', 'Please connect the device first');
+      showGetxSnackbar(
+          'Cant run the recipe', 'Please connect the device first');
       return;
     }
     final RecipeController recipeController = Get.find<RecipeController>();
@@ -74,7 +74,6 @@ class RecipesView extends StatelessWidget {
     RecipeController.recipeList.removeAt(index);
     ctrl.refreshLogs(text: 'Recipe "$recipeName" deleted');
     showGetxSnackbar('Recipe deleted', 'Recipe "$recipeName" deleted');
-
   }
 
   @override
@@ -94,15 +93,12 @@ class RecipesView extends StatelessWidget {
           : const Center(
               child: Text(
               'No recipe found',
-
               style: TextStyle(fontSize: 22),
             ));
     });
   }
 
-
   void editSelectedRecipe(BuildContext context) {
-   
     final RecipeController recipeController = Get.find<RecipeController>();
     recipeController.isEditRecipe.value = true;
     int index = recipeController.recipeIndex.value;
@@ -118,25 +114,12 @@ class RecipesView extends StatelessWidget {
         isScrollControlled: true,
         context: context,
         builder: (BuildContext context) {
-
           return const AddRecipeView(title: 'Edit recipe');
         }).whenComplete(() {
       debugPrint('');
       debugPrint('[recipe_view] show modal bottom sheet closed (edit recipe)');
       debugPrint(
           '[recipe_view] RecipeController.isSaveRecipeBtnClicked: ${RecipeController().isSaveRecipeBtnClicked}');
-
-      // if (RecipeController().isSaveRecipeBtnClicked() == false) {
-      //   debugPrint('[recipe_view] old recipe rolled back');
-      //   RecipeController
-      //           .recipeList[RecipeController().recipeIndex.value].commandList =
-      //       RecipeController().oldRecipeData['oldRecipe']['commandList'];
-      //   ctrl.refreshLogs(
-      //       text:
-      //           'Recipe "${RecipeController.recipeList[RecipeController().recipeIndex.value].recipeName}" editing canceled');
-      //   showGetxSnackbar('Cancel to edit',
-      //       'Recipe "${RecipeController.recipeList[RecipeController().recipeIndex.value].recipeName}" editing canceled');
-      // }
     });
   }
 
@@ -148,7 +131,6 @@ class RecipesView extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
         ),
-
         isScrollControlled: true,
         context: context,
         builder: (BuildContext context) {
@@ -159,18 +141,61 @@ class RecipesView extends StatelessWidget {
     });
   }
 
+  void editSetpoint(BuildContext context) {
+    final RecipeController recipeController = Get.find<RecipeController>();
+    int index = recipeController.recipeIndex.value;
+
+    TextEditingController setpointController = TextEditingController(
+      text: RecipeController.recipeList[index].setpoint,
+    );
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Edit Setpoint'),
+          content: TextField(
+            controller: setpointController,
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(
+              labelText: 'Setpoint (°C)',
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Save'),
+              onPressed: () {
+                RecipeController.recipeList[index].setpoint =
+                    setpointController.text;
+                Navigator.of(context).pop();
+                showGetxSnackbar('Setpoint Updated',
+                    'New setpoint: ${setpointController.text}°C');
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Widget buildRecipeContainer({
     required String recipeName,
-    //required bool status,
     required int recipeIndex,
     required BuildContext context,
   }) {
     RecipeController recipeController = Get.find<RecipeController>();
+    String setpoint = RecipeController.recipeList[recipeIndex].setpoint;
+
     return Padding(
       padding: const EdgeInsets.all(6.0),
       child: Card(
         shape: const RoundedRectangleBorder(),
-
         elevation: 4,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -179,19 +204,30 @@ class RecipesView extends StatelessWidget {
               Row(
                 children: <Widget>[
                   Expanded(
-                    child: Text(
-
-                      recipeName,
-                      style: TextStyle(
-                          fontSize: 20, color: colors['neutralTextColor']!),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          recipeName,
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: colors['neutralTextColor']!,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Temperature Setpoint: $setpoint°C',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: colors['neutralTextColor']!.withOpacity(0.7),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(width: 10),
                   PopupMenuButton<PopupItems>(
                     onSelected: (PopupItems item) {
-                      // RecipeController().recipeIndex.value = RecipeController
-                      //      .recipeList
-                      //       .indexWhere((dev) => dev.recipeName == RecipeController.recipeList[recipeIndex].recipeName);
                       int index = -1;
                       String targetName =
                           RecipeController.recipeList[recipeIndex].recipeName;
@@ -201,35 +237,27 @@ class RecipesView extends StatelessWidget {
                         if (RecipeController.recipeList[i].recipeName ==
                             targetName) {
                           index = i;
-                          //debugPrint('dapet nih: $index');
                           break;
                         }
                       }
-                      //debugPrint('kayanya ada error: $index');
-
-                      //recipeController.recipeIndex.value = RecipeController().recipeIndex.value;
                       recipeController.recipeIndex.value = index;
-                      debugPrint(
-                          'index resep: ${recipeController.recipeIndex.value}');
-                      debugPrint(
-                          'nama resep: ${RecipeController.recipeList[recipeController.recipeIndex.value].recipeName}');
-                      //int indexRecipe = int.parse(RecipeController.recipeList[recipeIndex].recipeName);
-                      //RecipeController().recipeIndex.value = indexRecipe;
 
                       if (item == PopupItems.edit) {
                         editSelectedRecipe(context);
                       } else if (item == PopupItems.run) {
                         showConfirmDialog(
                           context: context,
-                          title: 'Run This recipe',
+                          title: 'Run This Recipe',
                           text:
-                              'Want to run ${RecipeController.recipeList[recipeController.recipeIndex.value].recipeName} recipe ?',
+                              'Want to run ${RecipeController.recipeList[recipeController.recipeIndex.value].recipeName} recipe?',
                           onOkPressed: runrecipe,
                         );
+                      } else if (item == PopupItems.editSP) {
+                        editSetpoint(context);
                       } else {
                         showConfirmDialog(
                           context: context,
-                          title: 'Delete confirm',
+                          title: 'Delete Confirm',
                           text:
                               'Delete current recipe (${RecipeController.recipeList[recipeIndex].recipeName})?',
                           onOkPressed: deleteRecipe,
@@ -255,10 +283,23 @@ class RecipesView extends StatelessWidget {
                           value: PopupItems.edit,
                           child: Row(
                             children: [
-                              Text('Edit'),
+                              Text('Edit Command'),
                               Expanded(child: SizedBox(width: 10)),
                               Icon(
                                 Icons.edit,
+                                size: 20.0,
+                              )
+                            ],
+                          ),
+                        ),
+                        const PopupMenuItem<PopupItems>(
+                          value: PopupItems.editSP,
+                          child: Row(
+                            children: [
+                              Text('Edit Setpoint'),
+                              Expanded(child: SizedBox(width: 10)),
+                              Icon(
+                                Icons.thermostat,
                                 size: 20.0,
                               )
                             ],
@@ -282,7 +323,6 @@ class RecipesView extends StatelessWidget {
                   ),
                 ],
               ),
-
             ],
           ),
         ),

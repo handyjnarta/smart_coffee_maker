@@ -6,6 +6,7 @@ import '../views/add_command_view.dart';
 
 class PouringDialogController extends GetxController {
   static void onCancelPressed(BuildContext context) {
+    RecipeController().onNewCommandButtonPressed();
     Navigator.pop(context);
   }
 

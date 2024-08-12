@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth/app/controllers/recipe_controller.dart';
+
 import 'package:get/get.dart';
 import 'package:flutter_bluetooth/app/controllers/command_controller.dart';
 import '../custom_widget/custom_button.dart';
@@ -7,6 +8,7 @@ import '../helper/widget_helper.dart';
 import '../controllers/pouring_controller.dart';
 
 class CommandView extends StatelessWidget {
+  static bool isFirstCommandAdded = true;
   const CommandView({Key? key}) : super(key: key);
 
   @override
@@ -21,7 +23,7 @@ class CommandView extends StatelessWidget {
       const SizedBox(height: 10),
       Obx(() {
         return buildTextField(
-          title: 'Setpoint',
+          title: 'Setpoint (°C)',
           commandText: '30-90',
           errorText: CommandController.commandErrorText.value,
           commandTextController: RecipeController.recipeSetpointController,
@@ -91,9 +93,9 @@ class CommandView extends StatelessWidget {
               onPressedAction: () {
                 CommandController.validateNewCommandInput();
                 if (CommandController.isInputCommandValid.isTrue) {
-                  // if (CommandController.isEditCommand.isTrue) {
-                  //   CommandController.isEditCommand.value = false;
-                  // }
+                  if (CommandController.isEditCommand.isTrue) {
+                    CommandController.isEditCommand.value = false;
+                  }
 
                   showPouringDialog(context);
                 }
@@ -107,89 +109,88 @@ class CommandView extends StatelessWidget {
   }
 
   static void showPouringDialog(BuildContext context) {
+    debugPrint(
+        'Current step value before showing dialog: ${CommandController.currentStep.value}');
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return StatefulPouringDialog();
-      },
-    );
-  }
-}
-
-class StatefulPouringDialog extends StatefulWidget {
-  @override
-  _StatefulPouringDialogState createState() => _StatefulPouringDialogState();
-}
-
-class _StatefulPouringDialogState extends State<StatefulPouringDialog> {
-  late String title;
-
-  @override
-  void initState() {
-    super.initState();
-    _updateTitle();
-  }
-
-  void _updateTitle() {
-    if (CommandController.isEditCommand.isTrue) {
-      title = 'Pouring Step ${RecipeController.selectedNumSteps}';
-    } else {
-      title =
-          'Pouring Step ${(RecipeController.currentRecipe!.commandList.length) + 1}';
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text(title),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          buildTextField(
-            title: 'Total Water',
-            commandText: '1-600',
-            errorText: CommandController.commandvolumeErrorText(),
-            commandTextController: CommandController.commandvolumeCtrl,
-          ),
-          buildTextField(
-            title: 'Pouring Time',
-            commandText: '1-30',
-            errorText: CommandController.commandTimePouringErrorText(),
-            commandTextController: CommandController.commandTimePouring,
-          ),
-          buildTextField(
-            title: 'Delay Time',
-            commandText: '1-30',
-            errorText: CommandController.commandTimeIntervalErrorText(),
-            commandTextController: CommandController.commandTimeInterval,
-          ),
-        ],
-      ),
-      actions: <Widget>[
-        TextButton(
-          onPressed: () => PouringDialogController.onCancelPressed(context),
-          child: const Text('Cancel'),
-        ),
-        TextButton(
-          onPressed: () {
-            debugPrint(
-                'Command current step command view: ${CommandController.currentStep.value}');
+        return AlertDialog(
+          title: Obx(() {
             if (CommandController.isEditCommand.isTrue) {
-              CommandController.saveNewCommand();
-              Navigator.pop(context);
-              CommandController.isEditCommand.value = false;
+              return Text('Pouring Step ${RecipeController.selectedNumSteps}');
+            } else if (RecipeController.currentRecipe != null &&
+                RecipeController.currentRecipe!.commandList.length > 1) {
+              return Text(
+                  'Pouring Step ${(RecipeController.currentRecipe!.commandList.length) + 1}');
             } else {
-              PouringDialogController.onNextPressed(context);
-              setState(() {
-                _updateTitle();
-              });
+              return Text(
+                  'Pouring Step ${(CommandController.currentStep.value) + 1}');
             }
-          },
-          child: Obx(() =>
-              Text(CommandController.isEditCommand.isTrue ? 'Save' : 'Next')),
-        ),
-      ],
+          }),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              buildTextField(
+                title: 'Total Water (ml)',
+                commandText: '1-200',
+                errorText: CommandController.commandvolumeErrorText(),
+                commandTextController: CommandController.commandvolumeCtrl,
+              ),
+              buildTextField(
+                title: 'Pouring Time (s)',
+                commandText: '1-60',
+                errorText: CommandController.commandTimePouringErrorText(),
+                commandTextController: CommandController.commandTimePouring,
+              ),
+              buildTextField(
+                title: 'Delay Time (s)',
+                commandText: '1-60',
+                errorText: CommandController.commandTimeIntervalErrorText(),
+                commandTextController: CommandController.commandTimeInterval,
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => PouringDialogController.onCancelPressed(context),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                debugPrint(
+                    'Command current step command view: ${CommandController.currentStep.value}');
+
+                if (CommandController.isEditCommand.isTrue) {
+                  CommandController.saveNewCommand();
+                  Navigator.pop(context);
+                  CommandController.isEditCommand.value = false;
+                } else {
+                  // Add the command first
+                  PouringDialogController.onNextPressed(context);
+
+                  // Check if this is the first time a command is added
+                  if (!isFirstCommandAdded) {
+                    // If not the first command, close the dialog after saving
+                    Navigator.pop(context);
+                    debugPrint('[addcommand] not first anymore');
+                  }
+                }
+              },
+              child: Obx(() {
+                // Change the button text dynamically based on conditions
+                if (CommandController.isEditCommand.isTrue) {
+                  return const Text('Save');
+                } else if (RecipeController.currentRecipe != null &&
+                    RecipeController.currentRecipe!.commandList.isNotEmpty) {
+                  return const Text('Save');
+                } else {
+                  return const Text('Next');
+                }
+              }),
+            ),
+          ],
+        );
+      },
     );
   }
 }

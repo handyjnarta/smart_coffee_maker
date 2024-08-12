@@ -135,21 +135,21 @@ class CommandController extends GetxController {
     // Validation checks
     if (commandvolumeCtrl.text.isEmpty ||
         int.parse(commandvolumeCtrl.text) < 1 ||
-        int.parse(commandvolumeCtrl.text) > 600) {
-      showGetxSnackbar('Error', 'Value of total water must between 1-600 ml');
+        int.parse(commandvolumeCtrl.text) > 200) {
+      showGetxSnackbar('Error', 'Value of total water must between 1-200 ml');
       return;
     }
     if (commandTimeInterval.text.isEmpty ||
         int.parse(commandTimeInterval.text) < 1 ||
-        int.parse(commandTimeInterval.text) > 30) {
-      showGetxSnackbar('Error', 'Value of time delay must between 1-30 second');
+        int.parse(commandTimeInterval.text) > 60) {
+      showGetxSnackbar('Error', 'Value of time delay must between 1-60 second');
       return;
     }
     if (commandTimePouring.text.isEmpty ||
         int.parse(commandTimePouring.text) < 1 ||
-        int.parse(commandTimePouring.text) > 30) {
+        int.parse(commandTimePouring.text) > 60) {
       showGetxSnackbar(
-          'Error', 'Value of time pouring must between 1-30 second');
+          'Error', 'Value of time pouring must between 1-60 second');
       return;
     }
     isInputCommandValid.value = true;

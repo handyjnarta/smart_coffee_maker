@@ -87,6 +87,13 @@ class AddRecipeView extends StatelessWidget {
                                 recipeController.errorText.value =
                                     'Recipe name is required';
                                 debugPrint('Error: Recipe name is required');
+                              } else if (RecipeController
+                                  .currentRecipe!.commandList.isNotEmpty) {
+                                // If the recipe already has commands, route to showPouringDialog
+                                CommandView.showPouringDialog(context);
+
+                                debugPrint(
+                                    '[addrecipeview] showPouringDialog called');
                               } else if (recipeController
                                   .enableNewCommandBtn.isTrue) {
                                 // Proceed to create a new command if the button is enabled
@@ -95,11 +102,7 @@ class AddRecipeView extends StatelessWidget {
                                     '[addrecipeview] createNewCommand called');
                               } else {
                                 debugPrint(
-                                    '[addrecipeview] nilai newcommandbutton ${recipeController.enableNewCommandBtn.value}');
-                                final recipeName =
-                                    RecipeController.recipeNameController.text;
-                                debugPrint(
-                                    '[addrecipeview] createNewCommand not called. Recipe name: $recipeName');
+                                    '[addrecipeview] New Command button not enabled');
                               }
                             },
                             style: buildButtonStyle(
