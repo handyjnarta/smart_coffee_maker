@@ -22,7 +22,7 @@ void loop() {
 
   static unsigned long previousMillisPrint = 0;  // Make previousMillisPrint static to retain value across function calls
   unsigned long currentMillisPrint = millis();   // Get current time
-  unsigned long intervalPrint = 500;
+  unsigned long intervalPrint = 1000;
 
   if (currentMillisPrint - previousMillisPrint >= intervalPrint) {
     previousMillisPrint = currentMillisPrint;
@@ -34,7 +34,7 @@ void loop() {
         receivedTemp = mySerial.readStringUntil('\n');
         receivedTempConvert = receivedTemp.c_str();
         
-        fillRectangle(0, 0, 320, 240, TFT_BLUE);  // Clear the screen before updating the display
+        fillRectangle(0, 0, 320, 240, 0,TFT_BLUE);  // Clear the screen before updating the display
         
         displayMessage("\t Temperature = ", 2, 0, 30, TFT_WHITE);
         displayMessage(receivedTempConvert, 2, 190, 30, TFT_WHITE);
@@ -46,7 +46,7 @@ void loop() {
         receivedTempConvert = receivedTemp.c_str();
         receivedVolConvert = receivedVol.c_str();
         
-        fillRectangle(0, 0, 320, 240, TFT_BLUE);  // Clear the screen before updating the display
+        fillRectangle(0, 0, 320, 240, 0,TFT_BLUE);  // Clear the screen before updating the display
         
         displayMessage("\t Temperature = ", 2, 0, 30, TFT_WHITE);
         displayMessage(receivedTempConvert, 2, 190, 30, TFT_WHITE);
