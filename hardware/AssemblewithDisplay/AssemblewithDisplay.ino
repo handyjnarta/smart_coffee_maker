@@ -251,7 +251,9 @@ void loop() {
 
         NilaiSuhu = thermocouple.readCelsius();
         mySerial.println('h');
+        Serial.println('h');
         mySerial.println(NilaiSuhu);
+        Serial.println(NilaiSuhu);
         ESP_BT.printf("C -OL = %.2f", NilaiSuhu);
         myPID.Compute();
 
@@ -288,8 +290,11 @@ void loop() {
                 updateLoadCell();
                 ESP_BT.printf("total water weight: %.2f", volumeLoadCells);
                 mySerial.println('p');
+                Serial.println('p');
                 mySerial.println(NilaiSuhu);
+                Serial.println(NilaiSuhu);
                 mySerial.println(volumeLoadCells);
+                Serial.println(volumeLoadCells);
                 //ESP_BT.println();
               }
               if (millis() - stepStartTime >= pourDuration * 1000 )  {
