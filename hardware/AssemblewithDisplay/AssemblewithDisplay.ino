@@ -280,7 +280,7 @@ void loop() {
               dimmer.setPower(newVal);
               float volumeLoadCells = average;
               unsigned long currentMillis_print = millis(); // Get current time
-              unsigned long interval_print = 500; // Print interval
+              unsigned long interval_print = 1000; // Print interval
               if (currentMillis_print - previousMillis_print >= interval_print) {
                 previousMillis_print = currentMillis_print;
                 ESP_BT.printf("C = %.2f", NilaiSuhu);
