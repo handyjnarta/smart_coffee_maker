@@ -250,11 +250,9 @@ void loop() {
         previousMillis = currentMillis;
 
         NilaiSuhu = thermocouple.readCelsius();
-        updateLoadCell();
-        mySerial.println(NilaiSuhu));
-        mySerial.println(volumeLoadCells));
+        mySerial.println('h');
+        mySerial.println(NilaiSuhu);
         ESP_BT.printf("C -OL = %.2f", NilaiSuhu);
-        
         myPID.Compute();
 
         int preVal = dimmer.getPower();
@@ -289,8 +287,9 @@ void loop() {
                 ESP_BT.println('\n');
                 updateLoadCell();
                 ESP_BT.printf("total water weight: %.2f", volumeLoadCells);
-                mySerial.println(NilaiSuhu));
-                mySerial.println(volumeLoadCells));
+                mySerial.println('p');
+                mySerial.println(NilaiSuhu);
+                mySerial.println(volumeLoadCells);
                 //ESP_BT.println();
               }
               if (millis() - stepStartTime >= pourDuration * 1000 )  {
