@@ -237,7 +237,31 @@ void controlMotor(int speed)
   delay(20);
 }
 
-void updateAndSendData()
+void updateAndSendDataHeat()
+{
+  // Read temperature from the thermocouple
+  float temperature = thermocouple.readCelsius();
+
+  // Update load cell data
+  updateLoadCell();
+  float volume = average;
+
+  // Convert the values to strings with appropriate precision
+  String temperatureStr = String(temperature, 1); // 1 decimal place for temperature
+  String volumeStr = String(volume, 1);           // 1 decimal place for volume
+
+  // Combine data into a single string with comma separation
+  String dataToSend = "h," + temperatureStr + "," + volumeStr + "\r\n";
+
+  // Send the combined string through UART
+  mySerial.print(dataToSend);
+
+  // Optional: Print to Serial for debugging
+  Serial.print("Data Sent: ");
+  Serial.println(dataToSend);
+}
+
+void updateAndSendDataPour()
 {
   // Read temperature from the thermocouple
   float temperature = thermocouple.readCelsius();
@@ -280,6 +304,7 @@ void loop()
       previousMillis = currentMillis;
 
       NilaiSuhu = thermocouple.readCelsius();
+      updateAndSendDataHeat();
       ESP_BT.printf("C -OL = %.2f", NilaiSuhu);
       myPID.Compute();
 
@@ -300,6 +325,7 @@ void loop()
           int pourDuration = pouringDurations[step];
           int pourInterval = pouringIntervals[step];
           updateLoadCell();
+          updateAndSendDataPour();
           controlMotor(110);
           ESP_BT.println("mengalir bang");
           stepStartTime = millis();
@@ -318,11 +344,11 @@ void loop()
               ESP_BT.println('\n');
               updateLoadCell();
               ESP_BT.printf("total water weight: %.2f", volumeLoadCells);
-              mySerial.println('p');
+              //mySerial.println('p');
               Serial.println('p');
-              mySerial.println(NilaiSuhu);
+              //mySerial.println(NilaiSuhu);
               Serial.println(NilaiSuhu);
-              mySerial.println(volumeLoadCells);
+              //mySerial.println(volumeLoadCells);
             }
             if (millis() - stepStartTime >= pourDuration * 1000)
             {
