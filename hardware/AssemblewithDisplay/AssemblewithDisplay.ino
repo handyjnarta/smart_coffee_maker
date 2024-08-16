@@ -3,10 +3,9 @@
 #include <PID_v1.h>
 #include <HX711_ADC.h>
 #include "BluetoothSerial.h"
-#include <QorexLibrary.h>
 #include <HardwareSerial.h>
 
-HardwareSerial mySerial(1); // Menggunakan UART2
+HardwareSerial mySerial(1); // Using UART2
 
 String receivedData;
 const char* receivedDataconvert;
@@ -28,11 +27,8 @@ double Kp = 1.0, Ki = 0.5, Kd = 0.1;
 PID myPID(&NilaiSuhu, &Output, &Setpoint, Kp, Ki, Kd, DIRECT);
 int TotalLoadCell = 0;
 
-
 unsigned long previousMillis = 0;
 const long interval = 500;
-// unsigned long setpointReachedMillis = 0;
-const long setpointDelay = 10000;
 unsigned long previousMillis_print = 0;
 
 const int HX711_dout = 15;
@@ -50,12 +46,15 @@ int numSteps = 0;
 int pouringVolumes[100];
 int pouringDurations[100];
 int pouringIntervals[100];
+
 enum ProgramState {
   WAITING_FOR_INPUT,
   POURING,
   COMPLETED
 };
+
 ProgramState currentState = WAITING_FOR_INPUT;
+
 double readDoubleFromSerial() {
   String input = "";
   while (true) {
@@ -69,6 +68,7 @@ double readDoubleFromSerial() {
     }
   }
 }
+
 int readIntFromSerial() {
   String input = "";
   while (true) {
@@ -91,17 +91,11 @@ char readSingleCharFromSerial() {
   }
 }
 
-
-
 void setup() {
   Serial.begin(115200);
-  ESP_BT.begin("ESP32-BT-Slave-Qorexf");// jangan dipake ESP32_Coffee_Control, 
-  initDisplay(3, TFT_BLUE);
+  ESP_BT.begin("ESP32-BT-Slave-Qorexf");
   mySerial.begin(115200, SERIAL_8N1, 17, 16);
-  displayMessage("Qohuahh", 3, 30, 0, TFT_WHITE);
-  //Serial.println("Bluetooth Device is Ready to Pair");
   dimmer.begin(NORMAL_MODE, ON);
-  //Serial.println("Dimmer Program is starting...");
   myPID.SetMode(AUTOMATIC);
   myPID.SetOutputLimits(0, 80);
   LoadCell.begin();
@@ -119,26 +113,18 @@ void setup() {
     pinMode(motorPin, OUTPUT);
   }
 
-  //currentState = WAITING_FOR_INPUT;
   Serial.println("Mulai bang");
-  //ESP_BT.println("Mulai Bangk");
-
 }
 
 void askForInputs() {
   totalVolume = 0;
-  //ESP_BT.println("Enter desired temperature setpoint: ");
   if (ESP_BT.available()) {
-    char incoming = ESP_BT.read();//char incoming = 's';
-    if (incoming == 'a'){
-      //delay(1000);
-      //ESP_BT.println("Enter desired temperature setpoint: ");
+    char incoming = ESP_BT.read();
+    if (incoming == 'a') {
       Setpoint = readDoubleFromSerial();
       while (Setpoint < 30.00 || Setpoint > 94.00) {
-        //ESP_BT.println("Input is wrong");
         ESP_BT.println("Enter desired temperature setpoint: ");
         Setpoint = readDoubleFromSerial();
-        //delay(1000);
       }
       ESP_BT.printf("Setpoint accepted: %.2f", Setpoint);
       ESP_BT.println('\n');
@@ -165,53 +151,32 @@ void askForInputs() {
         ESP_BT.println(": ");
         pouringIntervals[step - 1] = readIntFromSerial();
       }
-
-      //ESP_BT.print("Total water volume: ");
-      //ESP_BT.println(totalVolume);
-
       currentState = POURING;
-    }
-    else if (incoming == 'r') {
+    } else if (incoming == 'r') {
+      Setpoint = readDoubleFromSerial();
+      while (Setpoint < 30.00 || Setpoint > 94.00) {
         Setpoint = readDoubleFromSerial();
-        while (Setpoint < 30.00 || Setpoint > 94.00) {
-          //ESP_BT.println("Input is wrong");
-          //ESP_BT.println("Desired temperature setpoint from recipe: ");
-          Setpoint = readDoubleFromSerial();
-          Serial.printf("Setpoint accepted: %.2f \n", Setpoint);
-          //delay(1000);
-        }
-        //ESP_BT.printf("Setpoint accepted: %.2f", Setpoint);
-        //ESP_BT.println('\n');
-        //ESP_BT.println("Number of pouring steps from recipe: ");
-        numSteps = readIntFromSerial();
-        Serial.printf("Number of pouring steps from recipe: %d \n", numSteps);
-        for (int step = 1; step <= numSteps; ++step) {
-          //ESP_BT.print("Desired water volume for step from recipe: ");
-          //ESP_BT.print(step);
-          //ESP_BT.println(": ");
-          int volwater = readIntFromSerial();
-          Serial.printf("Desired water volume for step from recipe: %d \n", volwater);
-          pouringVolumes[step - 1] = volwater;
-          totalVolume += volwater;
-          //ESP_BT.print("Duration (in seconds) from recipe for pouring step  ");
-          //ESP_BT.print(step);
-          //ESP_BT.println(": ");
-          pouringDurations[step - 1] = readIntFromSerial();
-          Serial.printf("Duration (in seconds) from recipe for pouring step: %d \n", pouringDurations[step - 1]);
-          // ESP_BT.print("Interval time (in seconds) from recipe between pouring step ");
-          // ESP_BT.print(step);
-          // ESP_BT.println(": ");
-          pouringIntervals[step - 1] = readIntFromSerial();
-          Serial.printf("Interval time (in seconds) from recipe between pouring step: %d \n", pouringIntervals[step - 1]);
-        }
-
-        currentState = POURING;
+        Serial.printf("Setpoint accepted: %.2f \n", Setpoint);
+      }
+      numSteps = readIntFromSerial();
+      Serial.printf("Number of pouring steps from recipe: %d \n", numSteps);
+      for (int step = 1; step <= numSteps; ++step) {
+        int volwater = readIntFromSerial();
+        Serial.printf("Desired water volume for step from recipe: %d \n", volwater);
+        pouringVolumes[step - 1] = volwater;
+        totalVolume += volwater;
+        pouringDurations[step - 1] = readIntFromSerial();
+        Serial.printf("Duration (in seconds) from recipe for pouring step: %d \n", pouringDurations[step - 1]);
+        pouringIntervals[step - 1] = readIntFromSerial();
+        Serial.printf("Interval time (in seconds) from recipe between pouring step: %d \n", pouringIntervals[step - 1]);
+      }
+      currentState = POURING;
     } else {
       ESP_BT.print("kalau gamau running skip aja ya ");
     }
-    }
-    dimmer.setPower(0);
   }
+  dimmer.setPower(0);
+}
 
 void updateLoadCell() {
   static boolean newDataReady = 0;
@@ -229,9 +194,32 @@ void updateLoadCell() {
 }
 
 void controlMotor(int speed) {
-  motorSpeed = speed;            // Update global motor speed variable
-  analogWrite(motorPin, speed);  // Set motor speed
-  delay(20);                     // Short delay
+  motorSpeed = speed;
+  analogWrite(motorPin, speed);
+  delay(20);
+}
+
+void updateAndSendData() {
+  // Read temperature from the thermocouple
+  float temperature = thermocouple.readCelsius();
+
+  // Update load cell data
+  updateLoadCell();
+  float volume = average;
+
+  // Convert the values to strings with appropriate precision
+  String temperatureStr = String(temperature, 1); // 1 decimal place for temperature
+  String volumeStr = String(volume, 1); // 1 decimal place for volume
+
+  // Combine data into a single string with comma separation
+  String dataToSend = "p," + temperatureStr + "," + volumeStr + "\r\n";
+
+  // Send the combined string through UART
+  mySerial.print(dataToSend);
+
+  // Optional: Print to Serial for debugging
+  Serial.print("Data Sent: ");
+  Serial.println(dataToSend);
 }
 
 void loop() {
@@ -244,21 +232,17 @@ void loop() {
 
     case POURING: {
       int newVal;
-
-
       if (currentMillis - previousMillis >= interval) {
         previousMillis = currentMillis;
 
         NilaiSuhu = thermocouple.readCelsius();
-        mySerial.println('h');
-        mySerial.println(NilaiSuhu);
+
         ESP_BT.printf("C -OL = %.2f", NilaiSuhu);
         myPID.Compute();
 
         int preVal = dimmer.getPower();
 
-
-        if (abs(NilaiSuhu - Setpoint) <= 1 || (NilaiSuhu > Setpoint) ) {
+        if (abs(NilaiSuhu - Setpoint) <= 1 || (NilaiSuhu > Setpoint)) {
           newVal = 0;
           Output = 0;
 
@@ -271,16 +255,16 @@ void loop() {
             int pourDuration = pouringDurations[step];
             int pourInterval = pouringIntervals[step];
             updateLoadCell();
-              controlMotor(110);
-              ESP_BT.println("mengalir bang");
-              stepStartTime = millis();
-              pouring = true;
+            controlMotor(110);
+            ESP_BT.println("mengalir bang");
+            stepStartTime = millis();
+            pouring = true;
 
             while (pouring) {
               dimmer.setPower(newVal);
               float volumeLoadCells = average;
-              unsigned long currentMillis_print = millis(); // Get current time
-              unsigned long interval_print = 1000; // Print interval
+              unsigned long currentMillis_print = millis();
+              unsigned long interval_print = 1000;
               if (currentMillis_print - previousMillis_print >= interval_print) {
                 previousMillis_print = currentMillis_print;
                 ESP_BT.printf("C = %.2f", NilaiSuhu);
@@ -290,60 +274,42 @@ void loop() {
                 mySerial.println('p');
                 mySerial.println(NilaiSuhu);
                 mySerial.println(volumeLoadCells);
-                //ESP_BT.println();
               }
-              if (millis() - stepStartTime >= pourDuration * 1000 )  {
+              if (millis() - stepStartTime >= pourDuration * 1000) {
                 controlMotor(0);
                 ESP_BT.print("udah berhenti");
                 ESP_BT.println('\n');
-                //volumeLoadCells +=10;
                 updateLoadCell();
-                ESP_BT.printf("total water weight: %.2f", (volumeLoadCells));
-                //volumeLoadCells +=10;
-                //ESP_BT.printf("total water weight: %.2f", (volumeLoadCells));
-                //ESP_BT.printf("total water weight: %d", (volumeLoadCells+10));
-                TotalLoadCell += volumeLoadCells;
-                volumeLoadCells = 0;
+                ESP_BT.printf("total water weight: %.2f", average);
+                ESP_BT.println('\n');
+                delay(pourInterval * 1000);
                 pouring = false;
-                if (step < numSteps - 1) {
-                  delay(pourInterval * 1000);
-                }
-
-
               }
-
             }
-
           }
-
-
-          ESP_BT.println("All pouring steps completed.");
-          ESP_BT.printf("Total water = %d", TotalLoadCell);
-          newVal = 0;
-          controlMotor(0);
-          step = 0;
           currentState = COMPLETED;
+        } else if (NilaiSuhu < Setpoint && abs(NilaiSuhu - Setpoint) > 5) {
+          newVal = preVal + 10;
+          if (newVal > 100) {
+            newVal = 100;
+          }
+          dimmer.setPower(newVal);
         } else {
-          // setpointReachedMillis = 0;
-          newVal = (int)Output;
+          newVal = preVal + 2;
+          if (newVal > 100) {
+            newVal = 100;
+          }
+          dimmer.setPower(newVal);
         }
-
-        dimmer.setPower(newVal);
-
-        /*if (preVal != newVal) {
-          Serial.print("TempValue -> ");
-          Serial.print(newVal);
-          Serial.println("%");
-        }*/
-
-
       }
       break;
     }
 
     case COMPLETED: {
-      ESP_BT.println("Pouring session completed. Enter new values to restart.");
-
+      dimmer.setPower(0);
+      ESP_BT.println("PROCESS COMPLETED");
+      ESP_BT.printf("Final temperature: %.2f", NilaiSuhu);
+      ESP_BT.println('\n');
       currentState = WAITING_FOR_INPUT;
       break;
     }

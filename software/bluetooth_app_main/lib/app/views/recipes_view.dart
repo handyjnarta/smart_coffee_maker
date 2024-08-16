@@ -17,7 +17,6 @@ enum PopupItems { edit, delete, run, editSP }
 class RecipesView extends StatelessWidget {
   const RecipesView({Key? key}) : super(key: key);
   //int index = 1;
-
   void runrecipe() {
     Navigator.pop(Get.context!);
     if (BluetoothData.isConnectedvalue == false) {
