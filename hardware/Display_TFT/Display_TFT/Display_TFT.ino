@@ -1,7 +1,7 @@
 #include <QorexLibrary.h>
 #include <HardwareSerial.h>
 
-HardwareSerial mySerial(2); // Using UART2
+HardwareSerial mySerial(1); // Using UART2
 
 String receivedTemp;
 String receivedVol;
@@ -30,7 +30,7 @@ String readStringUntilNewline(HardwareSerial &serial) {
 void setup() {
   initDisplay(3, TFT_BLACK);
   Serial.begin(115200);
-  mySerial.begin(115200, SERIAL_8N1, 17, 16); // TX=17, RX=16 (ensure the pins match your connections)
+  mySerial.begin(115200, SERIAL_8N1, 16, 17); // TX=17, RX=16 (ensure the pins match your connections)
 }
 
 void loop() {
