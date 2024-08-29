@@ -85,7 +85,7 @@ void loop() {
     }
 
     // Ensure the dimmer power is set smoothly
-    dimmer.setPower(newVal); // setPower(0-100%)
+    dimmer.setPower(0); // setPower(0-100%)
 
     if (preVal != newVal) {
       Serial.print("TempValue -> ");

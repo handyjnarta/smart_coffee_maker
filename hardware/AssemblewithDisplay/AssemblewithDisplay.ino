@@ -110,7 +110,7 @@ char readSingleCharFromSerial()
 void setup()
 {
   Serial.begin(115200);
-  ESP_BT.begin("ESP32-BT-Slave-Qorexf");
+  ESP_BT.begin("Final");
   mySerial.begin(115200, SERIAL_8N1, 17, 16);
   dimmer.begin(NORMAL_MODE, ON);
   myPID.SetMode(AUTOMATIC);
@@ -255,7 +255,6 @@ void updateAndSendDataHeat()
 
   // Send the combined string through UART
   mySerial.print(dataToSend);
-
   // Optional: Print to Serial for debugging
   Serial.print("Data Sent: ");
   Serial.println(dataToSend);
@@ -293,6 +292,7 @@ void loop()
   case WAITING_FOR_INPUT:
   {
     askForInputs();
+    dimmer.setPower(0);
     break;
   }
 
@@ -307,6 +307,8 @@ void loop()
       updateAndSendDataHeat();
       ESP_BT.printf("C -OL = %.2f", NilaiSuhu);
       myPID.Compute();
+      newVal = (int)Output; // Use the PID output
+
 
       int preVal = dimmer.getPower();
 
@@ -365,28 +367,16 @@ void loop()
         }
         currentState = COMPLETED;
       }
-      else if (NilaiSuhu < Setpoint && abs(NilaiSuhu - Setpoint) > 5)
-      {
-        newVal = preVal + 10;
-        if (newVal > 100)
-        {
-          newVal = 100;
+      else {
+          // setpointReachedMillis = 0;
+          newVal = (int)Output;
         }
+
         dimmer.setPower(newVal);
-      }
-      else
-      {
-        newVal = preVal + 2;
-        if (newVal > 100)
-        {
-          newVal = 100;
-        }
-        dimmer.setPower(newVal);
-      }
+      
     }
     break;
   }
-
   case COMPLETED:
   {
     dimmer.setPower(0);
