@@ -16,7 +16,7 @@ enum PopupItems { edit, delete, run, editSP }
 // ignore: must_be_immutable
 class RecipesView extends StatelessWidget {
   const RecipesView({Key? key}) : super(key: key);
-  //int index = 1;
+
   void runrecipe() {
     Navigator.pop(Get.context!);
     if (BluetoothData.isConnectedvalue == false) {
@@ -78,22 +78,25 @@ class RecipesView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      return (RecipeController.recipeList.isNotEmpty)
-          ? ListView.builder(
-              itemCount: RecipeController.recipeList.length,
-              itemBuilder: (BuildContext context, index) {
-                debugPrint('[recipe_view] rebuilding listview');
-                return buildRecipeContainer(
-                    context: context,
-                    recipeName: RecipeController.recipeList[index].recipeName,
-                    //status: RecipeController.recipeList[index].status,
-                    recipeIndex: index);
-              })
-          : const Center(
-              child: Text(
-              'No recipe found',
-              style: TextStyle(fontSize: 22),
-            ));
+      return Container(
+        color: const Color.fromARGB(255, 255, 229, 180), // Background color
+        child: (RecipeController.recipeList.isNotEmpty)
+            ? ListView.builder(
+                itemCount: RecipeController.recipeList.length,
+                itemBuilder: (BuildContext context, index) {
+                  debugPrint('[recipe_view] rebuilding listview');
+                  return buildRecipeContainer(
+                      context: context,
+                      recipeName: RecipeController.recipeList[index].recipeName,
+                      //status: RecipeController.recipeList[index].status,
+                      recipeIndex: index);
+                })
+            : const Center(
+                child: Text(
+                'No recipe found',
+                style: TextStyle(fontSize: 22),
+              )),
+      );
     });
   }
 

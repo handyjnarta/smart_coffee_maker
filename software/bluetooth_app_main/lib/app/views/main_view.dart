@@ -22,7 +22,8 @@ class MainView extends StatelessWidget {
       key: scaffoldKey,
       appBar: AppBar(
         title: const Text("Marcoff Chat"),
-        backgroundColor: const Color.fromARGB(199, 170, 84, 3),
+        foregroundColor: Color.fromARGB(255, 255, 255, 255),
+        backgroundColor: const Color.fromARGB(247, 117, 59, 5),
         actions: [
           Padding(
             padding: const EdgeInsets.only(
@@ -155,45 +156,52 @@ class MainView extends StatelessWidget {
             }),
           )
         ],
+        //Tabbar
         bottom: TabBar(
           controller: ctrl.tabController,
-          indicatorColor: Colors.white,
-
+          indicator: BoxDecoration(
+            color: const Color.fromARGB(255, 225, 173, 117), // Warna background saat ditekan
+            borderRadius: BorderRadius.circular(5), // Opsional: tambahkan border radius jika diinginkan
+          ),
+          labelColor: const Color.fromARGB(255, 173, 104, 13), // Warna teks saat ditekan
+          unselectedLabelColor:  const  Color.fromARGB(255, 210, 180, 140), // Warna teks saat tidak ditekan
           tabs: const [
-
             Tab(
-                icon: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.bluetooth),
-                SizedBox(
-                  width: 2,
-                ),
-                Text('Link')
-              ],
-            )),
+              icon: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.bluetooth),
+                  SizedBox(
+                    width: 2,
+                  ),
+                  Text('Link')
+                ],
+              ),
+            ),
             Tab(
-                icon: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.terminal),
-                SizedBox(
-                  width: 2,
-                ),
-                Text('Chat')
-              ],
-            )),
+              icon: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.terminal),
+                  SizedBox(
+                    width: 2,
+                  ),
+                  Text('Chat')
+                ],
+              ),
+            ),
             Tab(
-                icon: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.list_alt_outlined),
-                SizedBox(
-                  width: 2,
-                ),
-                Text('Resep')
-              ],
-            )),
+              icon: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.list_alt_outlined),
+                  SizedBox(
+                    width: 2,
+                  ),
+                  Text('Resep')
+                ],
+              ),
+            ),
           ],
         ),
       ),
